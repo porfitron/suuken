@@ -214,6 +214,143 @@
       background: #334155;
       margin: 0.25rem 0;
     }
+
+    .start-rules {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    #app.idle .corner {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    #celebration {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 70%);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s;
+      overflow: hidden;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    #celebration.visible {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease, visibility 0s;
+    }
+
+    .celebration-burst {
+      position: absolute;
+      width: 120vmax;
+      height: 120vmax;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 60%);
+      animation: burst-pulse 2s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes burst-pulse {
+      0%, 100% { transform: scale(0.6); opacity: 0.6; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    .celebration-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      animation: winner-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes winner-pop {
+      0% { transform: scale(0.3); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .celebration-emoji {
+      font-size: clamp(4rem, 16vw, 6rem);
+      line-height: 1;
+      animation: trophy-bounce 1s ease-in-out 0.5s infinite alternate;
+    }
+
+    @keyframes trophy-bounce {
+      from { transform: translateY(0) rotate(-5deg); }
+      to { transform: translateY(-12px) rotate(5deg); }
+    }
+
+    .celebration-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #fbbf24;
+    }
+
+    .celebration-winner {
+      font-size: clamp(2.5rem, 12vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .celebration-sub {
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    #celebration .primary-btn {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      padding: 1rem 2.5rem;
+      animation: btn-fade-in 0.5s ease 1.2s both;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes btn-fade-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confetti-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      opacity: 0;
+      animation: confetti-fall linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0.3; }
+    }
   </style>
 </head>
 <body>
@@ -238,6 +375,18 @@
     <main id="board" aria-live="polite"></main>
   </div>
 
+  <div id="celebration" aria-hidden="true" role="dialog" aria-label="Winner celebration">
+    <div class="celebration-burst" aria-hidden="true"></div>
+    <div class="confetti-container" id="confetti-container" aria-hidden="true"></div>
+    <div class="celebration-content">
+      <span class="celebration-emoji" aria-hidden="true">🏆</span>
+      <p class="celebration-label">Winner</p>
+      <p class="celebration-winner" id="celebration-winner"></p>
+      <p class="celebration-sub">First to put both thumbs down!</p>
+      <button type="button" class="primary-btn" id="celebration-start-btn">Start</button>
+    </div>
+  </div>
+
   <div id="install-banner">
     <span>Install Suuken</span>
     <button type="button" class="secondary-btn" id="install-btn">Add to Home Screen</button>
@@ -251,7 +400,7 @@
 
     const state = {
       turn: 'P1',
-      phase: 'COUNTDOWN',
+      phase: 'IDLE',
       activeCorners: { p1Left: true, p1Right: true, p2Left: true, p2Right: true },
       pressedCorners: { p1Left: false, p1Right: false, p2Left: false, p2Right: false },
       targetTotal: null,
@@ -264,9 +413,48 @@
     };
 
     const board = document.getElementById('board');
+    const app = document.getElementById('app');
+    const celebration = document.getElementById('celebration');
+    const confettiContainer = document.getElementById('confetti-container');
     const cornerEls = Object.fromEntries(
       CORNERS.map((id) => [id, document.querySelector(`[data-corner="${id}"]`)])
     );
+
+    const CONFETTI_COLORS = ['#f59e0b', '#fbbf24', '#818cf8', '#34d399', '#f472b6', '#60a5fa', '#fcd34d'];
+
+    function spawnConfetti() {
+      confettiContainer.replaceChildren();
+      for (let i = 0; i < 90; i += 1) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+        piece.style.animationDuration = `${2.5 + Math.random() * 2.5}s`;
+        piece.style.animationDelay = `${Math.random() * 1.5}s`;
+        const size = 6 + Math.random() * 8;
+        piece.style.width = `${size}px`;
+        piece.style.height = `${size * (0.6 + Math.random() * 0.8)}px`;
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        confettiContainer.appendChild(piece);
+      }
+    }
+
+    function showCelebration(winner) {
+      document.getElementById('celebration-winner').textContent = `${winner} Wins!`;
+      spawnConfetti();
+      const content = celebration.querySelector('.celebration-content');
+      content.style.animation = 'none';
+      void content.offsetHeight;
+      content.style.animation = '';
+      celebration.classList.add('visible');
+      celebration.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideCelebration() {
+      celebration.classList.remove('visible');
+      celebration.setAttribute('aria-hidden', 'true');
+      confettiContainer.replaceChildren();
+    }
 
     function countActiveCorners() {
       return CORNERS.filter((c) => state.activeCorners[c]).length;
@@ -301,17 +489,23 @@
     }
 
     function renderBoard() {
-      const flip = state.turn === 'P2' && ['COUNTDOWN', 'RESOLUTION', 'GAMEOVER'].includes(state.phase);
+      app.classList.toggle('idle', state.phase === 'IDLE');
+      const flip = state.turn === 'P2' && ['COUNTDOWN', 'RESOLUTION'].includes(state.phase);
       board.classList.toggle('flip', flip);
 
-      if (state.phase === 'GAMEOVER') {
+      if (state.phase === 'IDLE') {
         board.innerHTML = `
-          <p class="player-tag">${state.winner} wins!</p>
-          <h1>Game Over</h1>
-          <p class="phase-msg">First to put both thumbs down wins.</p>
-          <button type="button" class="primary-btn" id="reset-btn">Play Again</button>
+          <h1>Suuken</h1>
+          <p class="start-rules">Two players, one screen. Match the target tally to remove your thumbs. First to put both down wins.</p>
+          <div class="divider"></div>
+          <button type="button" class="primary-btn" id="start-btn">Start</button>
         `;
-        document.getElementById('reset-btn').onclick = resetGame;
+        document.getElementById('start-btn').onclick = beginGame;
+        return;
+      }
+
+      if (state.phase === 'GAMEOVER') {
+        board.innerHTML = '';
         return;
       }
 
@@ -424,8 +618,17 @@
     function checkWinner() {
       const p1Out = !P1_CORNERS.some((c) => state.activeCorners[c]);
       const p2Out = !P2_CORNERS.some((c) => state.activeCorners[c]);
-      if (p1Out) { state.winner = 'P1'; state.phase = 'GAMEOVER'; }
-      else if (p2Out) { state.winner = 'P2'; state.phase = 'GAMEOVER'; }
+      if (p1Out) {
+        state.winner = 'P1';
+        state.phase = 'GAMEOVER';
+        showCelebration('P1');
+        renderBoard();
+      } else if (p2Out) {
+        state.winner = 'P2';
+        state.phase = 'GAMEOVER';
+        showCelebration('P2');
+        renderBoard();
+      }
     }
 
     function nextTurn() {
@@ -437,7 +640,8 @@
       startPlayerTurn();
     }
 
-    function resetGame() {
+    function beginGame() {
+      hideCelebration();
       clearInterval(state.countdownTimer);
       clearTimeout(state.actionTimer);
       state.turn = 'P1';
@@ -450,6 +654,10 @@
       });
       syncCornerUI();
       startPlayerTurn();
+    }
+
+    function resetGame() {
+      beginGame();
     }
 
     function cornerFromTouch(touch) {
@@ -526,8 +734,10 @@
       });
     }
 
+    document.getElementById('celebration-start-btn').onclick = beginGame;
+
     syncCornerUI();
-    startPlayerTurn();
+    renderBoard();
   </script>
 </body>
 </html>
