@@ -8,6 +8,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
   <title>Suuken</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-B90DQQ81ZW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-B90DQQ81ZW');
+  </script>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/icon-192.svg" />
@@ -171,6 +179,20 @@
 
     .primary-btn:active { background: #fbbf24; }
 
+    .ghost-btn {
+      padding: 0.85rem 1.5rem;
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .ghost-btn:active {
+      background: rgba(71, 85, 105, 0.25);
+      color: #f8fafc;
+    }
+
     .secondary-btn {
       padding: 0.65rem 1.25rem;
       background: #334155;
@@ -270,6 +292,32 @@
       font-weight: 400;
     }
 
+    .name-input-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .name-input-row input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cpu-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+
+    .cpu-toggle input {
+      width: 1rem;
+      height: 1rem;
+      accent-color: #f59e0b;
+    }
+
     .session-score {
       font-size: 0.95rem;
       font-weight: 600;
@@ -294,6 +342,11 @@
       gap: 0.5rem;
     }
 
+    .session-primary-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+
     .text-btn {
       padding: 0.35rem 0.5rem;
       background: transparent;
@@ -310,6 +363,68 @@
     #app.setup .corner {
       opacity: 0.4;
       pointer-events: none;
+    }
+
+    #about-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(2, 6, 23, 0.76);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      padding: 1rem;
+    }
+
+    #about-modal.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .about-modal-card {
+      width: min(420px, 92vw);
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 1rem 1rem 0.9rem;
+      text-align: left;
+      box-shadow: 0 20px 45px rgba(2, 6, 23, 0.5);
+    }
+
+    .about-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #f8fafc;
+    }
+
+    .about-modal-close {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 999px;
+      background: #1f2937;
+      color: #cbd5e1;
+      font-size: 1.15rem;
+      line-height: 1;
+      border: 1px solid #334155;
+    }
+
+    .about-modal-body {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      line-height: 1.6;
     }
 
     #celebration {
@@ -549,9 +664,20 @@
       <p class="celebration-sub">First to put both thumbs down!</p>
       <p class="session-score celebration-score" id="celebration-session-score" hidden></p>
       <div class="celebration-actions">
-        <button type="button" class="primary-btn" id="celebration-start-btn">Start</button>
+        <button type="button" class="primary-btn" id="celebration-start-btn">Re-match</button>
         <button type="button" class="secondary-btn" id="celebration-share-btn">Share Results</button>
+        <button type="button" class="secondary-btn" id="celebration-new-players-btn">New player(s)</button>
       </div>
+    </div>
+  </div>
+
+  <div id="about-modal" aria-hidden="true">
+    <div class="about-modal-card" role="dialog" aria-modal="true" aria-labelledby="about-title">
+      <div class="about-modal-head">
+        <h2 class="about-modal-title" id="about-title">About Suuken</h2>
+        <button type="button" class="about-modal-close" id="about-close-btn" aria-label="Close about dialog">✕</button>
+      </div>
+      <p class="about-modal-body">Developed in equal partnership by Porfiirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/sukken</p>
     </div>
   </div>
 
@@ -565,12 +691,21 @@
     const CORNERS = ['p1Left', 'p1Right', 'p2Left', 'p2Right'];
     const P1_CORNERS = ['p1Left', 'p1Right'];
     const P2_CORNERS = ['p2Left', 'p2Right'];
+    const KEY_TO_CORNER = {
+      ':': 'p1Left',
+      ';': 'p1Left',
+      "'": 'p1Right',
+      a: 'p2Left',
+      s: 'p2Right'
+    };
     const TARGET_HISTORY_MAX = 10;
 
     const state = {
       turn: 'P1',
       phase: 'SETUP',
       playerNames: { P1: '', P2: '' },
+      lastHumanP2Name: '',
+      cpuEnabled: false,
       activeCorners: { p1Left: true, p1Right: true, p2Left: true, p2Right: true },
       pressedCorners: { p1Left: false, p1Right: false, p2Left: false, p2Right: false },
       targetTotal: null,
@@ -578,6 +713,7 @@
       roundSuccess: false,
       thumbDropped: false,
       winner: null,
+      currentMatchRounds: 0,
       countdownTimer: null,
       actionTimer: null,
       touchIds: new Map(),
@@ -592,11 +728,17 @@
     const app = document.getElementById('app');
     const celebration = document.getElementById('celebration');
     const confettiContainer = document.getElementById('confetti-container');
+    const aboutModal = document.getElementById('about-modal');
     const cornerEls = Object.fromEntries(
       CORNERS.map((id) => [id, document.querySelector(`[data-corner="${id}"]`)])
     );
 
     const CONFETTI_COLORS = ['#f59e0b', '#fbbf24', '#818cf8', '#34d399', '#f472b6', '#60a5fa', '#fcd34d'];
+
+    function trackAnalyticsEvent(eventName, params = {}) {
+      if (typeof window.gtag !== 'function') return;
+      window.gtag('event', eventName, params);
+    }
 
     function getPlayerName(player) {
       const name = state.playerNames[player]?.trim();
@@ -663,9 +805,26 @@
     function readNamesFromForm() {
       const p1Input = document.getElementById('p1-name');
       const p2Input = document.getElementById('p2-name');
+      const cpuInput = document.getElementById('p2-cpu');
+      state.cpuEnabled = Boolean(cpuInput?.checked);
       if (p1Input) state.playerNames.P1 = p1Input.value.trim();
-      if (p2Input) state.playerNames.P2 = p2Input.value.trim();
+      if (state.cpuEnabled) {
+        state.playerNames.P2 = 'Computer';
+      } else if (p2Input) {
+        state.playerNames.P2 = p2Input.value.trim();
+        state.lastHumanP2Name = state.playerNames.P2;
+      }
       updateCornerLabels();
+    }
+
+    function syncCpuNameField() {
+      const cpuInput = document.getElementById('p2-cpu');
+      const p2Input = document.getElementById('p2-name');
+      if (!cpuInput || !p2Input) return;
+      const cpuChecked = cpuInput.checked;
+      p2Input.disabled = cpuChecked;
+      p2Input.value = cpuChecked ? 'Computer' : (state.playerNames.P2 || '');
+      p2Input.setAttribute('aria-label', cpuChecked ? 'Top player name set to Computer' : 'Top player name');
     }
 
     function spawnConfetti() {
@@ -709,6 +868,16 @@
       celebration.querySelector('.celebration-sub').textContent =
         'First to put both thumbs down!';
       confettiContainer.replaceChildren();
+    }
+
+    function showAboutModal() {
+      aboutModal.classList.add('visible');
+      aboutModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideAboutModal() {
+      aboutModal.classList.remove('visible');
+      aboutModal.setAttribute('aria-hidden', 'true');
     }
 
     function canvasText(ctx, text, x, y, opts = {}) {
@@ -891,6 +1060,31 @@
       }
     }
 
+    function startNewPlayersSession() {
+      clearInterval(state.countdownTimer);
+      clearTimeout(state.actionTimer);
+      hideCelebration();
+      resetSessionRecord();
+      state.turn = 'P1';
+      state.phase = 'SETUP';
+      state.winner = null;
+      state.targetTotal = null;
+      state.roundSuccess = false;
+      state.thumbDropped = false;
+      state.cpuEnabled = false;
+      state.playerNames.P1 = '';
+      state.playerNames.P2 = '';
+      state.lastHumanP2Name = '';
+      CORNERS.forEach((c) => {
+        state.activeCorners[c] = true;
+        state.pressedCorners[c] = false;
+      });
+      clearTargetHistory();
+      syncCornerUI();
+      updateCornerLabels();
+      renderBoard();
+    }
+
     function countActiveCorners() {
       return CORNERS.filter((c) => state.activeCorners[c]).length;
     }
@@ -1037,7 +1231,7 @@
           : '';
         board.innerHTML = `
           <h1>Suuken</h1>
-          <p class="start-rules">Two players, one screen. Each turn a random target is chosen. Match the total thumbs raised to put one of your corners away. First to put both down wins. Turns alternate after every round.</p>
+          <p class="start-rules">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number (yes, even 0!). If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.</p>
           <div class="divider"></div>
           <div class="name-form">
             <div class="name-field">
@@ -1046,16 +1240,26 @@
             </div>
             <div class="name-field">
               <label for="p2-name">Top player</label>
-              <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${state.playerNames.P2.replace(/"/g, '&quot;')}" />
+              <div class="name-input-row">
+                <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} />
+                <label class="cpu-toggle" for="p2-cpu">
+                  <input type="checkbox" id="p2-cpu" ${state.cpuEnabled ? 'checked' : ''} />
+                  CPU
+                </label>
+              </div>
             </div>
           </div>
           ${sessionBlock}
           <div class="session-actions">
-            <button type="button" class="primary-btn" id="start-btn">Start</button>
+            <div class="session-primary-actions">
+              <button type="button" class="primary-btn" id="start-btn">Start</button>
+              <button type="button" class="ghost-btn" id="about-btn">About</button>
+            </div>
             ${totalSessionGames() > 0 ? '<button type="button" class="text-btn" id="reset-session-btn">Reset session record</button>' : ''}
           </div>
         `;
         document.getElementById('start-btn').onclick = beginGame;
+        document.getElementById('about-btn').onclick = showAboutModal;
         const resetSessionBtn = document.getElementById('reset-session-btn');
         if (resetSessionBtn) {
           resetSessionBtn.onclick = () => {
@@ -1066,6 +1270,23 @@
         document.getElementById('p2-name').addEventListener('keydown', (e) => {
           if (e.key === 'Enter') beginGame();
         });
+        const cpuToggle = document.getElementById('p2-cpu');
+        if (cpuToggle) {
+          cpuToggle.addEventListener('change', () => {
+            state.cpuEnabled = cpuToggle.checked;
+            if (state.cpuEnabled) {
+              const p2Input = document.getElementById('p2-name');
+              if (p2Input) {
+                state.lastHumanP2Name = p2Input.value.trim();
+              }
+              state.playerNames.P2 = 'Computer';
+            } else {
+              state.playerNames.P2 = state.lastHumanP2Name;
+            }
+            syncCpuNameField();
+          });
+          syncCpuNameField();
+        }
         return;
       }
 
@@ -1149,6 +1370,13 @@
 
     function startActionPhase() {
       resetPressed();
+      if (state.cpuEnabled) {
+        P2_CORNERS.forEach((corner) => {
+          if (!state.activeCorners[corner]) return;
+          state.pressedCorners[corner] = Math.random() < 0.5;
+        });
+      }
+      syncCornerUI();
       setPhase('ACTION');
       clearTimeout(state.actionTimer);
       state.actionTimer = setTimeout(resolveRound, 1000);
@@ -1159,15 +1387,30 @@
       state.lastTotal = total;
       state.roundSuccess = total === state.targetTotal;
       state.thumbDropped = false;
+      state.currentMatchRounds += 1;
 
       if (state.roundSuccess) {
         const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
         const active = playerCorners.filter((c) => state.activeCorners[c]);
         if (active.length === 1) {
           state.activeCorners[active[0]] = false;
+          state.thumbDropped = true;
+          syncCornerUI();
+        } else if (state.cpuEnabled && state.turn === 'P2' && active.length > 1) {
+          const randomCorner = active[Math.floor(Math.random() * active.length)];
+          state.activeCorners[randomCorner] = false;
+          state.thumbDropped = true;
           syncCornerUI();
         }
       }
+
+      trackAnalyticsEvent('round_completed', {
+        round_number: state.currentMatchRounds,
+        turn_player: state.turn,
+        target_total: state.targetTotal,
+        raised_total: total,
+        was_match: state.roundSuccess ? 1 : 0,
+      });
 
       recordTargetHistory(state.targetTotal);
       if (checkWinner()) return;
@@ -1193,6 +1436,13 @@
         state.winner = 'P1';
         state.phase = 'GAMEOVER';
         recordSessionWin('P1');
+        trackAnalyticsEvent('match_completed', {
+          winner: 'P1',
+          rounds_played: state.currentMatchRounds,
+          cpu_enabled: state.cpuEnabled ? 1 : 0,
+          p1_session_wins: sessionRecord.P1,
+          p2_session_wins: sessionRecord.P2,
+        });
         showCelebration('P1');
         renderBoard();
         return true;
@@ -1201,6 +1451,13 @@
         state.winner = 'P2';
         state.phase = 'GAMEOVER';
         recordSessionWin('P2');
+        trackAnalyticsEvent('match_completed', {
+          winner: 'P2',
+          rounds_played: state.currentMatchRounds,
+          cpu_enabled: state.cpuEnabled ? 1 : 0,
+          p1_session_wins: sessionRecord.P1,
+          p2_session_wins: sessionRecord.P2,
+        });
         showCelebration('P2');
         renderBoard();
         return true;
@@ -1229,6 +1486,7 @@
       state.targetTotal = null;
       state.roundSuccess = false;
       state.thumbDropped = false;
+      state.currentMatchRounds = 0;
       CORNERS.forEach((c) => {
         state.activeCorners[c] = true;
         state.pressedCorners[c] = false;
@@ -1247,9 +1505,23 @@
       return el?.closest('[data-corner]')?.dataset?.corner ?? null;
     }
 
+    function cornerFromKeyEvent(e) {
+      if (e.metaKey || e.ctrlKey || e.altKey) return null;
+      const key = e.key?.length === 1 ? e.key.toLowerCase() : e.key;
+      return KEY_TO_CORNER[key] ?? null;
+    }
+
+    function shouldIgnoreKeyboardEvent(e) {
+      const tag = e.target?.tagName;
+      if (!tag) return false;
+      if (e.target?.isContentEditable) return true;
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    }
+
     function setCornerPressed(cornerId, pressed) {
       if (!cornerId || state.phase !== 'ACTION') return;
       if (!state.activeCorners[cornerId]) return;
+      if (state.cpuEnabled && P2_CORNERS.includes(cornerId)) return;
       state.pressedCorners[cornerId] = pressed;
       syncCornerUI();
     }
@@ -1285,6 +1557,29 @@
     document.getElementById('app').addEventListener('touchend', onTouchEnd, { passive: false });
     document.getElementById('app').addEventListener('touchcancel', onTouchEnd, { passive: false });
 
+    document.addEventListener('keydown', (e) => {
+      if (shouldIgnoreKeyboardEvent(e)) return;
+      const corner = cornerFromKeyEvent(e);
+      if (!corner) return;
+      if (state.phase === 'ACTION') {
+        e.preventDefault();
+        setCornerPressed(corner, true);
+        return;
+      }
+      if (state.phase === 'RESOLUTION' && state.roundSuccess) {
+        e.preventDefault();
+        eliminateCorner(corner);
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (shouldIgnoreKeyboardEvent(e)) return;
+      const corner = cornerFromKeyEvent(e);
+      if (!corner || state.phase !== 'ACTION') return;
+      e.preventDefault();
+      setCornerPressed(corner, false);
+    });
+
     document.addEventListener('gesturestart', (e) => e.preventDefault());
 
     /* PWA install prompt */
@@ -1318,6 +1613,29 @@
 
     document.getElementById('celebration-start-btn').onclick = beginGame;
     document.getElementById('celebration-share-btn').onclick = shareResults;
+    document.getElementById('celebration-new-players-btn').onclick = startNewPlayersSession;
+    document.getElementById('about-close-btn').onclick = hideAboutModal;
+    aboutModal.addEventListener('click', (e) => {
+      if (e.target === aboutModal) hideAboutModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hideAboutModal();
+    });
+    document.addEventListener('click', (e) => {
+      const button = e.target.closest('button');
+      if (!button) return;
+      const buttonId = button.id || 'anonymous-button';
+      const buttonLabel = (button.textContent || '')
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, '_')
+        .slice(0, 40) || 'unlabeled';
+      trackAnalyticsEvent('button_click', {
+        button_id: buttonId,
+        button_label: buttonLabel,
+        phase: state.phase,
+      });
+    });
 
     updateCornerLabels();
     syncCornerUI();
