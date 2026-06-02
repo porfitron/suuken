@@ -270,6 +270,42 @@
       font-weight: 400;
     }
 
+    .session-score {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.02em;
+    }
+
+    .session-score strong {
+      color: #fbbf24;
+      font-weight: 800;
+    }
+
+    .session-score.celebration-score {
+      font-size: clamp(1rem, 3.5vw, 1.2rem);
+      margin-top: 0.25rem;
+    }
+
+    .session-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .text-btn {
+      padding: 0.35rem 0.5rem;
+      background: transparent;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .text-btn:active { color: #94a3b8; }
+
     #app.idle .corner,
     #app.setup .corner {
       opacity: 0.4;
@@ -404,6 +440,53 @@
       0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
       100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0.3; }
     }
+
+    .target-history {
+      position: absolute;
+      left: env(safe-area-inset-left, 8px);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .target-history.visible { opacity: 1; }
+
+    .target-history.p1 {
+      top: 75%;
+      bottom: auto;
+      transform: translateY(-50%);
+    }
+
+    .target-history.p2 {
+      top: 25%;
+      bottom: auto;
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    .target-history-item {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 800;
+      background: #1e293b;
+      border: 2px solid #334155;
+      color: #94a3b8;
+    }
+
+    .target-history-item.recent {
+      background: #422006;
+      border-color: #f59e0b;
+      color: #fbbf24;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+    }
   </style>
 </head>
 <body>
@@ -425,6 +508,9 @@
       👍
     </div>
 
+    <aside id="history-p1" class="target-history p1" aria-label="Recent target numbers for bottom player" hidden></aside>
+    <aside id="history-p2" class="target-history p2" aria-label="Recent target numbers for top player" hidden></aside>
+
     <main id="board" aria-live="polite"></main>
   </div>
 
@@ -436,6 +522,7 @@
       <p class="celebration-label">Winner</p>
       <p class="celebration-winner" id="celebration-winner"></p>
       <p class="celebration-sub">First to put both thumbs down!</p>
+      <p class="session-score celebration-score" id="celebration-session-score" hidden></p>
       <button type="button" class="primary-btn" id="celebration-start-btn">Start</button>
     </div>
   </div>
@@ -450,6 +537,7 @@
     const CORNERS = ['p1Left', 'p1Right', 'p2Left', 'p2Right'];
     const P1_CORNERS = ['p1Left', 'p1Right'];
     const P2_CORNERS = ['p2Left', 'p2Right'];
+    const TARGET_HISTORY_MAX = 10;
 
     const state = {
       turn: 'P1',
@@ -460,13 +548,19 @@
       targetTotal: null,
       lastTotal: 0,
       roundSuccess: false,
+      thumbDropped: false,
       winner: null,
       countdownTimer: null,
       actionTimer: null,
       touchIds: new Map(),
     };
 
+    const sessionRecord = { P1: 0, P2: 0 };
+    const targetHistory = [];
+
     const board = document.getElementById('board');
+    const historyP1 = document.getElementById('history-p1');
+    const historyP2 = document.getElementById('history-p2');
     const app = document.getElementById('app');
     const celebration = document.getElementById('celebration');
     const confettiContainer = document.getElementById('confetti-container');
@@ -488,6 +582,37 @@
 
     function abbrevName(name) {
       return name.length <= 8 ? name : `${name.slice(0, 7)}…`;
+    }
+
+    function totalSessionGames() {
+      return sessionRecord.P1 + sessionRecord.P2;
+    }
+
+    function formatSessionScore() {
+      const p1 = getPlayerName('P1');
+      const p2 = getPlayerName('P2');
+      return `${p1} <strong>${sessionRecord.P1}</strong> – <strong>${sessionRecord.P2}</strong> ${p2}`;
+    }
+
+    function recordSessionWin(winner) {
+      sessionRecord[winner] += 1;
+    }
+
+    function resetSessionRecord() {
+      sessionRecord.P1 = 0;
+      sessionRecord.P2 = 0;
+    }
+
+    function updateCelebrationSessionScore() {
+      const el = document.getElementById('celebration-session-score');
+      if (!el) return;
+      if (totalSessionGames() === 0) {
+        el.hidden = true;
+        el.textContent = '';
+        return;
+      }
+      el.hidden = false;
+      el.innerHTML = `Session: ${formatSessionScore()}`;
     }
 
     function updateCornerLabels() {
@@ -544,6 +669,7 @@
       content.style.animation = 'none';
       void content.offsetHeight;
       content.style.animation = '';
+      updateCelebrationSessionScore();
       celebration.classList.add('visible');
       celebration.setAttribute('aria-hidden', 'false');
     }
@@ -583,6 +709,32 @@
       });
     }
 
+    function recordTargetHistory(total) {
+      targetHistory.unshift(total);
+      if (targetHistory.length > TARGET_HISTORY_MAX) {
+        targetHistory.length = TARGET_HISTORY_MAX;
+      }
+      updateTargetHistoryUI();
+    }
+
+    function clearTargetHistory() {
+      targetHistory.length = 0;
+      updateTargetHistoryUI();
+    }
+
+    function updateTargetHistoryUI() {
+      const inGame = state.phase !== 'SETUP' && state.phase !== 'GAMEOVER';
+      const html = targetHistory.map((n, i) =>
+        `<span class="target-history-item${i === 0 ? ' recent' : ''}">${n}</span>`
+      ).join('');
+
+      [historyP1, historyP2].forEach((el) => {
+        el.innerHTML = html;
+        el.hidden = !inGame || targetHistory.length === 0;
+        el.classList.toggle('visible', inGame && targetHistory.length > 0);
+      });
+    }
+
     function setPhase(phase) {
       state.phase = phase;
       if (phase !== 'ACTION') resetPressed();
@@ -590,15 +742,19 @@
     }
 
     function renderBoard() {
+      updateTargetHistoryUI();
       app.classList.toggle('idle', state.phase === 'SETUP');
       app.classList.toggle('setup', state.phase === 'SETUP');
       const flip = state.turn === 'P2' && ['COUNTDOWN', 'RESOLUTION'].includes(state.phase);
       board.classList.toggle('flip', flip);
 
       if (state.phase === 'SETUP') {
+        const sessionBlock = totalSessionGames() > 0
+          ? `<p class="session-score">Session: ${formatSessionScore()}</p>`
+          : '';
         board.innerHTML = `
           <h1>Suuken</h1>
-          <p class="start-rules">Two players, one screen. Match the target tally to remove your thumbs. First to put both down wins.</p>
+          <p class="start-rules">Two players, one screen. Each turn a random target is chosen. Match the total thumbs raised to put one of your corners away. First to put both down wins. Turns alternate after every round.</p>
           <div class="divider"></div>
           <div class="name-form">
             <div class="name-field">
@@ -610,9 +766,20 @@
               <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${state.playerNames.P2.replace(/"/g, '&quot;')}" />
             </div>
           </div>
-          <button type="button" class="primary-btn" id="start-btn">Start</button>
+          ${sessionBlock}
+          <div class="session-actions">
+            <button type="button" class="primary-btn" id="start-btn">Start</button>
+            ${totalSessionGames() > 0 ? '<button type="button" class="text-btn" id="reset-session-btn">Reset session record</button>' : ''}
+          </div>
         `;
         document.getElementById('start-btn').onclick = beginGame;
+        const resetSessionBtn = document.getElementById('reset-session-btn');
+        if (resetSessionBtn) {
+          resetSessionBtn.onclick = () => {
+            resetSessionRecord();
+            renderBoard();
+          };
+        }
         document.getElementById('p2-name').addEventListener('keydown', (e) => {
           if (e.key === 'Enter') beginGame();
         });
@@ -654,10 +821,10 @@
         const remaining = playerCorners.filter((c) => state.activeCorners[c]);
         const needsPick = roundSuccess && remaining.length > 1;
         let extra = '';
-        if (roundSuccess && remaining.length === 1) {
-          extra = `<p class="result">Last thumb removed.</p>`;
-        } else if (needsPick) {
+        if (needsPick) {
           extra = `<p class="eliminate-hint">${getPlayerName(state.turn)}: tap one of your corners to put it away</p>`;
+        } else if (roundSuccess && state.thumbDropped) {
+          extra = `<p class="result">One thumb put away.</p>`;
         }
         board.innerHTML = `
           <p class="player-tag active">${activeTag}</p>
@@ -708,7 +875,7 @@
       const total = tallyPressed();
       state.lastTotal = total;
       state.roundSuccess = total === state.targetTotal;
-      setPhase('RESOLUTION');
+      state.thumbDropped = false;
 
       if (state.roundSuccess) {
         const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
@@ -716,9 +883,13 @@
         if (active.length === 1) {
           state.activeCorners[active[0]] = false;
           syncCornerUI();
-          checkWinner();
         }
       }
+
+      recordTargetHistory(state.targetTotal);
+      if (checkWinner()) return;
+
+      setPhase('RESOLUTION');
     }
 
     function eliminateCorner(cornerId) {
@@ -726,10 +897,10 @@
       const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
       if (!playerCorners.includes(cornerId) || !state.activeCorners[cornerId]) return;
       state.activeCorners[cornerId] = false;
+      state.thumbDropped = true;
       syncCornerUI();
-      checkWinner();
-      if (state.phase !== 'GAMEOVER') nextTurn();
-      else renderBoard();
+      if (checkWinner()) return;
+      renderBoard();
     }
 
     function checkWinner() {
@@ -738,14 +909,20 @@
       if (p1Out) {
         state.winner = 'P1';
         state.phase = 'GAMEOVER';
+        recordSessionWin('P1');
         showCelebration('P1');
         renderBoard();
-      } else if (p2Out) {
+        return true;
+      }
+      if (p2Out) {
         state.winner = 'P2';
         state.phase = 'GAMEOVER';
+        recordSessionWin('P2');
         showCelebration('P2');
         renderBoard();
+        return true;
       }
+      return false;
     }
 
     function nextTurn() {
@@ -754,22 +931,26 @@
       state.turn = state.turn === 'P1' ? 'P2' : 'P1';
       state.targetTotal = null;
       state.roundSuccess = false;
+      state.thumbDropped = false;
       startPlayerTurn();
     }
 
     function beginGame() {
       if (state.phase === 'SETUP') readNamesFromForm();
       hideCelebration();
+      updateCelebrationSessionScore();
       clearInterval(state.countdownTimer);
       clearTimeout(state.actionTimer);
       state.turn = 'P1';
       state.winner = null;
       state.targetTotal = null;
       state.roundSuccess = false;
+      state.thumbDropped = false;
       CORNERS.forEach((c) => {
         state.activeCorners[c] = true;
         state.pressedCorners[c] = false;
       });
+      clearTargetHistory();
       syncCornerUI();
       startPlayerTurn();
     }
