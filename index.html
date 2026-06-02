@@ -657,8 +657,8 @@
       👍
     </div>
 
-    <aside id="history-p1" class="target-history p1" aria-label="Recent target numbers for bottom player" hidden></aside>
-    <aside id="history-p2" class="target-history p2" aria-label="Recent target numbers for top player" hidden></aside>
+    <aside id="history-p1" class="target-history p1" aria-label="Recent target numbers for home player" hidden></aside>
+    <aside id="history-p2" class="target-history p2" aria-label="Recent target numbers for challenger" hidden></aside>
 
     <main id="board" aria-live="polite"></main>
   </div>
@@ -686,7 +686,7 @@
         <h2 class="about-modal-title" id="about-title">About Suuken</h2>
         <button type="button" class="about-modal-close" id="about-close-btn" aria-label="Close about dialog">✕</button>
       </div>
-      <p class="about-modal-body">Developed in equal partnership by Porfiirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/sukken</p>
+      <p class="about-modal-body">Developed in equal partnership by Porfiirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/sukken<br><br>Desktop test mode, keyboard controls are [ ; ] and [ ' ] for Player 1 and [ a ] and [ s ] for Player 2.</p>
     </div>
   </div>
 
@@ -755,7 +755,7 @@
     }
 
     function getPlayerTag(player) {
-      const pos = player === 'P1' ? 'bottom' : 'top';
+      const pos = player === 'P1' ? 'home' : 'challenger';
       return `${getPlayerName(player)} (${pos})`;
     }
 
@@ -833,7 +833,7 @@
       const cpuChecked = cpuInput.checked;
       p2Input.disabled = cpuChecked;
       p2Input.value = cpuChecked ? 'Computer' : (state.playerNames.P2 || '');
-      p2Input.setAttribute('aria-label', cpuChecked ? 'Top player name set to Computer' : 'Top player name');
+      p2Input.setAttribute('aria-label', cpuChecked ? 'Challenger name set to Computer' : 'Challenger name');
     }
 
     function spawnConfetti() {
@@ -1244,11 +1244,11 @@
           <div class="divider"></div>
           <div class="name-form">
             <div class="name-field">
-              <label for="p1-name">Bottom player</label>
+              <label for="p1-name">Home Player</label>
               <input type="text" id="p1-name" maxlength="20" placeholder="Player 1" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" />
             </div>
             <div class="name-field">
-              <label for="p2-name">Top player</label>
+              <label for="p2-name">Challenger</label>
               <div class="name-input-row">
                 <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} />
                 <label class="cpu-toggle" for="p2-cpu">
