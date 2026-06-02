@@ -443,9 +443,10 @@
 
     .target-history {
       position: absolute;
-      left: env(safe-area-inset-left, 8px);
+      left: calc(env(safe-area-inset-left, 0px) + 24px);
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 0.35rem;
       z-index: 1;
       pointer-events: none;
@@ -456,15 +457,17 @@
     .target-history.visible { opacity: 1; }
 
     .target-history.p1 {
-      top: 75%;
-      bottom: auto;
-      transform: translateY(-50%);
+      top: auto;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(96px, 28vw, 168px));
+      transform: none;
     }
 
     .target-history.p2 {
-      top: 25%;
+      left: auto;
+      right: calc(env(safe-area-inset-right, 0px) + 24px);
+      top: calc(env(safe-area-inset-top, 0px) + clamp(96px, 28vw, 168px));
       bottom: auto;
-      transform: translateY(-50%) rotate(180deg);
+      transform: rotate(180deg);
     }
 
     .target-history-item {
@@ -479,6 +482,7 @@
       background: #1e293b;
       border: 2px solid #334155;
       color: #94a3b8;
+      flex-shrink: 0;
     }
 
     .target-history-item.recent {
@@ -714,7 +718,7 @@
       if (targetHistory.length > TARGET_HISTORY_MAX) {
         targetHistory.length = TARGET_HISTORY_MAX;
       }
-      updateTargetHistoryUI();
+      updateTargetHistoryUI(true);
     }
 
     function clearTargetHistory() {
@@ -722,17 +726,92 @@
       updateTargetHistoryUI();
     }
 
-    function updateTargetHistoryUI() {
-      const inGame = state.phase !== 'SETUP' && state.phase !== 'GAMEOVER';
-      const html = targetHistory.map((n, i) =>
-        `<span class="target-history-item${i === 0 ? ' recent' : ''}">${n}</span>`
-      ).join('');
+    function buildHistoryItem(value, isRecent) {
+      const span = document.createElement('span');
+      span.className = `target-history-item${isRecent ? ' recent' : ''}`;
+      span.textContent = String(value);
+      return span;
+    }
 
-      [historyP1, historyP2].forEach((el) => {
-        el.innerHTML = html;
-        el.hidden = !inGame || targetHistory.length === 0;
-        el.classList.toggle('visible', inGame && targetHistory.length > 0);
+    function getHistoryDisplayValues() {
+      return [...targetHistory].reverse();
+    }
+
+    function renderHistoryContainer(container, animateInsert) {
+      const inGame = state.phase !== 'SETUP' && state.phase !== 'GAMEOVER';
+      const displayValues = getHistoryDisplayValues();
+      container.hidden = !inGame || displayValues.length === 0;
+      container.classList.toggle('visible', inGame && displayValues.length > 0);
+
+      if (!inGame || displayValues.length === 0) {
+        container.replaceChildren();
+        return;
+      }
+
+      const canAnimate = animateInsert
+        && container.children.length > 0
+        && typeof container.animate === 'function';
+
+      if (canAnimate) {
+        const prevRects = [...container.children].map((el) => el.getBoundingClientRect());
+        const oldLen = prevRects.length;
+        container.replaceChildren();
+        displayValues.forEach((value, index) => {
+          container.appendChild(buildHistoryItem(value, index === displayValues.length - 1));
+        });
+
+        const newLen = container.children.length;
+        const droppedOldest = oldLen > 0 && newLen === oldLen;
+
+        [...container.children].forEach((el, index) => {
+          const isNewest = index === newLen - 1;
+          if (isNewest) {
+            el.animate([
+              { transform: 'translateY(130%) scale(0.8)', opacity: 0 },
+              { transform: 'translateY(0) scale(1)', opacity: 1 },
+            ], { duration: 460, easing: 'cubic-bezier(0.34, 1.25, 0.64, 1)' });
+            return;
+          }
+
+          let fromRect;
+          if (droppedOldest) {
+            fromRect = prevRects[index + 1];
+          } else if (index === newLen - 2) {
+            fromRect = prevRects[oldLen - 1];
+          } else {
+            fromRect = prevRects[index];
+          }
+
+          if (!fromRect) return;
+          const nextRect = el.getBoundingClientRect();
+          const dx = fromRect.left - nextRect.left;
+          const dy = fromRect.top - nextRect.top;
+          if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+            el.animate([
+              { transform: `translate(${dx}px, ${dy}px)` },
+              { transform: 'translate(0, 0)' },
+            ], { duration: 460, easing: 'cubic-bezier(0.34, 1.25, 0.64, 1)' });
+          }
+        });
+        return;
+      }
+
+      container.replaceChildren();
+      displayValues.forEach((value, index) => {
+        container.appendChild(buildHistoryItem(value, index === displayValues.length - 1));
       });
+
+      if (animateInsert && container.children.length === 1) {
+        container.lastElementChild.animate([
+          { transform: 'translateY(130%) scale(0.8)', opacity: 0 },
+          { transform: 'translateY(0) scale(1)', opacity: 1 },
+        ], { duration: 460, easing: 'cubic-bezier(0.34, 1.25, 0.64, 1)' });
+      }
+    }
+
+    function updateTargetHistoryUI(animateInsert = false) {
+      renderHistoryContainer(historyP1, animateInsert);
+      renderHistoryContainer(historyP2, animateInsert);
     }
 
     function setPhase(phase) {
