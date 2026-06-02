@@ -8,6 +8,15 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
   <title>Suuken</title>
+  <script>
+    (function enforceHttps() {
+      if (window.location.protocol !== 'http:') return;
+      const host = window.location.hostname;
+      const isLocalhost = host === 'localhost' || host === '127.0.0.1' || host === '[::1]';
+      if (isLocalhost) return;
+      window.location.replace(`https://${window.location.host}${window.location.pathname}${window.location.search}${window.location.hash}`);
+    }());
+  </script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-B90DQQ81ZW"></script>
   <script>
@@ -1231,7 +1240,7 @@
           : '';
         board.innerHTML = `
           <h1>Suuken</h1>
-          <p class="start-rules">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number (yes, even 0!). If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.</p>
+          <p class="start-rules">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.</p>
           <div class="divider"></div>
           <div class="name-form">
             <div class="name-field">
