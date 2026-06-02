@@ -406,13 +406,34 @@
       font-weight: 500;
     }
 
-    #celebration .primary-btn {
+    .celebration-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.65rem;
       margin-top: 1rem;
-      font-size: 1.1rem;
-      padding: 1rem 2.5rem;
       animation: btn-fade-in 0.5s ease 1.2s both;
       position: relative;
       z-index: 2;
+    }
+
+    #celebration.flip .celebration-actions {
+      transform: rotate(180deg);
+    }
+
+    #celebration .primary-btn {
+      font-size: 1.1rem;
+      padding: 1rem 2.5rem;
+    }
+
+    #celebration .secondary-btn {
+      font-size: 0.95rem;
+      padding: 0.75rem 1.75rem;
+    }
+
+    #celebration-share-btn[disabled] {
+      opacity: 0.55;
+      cursor: wait;
     }
 
     @keyframes btn-fade-in {
@@ -527,7 +548,10 @@
       <p class="celebration-winner" id="celebration-winner"></p>
       <p class="celebration-sub">First to put both thumbs down!</p>
       <p class="session-score celebration-score" id="celebration-session-score" hidden></p>
-      <button type="button" class="primary-btn" id="celebration-start-btn">Start</button>
+      <div class="celebration-actions">
+        <button type="button" class="primary-btn" id="celebration-start-btn">Start</button>
+        <button type="button" class="secondary-btn" id="celebration-share-btn">Share Results</button>
+      </div>
     </div>
   </div>
 
@@ -685,6 +709,186 @@
       celebration.querySelector('.celebration-sub').textContent =
         'First to put both thumbs down!';
       confettiContainer.replaceChildren();
+    }
+
+    function canvasText(ctx, text, x, y, opts = {}) {
+      const {
+        size = 24,
+        weight = '600',
+        color = '#e2e8f0',
+        align = 'center',
+        maxWidth,
+      } = opts;
+      ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      if (maxWidth) {
+        ctx.fillText(text, x, y, maxWidth);
+      } else {
+        ctx.fillText(text, x, y);
+      }
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, opts = {}) {
+      const {
+        size = 24,
+        weight = '600',
+        color = '#e2e8f0',
+        align = 'center',
+      } = opts;
+      ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+
+      const words = text.split(' ');
+      const lines = [];
+      let line = '';
+      for (const word of words) {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      const startY = y - ((lines.length - 1) * lineHeight) / 2;
+      lines.forEach((ln, i) => {
+        canvasText(ctx, ln, x, startY + i * lineHeight, opts);
+      });
+    }
+
+    function drawResultsImage() {
+      const winner = state.winner;
+      if (!winner) return Promise.resolve(null);
+
+      const winnerName = getPlayerName(winner);
+      const p1Name = getPlayerName('P1');
+      const p2Name = getPlayerName('P2');
+      const sub = `${winnerName} put both thumbs down first!`;
+      const hasSession = totalSessionGames() > 0;
+
+      const canvas = document.createElement('canvas');
+      const scale = 2;
+      const w = 600;
+      const h = hasSession ? 820 : 760;
+      canvas.width = w * scale;
+      canvas.height = h * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(scale, scale);
+
+      const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.75);
+      bg.addColorStop(0, '#1a1a2e');
+      bg.addColorStop(1, '#0f0f1a');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const glow = ctx.createRadialGradient(w / 2, 220, 0, w / 2, 220, 220);
+      glow.addColorStop(0, 'rgba(245, 158, 11, 0.22)');
+      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+
+      canvasText(ctx, '🏆', w / 2, 150, { size: 88 });
+      canvasText(ctx, 'WINNER', w / 2, 250, {
+        size: 18,
+        weight: '700',
+        color: '#fbbf24',
+      });
+
+      const titleGrad = ctx.createLinearGradient(w / 2 - 180, 0, w / 2 + 180, 0);
+      titleGrad.addColorStop(0, '#fbbf24');
+      titleGrad.addColorStop(0.5, '#f59e0b');
+      titleGrad.addColorStop(1, '#fcd34d');
+      ctx.font = '900 52px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+      ctx.fillStyle = titleGrad;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`${winnerName} Wins!`, w / 2, 330);
+
+      wrapCanvasText(ctx, sub, w / 2, 410, w - 80, 34, {
+        size: 22,
+        weight: '500',
+        color: '#cbd5e1',
+      });
+
+      if (hasSession) {
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(80, 490);
+        ctx.lineTo(w - 80, 490);
+        ctx.stroke();
+
+        canvasText(ctx, 'Session', w / 2, 540, {
+          size: 16,
+          weight: '700',
+          color: '#94a3b8',
+        });
+        canvasText(ctx, `${p1Name}  ${sessionRecord.P1} – ${sessionRecord.P2}  ${p2Name}`, w / 2, 590, {
+          size: 28,
+          weight: '800',
+          color: '#fbbf24',
+          maxWidth: w - 60,
+        });
+      }
+
+      canvasText(ctx, 'Suuken', w / 2, h - 68, {
+        size: 20,
+        weight: '800',
+        color: '#64748b',
+      });
+      canvasText(ctx, 'https://porfir.io/suuken', w / 2, h - 36, {
+        size: 16,
+        weight: '600',
+        color: '#475569',
+      });
+
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
+      });
+    }
+
+    async function shareResults() {
+      const btn = document.getElementById('celebration-share-btn');
+      if (!btn || btn.disabled) return;
+
+      btn.disabled = true;
+      const prevLabel = btn.textContent;
+      btn.textContent = 'Preparing…';
+
+      try {
+        const blob = await drawResultsImage();
+        if (!blob) return;
+
+        const file = new File([blob], 'suuken-results.png', { type: 'image/png' });
+        const shareData = {
+          files: [file],
+          title: 'Suuken Results',
+          text: `${getPlayerName(state.winner)} wins!`,
+        };
+
+        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+          await navigator.share(shareData);
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'suuken-results.png';
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      } catch (err) {
+        if (err?.name !== 'AbortError') {
+          console.error('Share failed:', err);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = prevLabel;
+      }
     }
 
     function countActiveCorners() {
@@ -1113,6 +1317,7 @@
     }
 
     document.getElementById('celebration-start-btn').onclick = beginGame;
+    document.getElementById('celebration-share-btn').onclick = shareResults;
 
     updateCornerLabels();
     syncCornerUI();
