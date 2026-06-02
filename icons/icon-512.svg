@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="80" fill="#0f0f1a"/>
+  <circle cx="88" cy="88" r="52" fill="#f59e0b"/>
+  <circle cx="424" cy="88" r="52" fill="#f59e0b"/>
+  <circle cx="88" cy="424" r="52" fill="#f59e0b"/>
+  <circle cx="424" cy="424" r="52" fill="#f59e0b"/>
+  <text x="256" y="290" text-anchor="middle" font-family="system-ui,sans-serif" font-size="96" font-weight="700" fill="#e2e8f0">Suuken</text>
+</svg>

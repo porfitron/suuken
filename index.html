@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f0f1a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
+  <title>Suuken</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #0f0f1a;
+      color: #e2e8f0;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    .corner {
+      position: absolute;
+      width: clamp(88px, 28vw, 160px);
+      height: clamp(88px, 28vw, 160px);
+      border-radius: 50%;
+      border: 3px solid #334155;
+      background: #1e293b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.3s;
+      z-index: 2;
+    }
+
+    .corner.inactive {
+      opacity: 0.25;
+      pointer-events: none;
+      background: #0f172a;
+      border-color: #1e293b;
+    }
+
+    .corner.pressed {
+      background: #f59e0b;
+      border-color: #fbbf24;
+      box-shadow: 0 0 32px rgba(245, 158, 11, 0.55);
+    }
+
+    .corner.p1 { bottom: env(safe-area-inset-bottom, 12px); }
+    .corner.p2 { top: env(safe-area-inset-top, 12px); }
+    .corner.left { left: env(safe-area-inset-left, 12px); }
+    .corner.right { right: env(safe-area-inset-right, 12px); }
+
+    .corner-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      position: absolute;
+      bottom: 18%;
+    }
+
+    #board {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(92vw, 420px);
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1.25rem;
+      text-align: center;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    #board > * { pointer-events: auto; }
+
+    #board.flip {
+      transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    .player-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .player-tag.active { color: #f59e0b; }
+
+    h1 {
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .phase-msg {
+      font-size: clamp(1.25rem, 4vw, 1.75rem);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .countdown {
+      font-size: clamp(4rem, 18vw, 7rem);
+      font-weight: 800;
+      color: #f59e0b;
+      line-height: 1;
+    }
+
+    .guess-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      touch-action: manipulation;
+    }
+
+    .guess-btn {
+      min-width: 3rem;
+      height: 3rem;
+      padding: 0 0.75rem;
+      background: #334155;
+      color: #f8fafc;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .guess-btn:active { background: #475569; }
+
+    .primary-btn {
+      padding: 0.85rem 1.5rem;
+      background: #f59e0b;
+      color: #0f0f1a;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .primary-btn:active { background: #fbbf24; }
+
+    .secondary-btn {
+      padding: 0.65rem 1.25rem;
+      background: #334155;
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .result {
+      font-size: 1rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+
+    .result strong { color: #f59e0b; }
+
+    .eliminate-hint {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.25rem;
+    }
+
+    #install-banner {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 0.5rem;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      z-index: 10;
+      font-size: 0.8rem;
+    }
+
+    #install-banner.visible { display: flex; }
+
+    .divider {
+      width: 60%;
+      height: 1px;
+      background: #334155;
+      margin: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="corner-p1-left" class="corner p1 left" data-corner="p1Left" aria-label="Player 1 left thumb">
+      <span class="corner-label">P1</span>
+      👍
+    </div>
+    <div id="corner-p1-right" class="corner p1 right" data-corner="p1Right" aria-label="Player 1 right thumb">
+      <span class="corner-label">P1</span>
+      👍
+    </div>
+    <div id="corner-p2-left" class="corner p2 left" data-corner="p2Left" aria-label="Player 2 left thumb">
+      <span class="corner-label">P2</span>
+      👍
+    </div>
+    <div id="corner-p2-right" class="corner p2 right" data-corner="p2Right" aria-label="Player 2 right thumb">
+      <span class="corner-label">P2</span>
+      👍
+    </div>
+
+    <main id="board" aria-live="polite"></main>
+  </div>
+
+  <div id="install-banner">
+    <span>Install Suuken</span>
+    <button type="button" class="secondary-btn" id="install-btn">Add to Home Screen</button>
+    <button type="button" class="secondary-btn" id="dismiss-install" aria-label="Dismiss">✕</button>
+  </div>
+
+  <script>
+    const CORNERS = ['p1Left', 'p1Right', 'p2Left', 'p2Right'];
+    const P1_CORNERS = ['p1Left', 'p1Right'];
+    const P2_CORNERS = ['p2Left', 'p2Right'];
+
+    const state = {
+      turn: 'P1',
+      phase: 'GUESS',
+      activeCorners: { p1Left: true, p1Right: true, p2Left: true, p2Right: true },
+      pressedCorners: { p1Left: false, p1Right: false, p2Left: false, p2Right: false },
+      currentGuess: null,
+      lastTotal: 0,
+      guessCorrect: false,
+      winner: null,
+      countdownTimer: null,
+      actionTimer: null,
+      touchIds: new Map(),
+    };
+
+    const board = document.getElementById('board');
+    const cornerEls = Object.fromEntries(
+      CORNERS.map((id) => [id, document.querySelector(`[data-corner="${id}"]`)])
+    );
+
+    function countActiveCorners() {
+      return CORNERS.filter((c) => state.activeCorners[c]).length;
+    }
+
+    function countActiveForPlayer(player) {
+      const list = player === 'P1' ? P1_CORNERS : P2_CORNERS;
+      return list.filter((c) => state.activeCorners[c]).length;
+    }
+
+    function tallyPressed() {
+      return CORNERS.filter((c) => state.activeCorners[c] && state.pressedCorners[c]).length;
+    }
+
+    function resetPressed() {
+      CORNERS.forEach((c) => { state.pressedCorners[c] = false; });
+      syncCornerUI();
+    }
+
+    function syncCornerUI() {
+      CORNERS.forEach((id) => {
+        const el = cornerEls[id];
+        el.classList.toggle('inactive', !state.activeCorners[id]);
+        el.classList.toggle('pressed', state.pressedCorners[id]);
+      });
+    }
+
+    function setPhase(phase) {
+      state.phase = phase;
+      if (phase !== 'ACTION') resetPressed();
+      renderBoard();
+    }
+
+    function renderBoard() {
+      const flip = state.turn === 'P2' && ['GUESS', 'RESOLUTION', 'GAMEOVER'].includes(state.phase);
+      board.classList.toggle('flip', flip);
+
+      if (state.phase === 'GAMEOVER') {
+        board.innerHTML = `
+          <p class="player-tag">${state.winner} wins!</p>
+          <h1>Game Over</h1>
+          <p class="phase-msg">First to put both thumbs down wins.</p>
+          <button type="button" class="primary-btn" id="reset-btn">Play Again</button>
+        `;
+        document.getElementById('reset-btn').onclick = resetGame;
+        return;
+      }
+
+      const activeTag = state.turn === 'P1' ? 'P1 (bottom)' : 'P2 (top)';
+      const maxGuess = countActiveCorners();
+
+      if (state.phase === 'GUESS') {
+        const buttons = Array.from({ length: maxGuess + 1 }, (_, n) =>
+          `<button type="button" class="guess-btn" data-guess="${n}">${n}</button>`
+        ).join('');
+        board.innerHTML = `
+          <p class="player-tag active">${activeTag} — guess</p>
+          <h1>Suuken</h1>
+          <p class="phase-msg">How many thumbs will go up?</p>
+          <p class="result"><strong>0</strong> to <strong>${maxGuess}</strong> (${maxGuess} active corners)</p>
+          <div class="guess-row">${buttons}</div>
+        `;
+        board.querySelectorAll('[data-guess]').forEach((btn) => {
+          btn.onclick = () => submitGuess(Number(btn.dataset.guess));
+        });
+        return;
+      }
+
+      if (state.phase === 'COUNTDOWN') {
+        board.innerHTML = `
+          <p class="player-tag active">${activeTag}</p>
+          <p class="countdown" id="countdown-num">3</p>
+          <p class="phase-msg">Get ready…</p>
+        `;
+        return;
+      }
+
+      if (state.phase === 'ACTION') {
+        board.innerHTML = `
+          <p class="player-tag">Both players</p>
+          <p class="countdown" style="font-size: clamp(2.5rem, 12vw, 4rem);">GO!</p>
+          <p class="phase-msg">Hold the corners you raise</p>
+          <p class="result">Tally in 1 second…</p>
+        `;
+        return;
+      }
+
+      if (state.phase === 'RESOLUTION') {
+        const { currentGuess, lastTotal, guessCorrect } = state;
+        const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
+        const remaining = playerCorners.filter((c) => state.activeCorners[c]);
+        const needsPick = guessCorrect && remaining.length > 1;
+        let extra = '';
+        if (guessCorrect && remaining.length === 1) {
+          extra = `<p class="result">Last thumb removed.</p>`;
+        } else if (needsPick) {
+          extra = `<p class="eliminate-hint">${state.turn}: tap one of your corners to put it away</p>`;
+        }
+        board.innerHTML = `
+          <p class="player-tag active">${activeTag}</p>
+          <p class="phase-msg">${guessCorrect ? 'Correct!' : 'Wrong guess'}</p>
+          <p class="result">
+            Guessed <strong>${currentGuess}</strong> — total raised: <strong>${lastTotal}</strong>
+          </p>
+          ${extra}
+          ${!needsPick ? '<button type="button" class="primary-btn" id="next-btn">Next Turn</button>' : ''}
+        `;
+        const next = document.getElementById('next-btn');
+        if (next) next.onclick = nextTurn;
+        return;
+      }
+    }
+
+    function submitGuess(num) {
+      state.currentGuess = num;
+      setPhase('COUNTDOWN');
+      let n = 3;
+      const numEl = () => document.getElementById('countdown-num');
+      clearInterval(state.countdownTimer);
+      state.countdownTimer = setInterval(() => {
+        n -= 1;
+        if (n > 0) {
+          const el = numEl();
+          if (el) el.textContent = String(n);
+        } else {
+          clearInterval(state.countdownTimer);
+          startActionPhase();
+        }
+      }, 800);
+    }
+
+    function startActionPhase() {
+      resetPressed();
+      setPhase('ACTION');
+      clearTimeout(state.actionTimer);
+      state.actionTimer = setTimeout(resolveRound, 1000);
+    }
+
+    function resolveRound() {
+      const total = tallyPressed();
+      state.lastTotal = total;
+      state.guessCorrect = total === state.currentGuess;
+      setPhase('RESOLUTION');
+
+      if (state.guessCorrect) {
+        const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
+        const active = playerCorners.filter((c) => state.activeCorners[c]);
+        if (active.length === 1) {
+          state.activeCorners[active[0]] = false;
+          syncCornerUI();
+          checkWinner();
+        }
+      }
+    }
+
+    function eliminateCorner(cornerId) {
+      if (state.phase !== 'RESOLUTION' || !state.guessCorrect) return;
+      const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
+      if (!playerCorners.includes(cornerId) || !state.activeCorners[cornerId]) return;
+      state.activeCorners[cornerId] = false;
+      syncCornerUI();
+      checkWinner();
+      if (state.phase !== 'GAMEOVER') nextTurn();
+      else renderBoard();
+    }
+
+    function checkWinner() {
+      const p1Out = !P1_CORNERS.some((c) => state.activeCorners[c]);
+      const p2Out = !P2_CORNERS.some((c) => state.activeCorners[c]);
+      if (p1Out) { state.winner = 'P1'; state.phase = 'GAMEOVER'; }
+      else if (p2Out) { state.winner = 'P2'; state.phase = 'GAMEOVER'; }
+    }
+
+    function nextTurn() {
+      clearInterval(state.countdownTimer);
+      clearTimeout(state.actionTimer);
+      state.turn = state.turn === 'P1' ? 'P2' : 'P1';
+      state.currentGuess = null;
+      state.guessCorrect = false;
+      setPhase('GUESS');
+    }
+
+    function resetGame() {
+      clearInterval(state.countdownTimer);
+      clearTimeout(state.actionTimer);
+      state.turn = 'P1';
+      state.phase = 'GUESS';
+      state.winner = null;
+      state.currentGuess = null;
+      state.guessCorrect = false;
+      CORNERS.forEach((c) => {
+        state.activeCorners[c] = true;
+        state.pressedCorners[c] = false;
+      });
+      syncCornerUI();
+      renderBoard();
+    }
+
+    function cornerFromTouch(touch) {
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      return el?.closest('[data-corner]')?.dataset?.corner ?? null;
+    }
+
+    function setCornerPressed(cornerId, pressed) {
+      if (!cornerId || state.phase !== 'ACTION') return;
+      if (!state.activeCorners[cornerId]) return;
+      state.pressedCorners[cornerId] = pressed;
+      syncCornerUI();
+    }
+
+    function onTouchStart(e) {
+      if (state.phase === 'RESOLUTION' && state.guessCorrect) {
+        const corner = cornerFromTouch(e.changedTouches[0]);
+        if (corner) { eliminateCorner(corner); e.preventDefault(); }
+        return;
+      }
+      if (state.phase !== 'ACTION') return;
+      e.preventDefault();
+      for (const touch of e.changedTouches) {
+        const corner = cornerFromTouch(touch);
+        if (corner) {
+          state.touchIds.set(touch.identifier, corner);
+          setCornerPressed(corner, true);
+        }
+      }
+    }
+
+    function onTouchEnd(e) {
+      if (state.phase !== 'ACTION') return;
+      e.preventDefault();
+      for (const touch of e.changedTouches) {
+        const corner = state.touchIds.get(touch.identifier);
+        state.touchIds.delete(touch.identifier);
+        if (corner) setCornerPressed(corner, false);
+      }
+    }
+
+    document.getElementById('app').addEventListener('touchstart', onTouchStart, { passive: false });
+    document.getElementById('app').addEventListener('touchend', onTouchEnd, { passive: false });
+    document.getElementById('app').addEventListener('touchcancel', onTouchEnd, { passive: false });
+
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+
+    /* PWA install prompt */
+    let deferredInstall = null;
+    const banner = document.getElementById('install-banner');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstall = e;
+      if (!localStorage.getItem('suuken-install-dismissed')) {
+        banner.classList.add('visible');
+      }
+    });
+    document.getElementById('install-btn').onclick = async () => {
+      if (!deferredInstall) return;
+      deferredInstall.prompt();
+      await deferredInstall.userChoice;
+      banner.classList.remove('visible');
+      deferredInstall = null;
+    };
+    document.getElementById('dismiss-install').onclick = () => {
+      banner.classList.remove('visible');
+      localStorage.setItem('suuken-install-dismissed', '1');
+    };
+
+    /* Service worker */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+
+    syncCornerUI();
+    renderBoard();
+  </script>
+</body>
+</html>
