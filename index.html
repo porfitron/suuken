@@ -64,7 +64,10 @@
     }
 
     .corner.p1 { bottom: env(safe-area-inset-bottom, 12px); }
-    .corner.p2 { top: env(safe-area-inset-top, 12px); }
+    .corner.p2 {
+      top: env(safe-area-inset-top, 12px);
+      transform: rotate(180deg);
+    }
     .corner.left { left: env(safe-area-inset-left, 12px); }
     .corner.right { right: env(safe-area-inset-right, 12px); }
 
@@ -222,7 +225,53 @@
       max-width: 280px;
     }
 
-    #app.idle .corner {
+    .name-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: min(280px, 85vw);
+    }
+
+    .name-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: left;
+    }
+
+    .name-field label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .name-field input {
+      font: inherit;
+      padding: 0.65rem 0.85rem;
+      border: 2px solid #334155;
+      border-radius: 10px;
+      background: #1e293b;
+      color: #f8fafc;
+      font-size: 1rem;
+      font-weight: 600;
+      width: 100%;
+      touch-action: manipulation;
+    }
+
+    .name-field input:focus {
+      outline: none;
+      border-color: #f59e0b;
+    }
+
+    .name-field input::placeholder {
+      color: #64748b;
+      font-weight: 400;
+    }
+
+    #app.idle .corner,
+    #app.setup .corner {
       opacity: 0.4;
       pointer-events: none;
     }
@@ -249,6 +298,10 @@
       opacity: 1;
       visibility: visible;
       transition: opacity 0.4s ease, visibility 0s;
+    }
+
+    #celebration.flip {
+      transform: rotate(180deg);
     }
 
     .celebration-burst {
@@ -400,7 +453,8 @@
 
     const state = {
       turn: 'P1',
-      phase: 'IDLE',
+      phase: 'SETUP',
+      playerNames: { P1: '', P2: '' },
       activeCorners: { p1Left: true, p1Right: true, p2Left: true, p2Right: true },
       pressedCorners: { p1Left: false, p1Right: false, p2Left: false, p2Right: false },
       targetTotal: null,
@@ -422,6 +476,45 @@
 
     const CONFETTI_COLORS = ['#f59e0b', '#fbbf24', '#818cf8', '#34d399', '#f472b6', '#60a5fa', '#fcd34d'];
 
+    function getPlayerName(player) {
+      const name = state.playerNames[player]?.trim();
+      return name || player;
+    }
+
+    function getPlayerTag(player) {
+      const pos = player === 'P1' ? 'bottom' : 'top';
+      return `${getPlayerName(player)} (${pos})`;
+    }
+
+    function abbrevName(name) {
+      return name.length <= 8 ? name : `${name.slice(0, 7)}…`;
+    }
+
+    function updateCornerLabels() {
+      document.querySelectorAll('.corner.p1 .corner-label').forEach((el) => {
+        el.textContent = abbrevName(getPlayerName('P1'));
+      });
+      document.querySelectorAll('.corner.p2 .corner-label').forEach((el) => {
+        el.textContent = abbrevName(getPlayerName('P2'));
+      });
+      CORNERS.forEach((id) => {
+        const player = P1_CORNERS.includes(id) ? 'P1' : 'P2';
+        const side = id.includes('Left') ? 'left' : 'right';
+        cornerEls[id].setAttribute(
+          'aria-label',
+          `${getPlayerName(player)} ${side} thumb`
+        );
+      });
+    }
+
+    function readNamesFromForm() {
+      const p1Input = document.getElementById('p1-name');
+      const p2Input = document.getElementById('p2-name');
+      if (p1Input) state.playerNames.P1 = p1Input.value.trim();
+      if (p2Input) state.playerNames.P2 = p2Input.value.trim();
+      updateCornerLabels();
+    }
+
     function spawnConfetti() {
       confettiContainer.replaceChildren();
       for (let i = 0; i < 90; i += 1) {
@@ -440,7 +533,12 @@
     }
 
     function showCelebration(winner) {
-      document.getElementById('celebration-winner').textContent = `${winner} Wins!`;
+      const name = getPlayerName(winner);
+      document.getElementById('celebration-winner').textContent = `${name} Wins!`;
+      celebration.querySelector('.celebration-sub').textContent =
+        `${name} put both thumbs down first!`;
+      celebration.classList.toggle('flip', winner === 'P2');
+      celebration.setAttribute('aria-label', `${name} wins`);
       spawnConfetti();
       const content = celebration.querySelector('.celebration-content');
       content.style.animation = 'none';
@@ -451,8 +549,11 @@
     }
 
     function hideCelebration() {
-      celebration.classList.remove('visible');
+      celebration.classList.remove('visible', 'flip');
       celebration.setAttribute('aria-hidden', 'true');
+      celebration.setAttribute('aria-label', 'Winner celebration');
+      celebration.querySelector('.celebration-sub').textContent =
+        'First to put both thumbs down!';
       confettiContainer.replaceChildren();
     }
 
@@ -489,18 +590,32 @@
     }
 
     function renderBoard() {
-      app.classList.toggle('idle', state.phase === 'IDLE');
+      app.classList.toggle('idle', state.phase === 'SETUP');
+      app.classList.toggle('setup', state.phase === 'SETUP');
       const flip = state.turn === 'P2' && ['COUNTDOWN', 'RESOLUTION'].includes(state.phase);
       board.classList.toggle('flip', flip);
 
-      if (state.phase === 'IDLE') {
+      if (state.phase === 'SETUP') {
         board.innerHTML = `
           <h1>Suuken</h1>
           <p class="start-rules">Two players, one screen. Match the target tally to remove your thumbs. First to put both down wins.</p>
           <div class="divider"></div>
+          <div class="name-form">
+            <div class="name-field">
+              <label for="p1-name">Bottom player</label>
+              <input type="text" id="p1-name" maxlength="20" placeholder="Player 1" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" />
+            </div>
+            <div class="name-field">
+              <label for="p2-name">Top player</label>
+              <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${state.playerNames.P2.replace(/"/g, '&quot;')}" />
+            </div>
+          </div>
           <button type="button" class="primary-btn" id="start-btn">Start</button>
         `;
         document.getElementById('start-btn').onclick = beginGame;
+        document.getElementById('p2-name').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') beginGame();
+        });
         return;
       }
 
@@ -509,7 +624,9 @@
         return;
       }
 
-      const activeTag = state.turn === 'P1' ? 'P1 (bottom)' : 'P2 (top)';
+      const activeTag = getPlayerTag(state.turn);
+      const p1Name = getPlayerName('P1');
+      const p2Name = getPlayerName('P2');
 
       if (state.phase === 'COUNTDOWN') {
         board.innerHTML = `
@@ -523,7 +640,7 @@
 
       if (state.phase === 'ACTION') {
         board.innerHTML = `
-          <p class="player-tag">Both players</p>
+          <p class="player-tag">${p1Name} & ${p2Name}</p>
           <p class="countdown" style="font-size: clamp(2.5rem, 12vw, 4rem);">GO!</p>
           <p class="phase-msg">Hold the corners you raise</p>
           <p class="result">Tally in 1 second…</p>
@@ -540,7 +657,7 @@
         if (roundSuccess && remaining.length === 1) {
           extra = `<p class="result">Last thumb removed.</p>`;
         } else if (needsPick) {
-          extra = `<p class="eliminate-hint">${state.turn}: tap one of your corners to put it away</p>`;
+          extra = `<p class="eliminate-hint">${getPlayerName(state.turn)}: tap one of your corners to put it away</p>`;
         }
         board.innerHTML = `
           <p class="player-tag active">${activeTag}</p>
@@ -641,6 +758,7 @@
     }
 
     function beginGame() {
+      if (state.phase === 'SETUP') readNamesFromForm();
       hideCelebration();
       clearInterval(state.countdownTimer);
       clearTimeout(state.actionTimer);
@@ -736,6 +854,7 @@
 
     document.getElementById('celebration-start-btn').onclick = beginGame;
 
+    updateCornerLabels();
     syncCornerUI();
     renderBoard();
   </script>
