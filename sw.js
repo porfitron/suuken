@@ -1,10 +1,13 @@
-const CACHE = 'suuken-v2';
+const CACHE = 'suuken-v3';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
+  './icons/og-image.png',
+  './robots.txt',
+  './sitemap.xml',
 ];
 
 self.addEventListener('install', (event) => {
