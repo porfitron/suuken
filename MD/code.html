@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Suuken | Developer Reference Bundle</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&amp;family=Hanken+Grotesk:wght@400;700&amp;family=JetBrains+Mono:wght@700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        
+        .glitch-text {
+            text-shadow: 2px 0 #00f1fe, -2px 0 #ffb4ab;
+            animation: glitch 1.5s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .skew-box {
+            transform: skewX(-15deg);
+        }
+        .unskew-content {
+            transform: skewX(15deg);
+        }
+
+        .neon-cyan-glow {
+            box-shadow: 0 0 15px rgba(0, 241, 254, 0.4), inset 0 0 10px rgba(0, 241, 254, 0.2);
+        }
+        .neon-magenta-glow {
+            box-shadow: 0 0 15px rgba(182, 0, 58, 0.4), inset 0 0 10px rgba(182, 0, 58, 0.2);
+        }
+        .neon-gold-glow {
+            filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.6));
+        }
+
+        body {
+            background-color: #121317;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(241, 193, 0, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 241, 254, 0.05) 0%, transparent 40%);
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            position: absolute;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#343439",
+                        "primary-fixed-dim": "#f1c100",
+                        "on-tertiary-container": "#b6003a",
+                        "outline-variant": "#4e4632",
+                        "on-tertiary-fixed": "#40000f",
+                        "background": "#121317",
+                        "secondary-container": "#00f1fe",
+                        "on-secondary": "#00363a",
+                        "surface-dim": "#121317",
+                        "surface-container-high": "#292a2e",
+                        "on-surface": "#e3e2e7",
+                        "inverse-surface": "#e3e2e7",
+                        "surface-tint": "#f1c100",
+                        "on-background": "#e3e2e7",
+                        "surface-container-low": "#1a1b20",
+                        "on-primary-fixed-variant": "#584400",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#2f3035",
+                        "on-tertiary-fixed-variant": "#91002d",
+                        "outline": "#9a9078",
+                        "surface-container-lowest": "#0d0e12",
+                        "tertiary-container": "#ffc3c7",
+                        "tertiary": "#ffe9ea",
+                        "primary-fixed": "#ffe08b",
+                        "on-primary-container": "#6f5700",
+                        "on-error": "#690005",
+                        "secondary": "#ddfcff",
+                        "tertiary-fixed": "#ffdadb",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#38393d",
+                        "on-secondary-container": "#006a70",
+                        "on-secondary-fixed-variant": "#004f54",
+                        "on-primary": "#3d2f00",
+                        "secondary-fixed-dim": "#00dbe7",
+                        "surface-container-highest": "#343439",
+                        "on-tertiary": "#67001d",
+                        "primary-container": "#ffcc00",
+                        "primary": "#ffedc3",
+                        "on-secondary-fixed": "#002022",
+                        "secondary-fixed": "#74f5ff",
+                        "on-surface-variant": "#d2c5ab",
+                        "inverse-primary": "#745b00",
+                        "on-primary-fixed": "#241a00",
+                        "surface-container": "#1f1f24",
+                        "surface": "#121317",
+                        "error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb2b8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter-md": "1.5rem",
+                        "corner-safe": "1.25rem",
+                        "thumb-zone": "120px",
+                        "gutter-sm": "1rem",
+                        "touch-target": "3rem"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Anybody"],
+                        "headline-lg-mobile": ["Anybody"],
+                        "display-xl": ["Anybody"],
+                        "label-mono": ["JetBrains Mono"],
+                        "button-text": ["Anybody"],
+                        "body-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["36px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "32px", "fontWeight": "800"}],
+                        "display-xl": ["64px", {"lineHeight": "60px", "letterSpacing": "-0.04em", "fontWeight": "900"}],
+                        "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "button-text": ["18px", {"lineHeight": "20px", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface overflow-x-hidden pb-24">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 shadow-[0_4px_20px_rgba(0,0,0,0.5)] flex items-center justify-between px-gutter-md h-16">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary-container">menu</span>
+<h1 class="font-display-xl text-headline-lg-mobile italic uppercase text-primary-container drop-shadow-[0_0_8px_rgba(255,204,0,0.6)]">SUUKEN</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-mono text-primary-fixed-dim uppercase tracking-widest hidden md:block">Dev Mode</span>
+<span class="material-symbols-outlined text-primary-container">leaderboard</span>
+</div>
+</header>
+<main class="pt-24 px-gutter-md max-w-7xl mx-auto">
+<!-- Hero Title -->
+<section class="mb-12 border-l-4 border-primary-container pl-6">
+<h2 class="font-display-xl text-display-xl italic uppercase tracking-tighter text-on-surface">DEVELOPER REFERENCE BUNDLE</h2>
+<p class="font-body-md text-on-surface-variant max-w-2xl mt-2 italic">Official UI specifications for the 'Iron Thumb Strike' combat ecosystem. Implement states with aggressive geometry and CRT-inspired luminance.</p>
+</section>
+<!-- The Bento Handoff Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- 1. Tournament Setup (Gold/Skewed) -->
+<div class="relative group overflow-hidden border-2 border-outline-variant bg-surface-container-low rounded-xl flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-label-mono text-primary-container italic">01 // TOURNAMENT SETUP</span>
+<span class="material-symbols-outlined text-primary-container">stadium</span>
+</div>
+<div class="relative aspect-[4/3] bg-background flex items-center justify-center p-8 overflow-hidden">
+<div class="scanline"></div>
+<!-- Mock Screen -->
+<div class="w-full max-w-sm space-y-6">
+<div class="skew-box bg-primary-container p-1 shadow-[4px_4px_0_0_#3d2f00]">
+<div class="unskew-content border-2 border-on-primary p-4 flex flex-col gap-1">
+<span class="font-label-mono text-on-primary-container text-[10px] uppercase">Entry Name</span>
+<input class="bg-transparent border-none p-0 font-headline-lg-mobile italic text-on-primary uppercase focus:ring-0 w-full" type="text" value="CHALLENGER_01"/>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="flex-1 skew-box bg-surface-container-highest border-2 border-secondary-container p-3 neon-cyan-glow">
+<span class="unskew-content font-button-text text-secondary-container italic">JOIN ARENA</span>
+</button>
+<button class="w-12 h-12 skew-box border-2 border-outline flex items-center justify-center">
+<span class="unskew-content material-symbols-outlined text-on-surface">settings</span>
+</button>
+</div>
+</div>
+<!-- Background Visual Decor -->
+<div class="absolute -bottom-10 -right-10 opacity-10">
+<span class="text-[200px] font-black italic">ARENA</span>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest font-body-md text-on-surface-variant text-sm">
+<p>KEY TOKENS: <code class="text-primary-fixed-dim">primary-container</code>, <code class="text-primary-fixed-dim">skew-x-[-15deg]</code>, <code class="text-primary-fixed-dim">drop-shadow-gold</code></p>
+</div>
+</div>
+<!-- 2. The Arena HUD (Glitch/History) -->
+<div class="relative group overflow-hidden border-2 border-outline-variant bg-surface-container-low rounded-xl flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-label-mono text-secondary-container italic">02 // THE ARENA (HUD)</span>
+<span class="material-symbols-outlined text-secondary-container">view_in_ar</span>
+</div>
+<div class="relative aspect-[4/3] bg-background flex flex-col items-center justify-center overflow-hidden">
+<div class="absolute inset-0 bg-[linear-gradient(rgba(18,19,23,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] pointer-events-none"></div>
+<!-- HUD Elements -->
+<div class="z-10 text-center">
+<div class="font-label-mono text-on-surface-variant tracking-[0.4em] mb-2">ROUND 03</div>
+<div class="glitch-text font-display-xl text-primary-container italic uppercase text-6xl">MATCH!</div>
+</div>
+<!-- Vertical History Tokens -->
+<div class="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+<div class="w-2 h-8 bg-secondary-container neon-cyan-glow"></div>
+<div class="w-2 h-8 bg-secondary-container neon-cyan-glow"></div>
+<div class="w-2 h-8 bg-surface-variant"></div>
+<div class="w-2 h-8 bg-surface-variant"></div>
+</div>
+<div class="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-2">
+<div class="w-2 h-8 bg-on-tertiary-container neon-magenta-glow"></div>
+<div class="w-2 h-8 bg-surface-variant"></div>
+<div class="w-2 h-8 bg-surface-variant"></div>
+<div class="w-2 h-8 bg-surface-variant"></div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest font-body-md text-on-surface-variant text-sm">
+<p>KEY TOKENS: <code class="text-secondary-fixed-dim">secondary-container</code>, <code class="text-secondary-fixed-dim">glitch-animation</code>, <code class="text-secondary-fixed-dim">vertical-segmented-progress</code></p>
+</div>
+</div>
+<!-- 3. Immersive Play (180 Flip) -->
+<div class="relative group overflow-hidden border-2 border-outline-variant bg-surface-container-low rounded-xl flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-label-mono text-tertiary-fixed-dim italic">03 // IMMERSIVE PLAY (FLIP)</span>
+<span class="material-symbols-outlined text-tertiary-fixed-dim">screen_rotation</span>
+</div>
+<div class="relative aspect-[4/3] bg-background flex flex-col justify-between p-6 overflow-hidden">
+<!-- P2 Side (Flipped) -->
+<div class="rotate-180 flex flex-col gap-4">
+<div class="flex justify-between items-end">
+<div class="border-b-4 border-on-tertiary-container pb-2 pr-8">
+<div class="font-label-mono text-tertiary-fixed-dim text-[10px]">COMMANDER</div>
+<div class="font-headline-lg-mobile italic text-on-surface">P2_ROGUE</div>
+</div>
+<div class="w-16 h-16 bg-surface-container-highest border-2 border-on-tertiary-container flex items-center justify-center neon-magenta-glow">
+<span class="material-symbols-outlined text-on-tertiary-container text-4xl" style="font-variation-settings: 'FILL' 1;">swords</span>
+</div>
+</div>
+</div>
+<!-- Edge-to-Edge Divider -->
+<div class="h-px w-full bg-gradient-to-r from-transparent via-outline to-transparent opacity-30"></div>
+<!-- P1 Side -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div class="w-16 h-16 bg-surface-container-highest border-2 border-secondary-container flex items-center justify-center neon-cyan-glow">
+<span class="material-symbols-outlined text-secondary-container text-4xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div class="border-t-4 border-secondary-container pt-2 pl-8 text-right">
+<div class="font-label-mono text-secondary-fixed-dim text-[10px]">RECRUIT</div>
+<div class="font-headline-lg-mobile italic text-on-surface">P1_NOVA</div>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest font-body-md text-on-surface-variant text-sm">
+<p>KEY TOKENS: <code class="text-tertiary-fixed-dim">rotate-180</code>, <code class="text-tertiary-fixed-dim">edge-anchor-grid</code>, <code class="text-tertiary-fixed-dim">border-t-4</code></p>
+</div>
+</div>
+<!-- 4. Victory State (Trophy/Winner) -->
+<div class="relative group overflow-hidden border-2 border-outline-variant bg-surface-container-low rounded-xl flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-label-mono text-primary-container italic">04 // VICTORY STATE</span>
+<span class="material-symbols-outlined text-primary-container">military_tech</span>
+</div>
+<div class="relative aspect-[4/3] bg-[#121317] flex items-center justify-center overflow-hidden">
+<!-- Radial Glow -->
+<div class="absolute w-64 h-64 bg-primary-container opacity-10 blur-[100px]"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="mb-4 transform -skew-x-12 scale-125 neon-gold-glow">
+<span class="material-symbols-outlined text-primary-container text-8xl" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div class="font-label-mono text-primary-fixed-dim tracking-[0.5em] mb-1">CHAMPION DECLARED</div>
+<div class="font-display-xl text-primary-container italic text-5xl uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,204,0,0.4)]">WINNER</div>
+<div class="mt-6 flex gap-2">
+<div class="px-6 py-2 bg-primary-container skew-box">
+<span class="unskew-content font-button-text text-on-primary italic">REMATCH</span>
+</div>
+<div class="px-4 py-2 border-2 border-primary-container skew-box">
+<span class="unskew-content material-symbols-outlined text-primary-container">share</span>
+</div>
+</div>
+</div>
+<!-- Gritty Background Text -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 opacity-[0.03] select-none pointer-events-none">
+<div class="text-[120px] font-black leading-none uppercase">DOMINANCE</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest font-body-md text-on-surface-variant text-sm">
+<p>KEY TOKENS: <code class="text-primary-fixed-dim">workspace_premium-fill</code>, <code class="text-primary-fixed-dim">shadow-gold-glow</code>, <code class="text-primary-fixed-dim">champion-status</code></p>
+</div>
+</div>
+</div>
+<!-- Layout Rules Reference -->
+<section class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
+<div class="p-6 border-l-2 border-secondary-container bg-surface-container-low">
+<h3 class="font-headline-lg-mobile text-secondary-container italic mb-2">COMBAT ZONES</h3>
+<p class="font-body-md text-on-surface-variant">Inputs MUST be anchored to corners. Minimum hit area: 120px. Keep center clear for status callouts.</p>
+</div>
+<div class="p-6 border-l-2 border-on-tertiary-container bg-surface-container-low">
+<h3 class="font-headline-lg-mobile text-on-tertiary-container italic mb-2">NEON BLEED</h3>
+<p class="font-body-md text-on-surface-variant">Don't use drop shadows. Use 2px-4px Gaussian blur "emissive" light based on player color (Cyan/Magenta).</p>
+</div>
+<div class="p-6 border-l-2 border-primary-container bg-surface-container-low">
+<h3 class="font-headline-lg-mobile text-primary-container italic mb-2">KINETIC TEXT</h3>
+<p class="font-body-md text-on-surface-variant">Always use Italics for 'Anybody' font. Headlines should be tracking-tighter for aggressive tournament feel.</p>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Anchor -->
+<nav class="fixed bottom-0 w-full z-50 bg-background/90 backdrop-blur-xl border-t-4 border-primary-container shadow-[0_-8px_24px_rgba(241,193,0,0.2)] skew-x-[-15deg] flex justify-around items-stretch h-20">
+<div class="flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 transform skew-x-[15deg] hover:text-primary-fixed-dim transition-all active:translate-y-1 duration-100 cursor-pointer">
+<span class="material-symbols-outlined">sports_kabaddi</span>
+<span class="font-button-text text-button-text italic">ARENA</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container py-2 px-6 transform skew-x-[15deg] active:translate-y-1 duration-100 cursor-pointer">
+<span class="material-symbols-outlined">military_tech</span>
+<span class="font-button-text text-button-text italic">RANKING</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 transform skew-x-[15deg] hover:text-primary-fixed-dim transition-all active:translate-y-1 duration-100 cursor-pointer">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-button-text text-button-text italic">RULES</span>
+</div>
+</nav>
+<script>
+        // Simple Micro-interactions for the gallery
+        document.querySelectorAll('.group').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = '#ffcc00';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = '#4e4632';
+            });
+        });
+
+        // Simulating the "HUD Pulse"
+        setInterval(() => {
+            const matchText = document.querySelector('.glitch-text');
+            if(matchText) {
+                matchText.classList.toggle('opacity-80');
+            }
+        }, 100);
+    </script>
+</body></html>
