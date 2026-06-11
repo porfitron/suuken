@@ -15,7 +15,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Suuken" />
   <meta property="og:title" content="Suuken" />
-  <meta property="og:description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
+  <meta property="og:description" content="Let's play Suuken face-to-face — 2-player thumb-guessing on one shared screen" />
   <meta property="og:url" content="https://porfir.io/suuken" />
   <meta property="og:locale" content="en_US" />
   <meta property="og:image" content="https://porfir.io/suuken/icons/og-image.png" />
@@ -25,7 +25,7 @@
   <meta property="og:image:alt" content="Suuken — 2-player thumb-guessing game on one shared screen" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Suuken" />
-  <meta name="twitter:description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
+  <meta name="twitter:description" content="Let's play Suuken face-to-face — 2-player thumb-guessing on one shared screen" />
   <meta name="twitter:image" content="https://porfir.io/suuken/icons/og-image.png" />
   <meta name="twitter:image:alt" content="Suuken — 2-player thumb-guessing game on one shared screen" />
   <title>Suuken</title>
@@ -137,11 +137,23 @@
   <link rel="apple-touch-icon" href="icons/icon-192.svg" />
 </head>
 <body class="font-body text-on-surface italic overflow-x-hidden">
-  <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md h-16 pt-[env(safe-area-inset-top)]">
+  <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
     <div class="flex items-center gap-3">
-      <button type="button" id="menu-btn" class="text-primary-container neon-gold-glow" aria-label="Open menu">
-        <span class="material-symbols-outlined">menu</span>
-      </button>
+      <div class="relative" id="menu-anchor">
+        <button type="button" id="menu-btn" class="text-primary-container neon-gold-glow w-touch-target h-touch-target flex items-center justify-center -ml-2" aria-label="Open menu" aria-expanded="false" aria-haspopup="menu" aria-controls="app-menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div id="app-menu" class="app-menu" role="menu" aria-labelledby="menu-btn" hidden>
+          <button type="button" id="menu-rules" class="app-menu-item" role="menuitem">
+            <span class="material-symbols-outlined text-primary-container text-xl">menu_book</span>
+            <span class="font-display text-button-text italic uppercase text-on-surface">Rules</span>
+          </button>
+          <button type="button" id="menu-share" class="app-menu-item" role="menuitem">
+            <span class="material-symbols-outlined text-primary-container text-xl">share</span>
+            <span class="font-display text-button-text italic uppercase text-on-surface">Share</span>
+          </button>
+        </div>
+      </div>
       <h1 class="font-display text-headline-mobile uppercase text-primary-container neon-gold-text tracking-tighter not-italic">SUUKEN</h1>
     </div>
     <div class="flex items-center gap-2">
@@ -150,7 +162,7 @@
     </div>
   </header>
 
-  <div id="app" class="pt-16 pb-20">
+  <div id="app">
     <div id="p2-arena" class="arena-half absolute top-0 left-0 right-0 h-1/2 rotate-180 overflow-hidden relative">
       <div class="player-identity player-identity-p2 pointer-events-none z-[2]">
         <div class="font-mono text-label-mono text-p2 uppercase tracking-widest not-italic">Commander</div>
@@ -188,7 +200,7 @@
     <main id="board" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,420px)] min-h-[200px] flex flex-col items-center justify-center gap-4 p-gutter-sm text-center z-[3] pointer-events-none not-italic" aria-live="polite"></main>
   </div>
 
-  <nav id="bottom-nav" class="fixed bottom-0 w-full z-50 bg-background/90 backdrop-blur-xl border-t-4 border-primary-container skew-box flex justify-around items-stretch h-20 pb-[env(safe-area-inset-bottom)]">
+  <nav id="bottom-nav" class="fixed bottom-0 w-full z-50 bg-background/90 backdrop-blur-xl border-t-4 border-primary-container skew-box flex justify-around items-stretch">
     <button type="button" id="nav-arena" class="nav-tab nav-tab-active flex flex-col items-center justify-center text-on-primary-container py-2 px-6 unskew-content not-italic active:translate-y-0.5 transition-all">
       <span class="material-symbols-outlined">sports_kabaddi</span>
       <span class="font-display text-button-text italic uppercase">Arena</span>
@@ -255,7 +267,7 @@
     </div>
   </div>
 
-  <div id="install-banner" class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] left-1/2 -translate-x-1/2 hidden gap-2 items-center px-3 py-2 bg-surface-container-high border-2 border-outline z-10 text-sm not-italic skew-box">
+  <div id="install-banner" class="fixed left-1/2 -translate-x-1/2 hidden gap-2 items-center px-3 py-2 bg-surface-container-high border-2 border-outline z-10 text-sm not-italic skew-box">
     <span class="unskew-content font-body text-body-md text-on-surface not-italic">Install Suuken</span>
     <button type="button" class="unskew-content px-3 py-1 bg-surface-container border-2 border-outline font-mono text-label-mono uppercase not-italic" id="install-btn">Add</button>
     <button type="button" class="unskew-content px-2 py-1 border-2 border-outline not-italic" id="dismiss-install" aria-label="Dismiss">✕</button>
@@ -881,6 +893,32 @@
       }
 
       return drawResultsImageCanvas();
+    }
+
+    function getShareInviteText() {
+      return `Let's play Suuken face-to-face at ${SHARE_PLAY_URL}`;
+    }
+
+    async function shareApp() {
+      const shareData = {
+        title: 'Suuken',
+        text: getShareInviteText(),
+        url: SHARE_PLAY_URL,
+      };
+
+      try {
+        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+          await navigator.share(shareData);
+          return;
+        }
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(getShareInviteText());
+        }
+      } catch (err) {
+        if (err?.name !== 'AbortError') {
+          console.error('Share failed:', err);
+        }
+      }
     }
 
     async function shareResults() {
@@ -1521,7 +1559,51 @@
     document.getElementById('celebration-new-players-btn').onclick = startNewPlayersSession;
     document.getElementById('celebration-ranking-btn').onclick = showRankingPanel;
     document.getElementById('about-close-btn').onclick = hideAboutModal;
-    document.getElementById('menu-btn').onclick = showAboutModal;
+
+    const menuBtn = document.getElementById('menu-btn');
+    const appMenu = document.getElementById('app-menu');
+    const menuAnchor = document.getElementById('menu-anchor');
+
+    function isAppMenuOpen() {
+      return appMenu?.classList.contains('is-open');
+    }
+
+    function openAppMenu() {
+      if (!appMenu || !menuBtn) return;
+      appMenu.hidden = false;
+      requestAnimationFrame(() => appMenu.classList.add('is-open'));
+      menuBtn.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeAppMenu() {
+      if (!appMenu || !menuBtn) return;
+      appMenu.classList.remove('is-open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      window.setTimeout(() => {
+        if (!isAppMenuOpen()) appMenu.hidden = true;
+      }, 200);
+    }
+
+    function toggleAppMenu() {
+      if (isAppMenuOpen()) closeAppMenu();
+      else openAppMenu();
+    }
+
+    menuBtn.onclick = (e) => {
+      e.stopPropagation();
+      toggleAppMenu();
+    };
+
+    document.getElementById('menu-rules').onclick = () => {
+      closeAppMenu();
+      showAboutModal();
+    };
+
+    document.getElementById('menu-share').onclick = async () => {
+      closeAppMenu();
+      await shareApp();
+    };
+
     document.getElementById('nav-rules').onclick = showAboutModal;
     document.getElementById('nav-ranking').onclick = showRankingPanel;
     document.getElementById('ranking-close-btn').onclick = hideRankingPanel;
@@ -1537,11 +1619,15 @@
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        closeAppMenu();
         hideAboutModal();
         hideRankingPanel();
       }
     });
     document.addEventListener('click', (e) => {
+      if (isAppMenuOpen() && menuAnchor && !menuAnchor.contains(e.target)) {
+        closeAppMenu();
+      }
       const button = e.target.closest('button');
       if (!button) return;
       const buttonId = button.id || 'anonymous-button';

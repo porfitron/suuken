@@ -191,6 +191,21 @@ body.immersive #app {
 /* Base resets for game shell */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --header-bar: 4rem;
+  --nav-bar: 5rem;
+  --header-total: calc(var(--header-bar) + var(--safe-top));
+  --nav-total: calc(var(--nav-bar) + var(--safe-bottom));
+}
+
+html {
+  height: -webkit-fill-available;
+}
+
 html, body {
   width: 100%;
   height: 100%;
@@ -202,18 +217,96 @@ html, body {
 }
 
 body {
+  position: fixed;
+  inset: 0;
   background-color: #121317;
   background-image:
     radial-gradient(circle at 20% 30%, rgba(241, 193, 0, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 80% 70%, rgba(0, 241, 254, 0.05) 0%, transparent 40%);
 }
 
+#top-app-bar {
+  padding-top: var(--safe-top);
+  height: var(--header-total);
+}
+
+#menu-anchor {
+  z-index: 2;
+}
+
+.app-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  min-width: 11rem;
+  background: #1a1b20;
+  border: 2px solid #9a9078;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.45),
+    0 0 12px rgba(255, 204, 0, 0.12);
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-0.35rem) scale(0.97);
+  transform-origin: top left;
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease,
+    transform 0.22s cubic-bezier(0.34, 1.25, 0.64, 1);
+}
+
+.app-menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.app-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.15s ease;
+}
+
+.app-menu-item + .app-menu-item {
+  border-top: 1px solid #4e4632;
+}
+
+.app-menu-item:hover,
+.app-menu-item:focus-visible {
+  background: #292a2e;
+  outline: none;
+}
+
+.app-menu-item:active {
+  background: #343439;
+}
+
+#bottom-nav {
+  padding-bottom: var(--safe-bottom);
+  height: var(--nav-total);
+}
+
 #app {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  width: 100%;
+  height: 100%;
+  padding-top: var(--header-total);
+  padding-bottom: var(--nav-total);
+}
+
+#install-banner {
+  bottom: calc(var(--nav-total) + 0.5rem);
 }
 
 #app.idle .corner,

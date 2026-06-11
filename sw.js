@@ -1,4 +1,4 @@
-const CACHE = 'suuken-v4';
+const CACHE = 'suuken-v5';
 const ASSETS = [
   './',
   './index.html',
