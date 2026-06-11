@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f0f1a" />
+  <meta name="theme-color" content="#121317" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
@@ -29,6 +29,74 @@
   <meta name="twitter:image" content="https://porfir.io/suuken/icons/og-image.png" />
   <meta name="twitter:image:alt" content="Suuken — 2-player thumb-guessing game on one shared screen" />
   <title>Suuken</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&family=Hanken+Grotesk:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/suuken.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#121317',
+            surface: '#121317',
+            'surface-dim': '#121317',
+            'surface-bright': '#38393d',
+            'surface-container-lowest': '#0d0e12',
+            'surface-container-low': '#1a1b20',
+            'surface-container': '#1f1f24',
+            'surface-container-high': '#292a2e',
+            'surface-container-highest': '#343439',
+            'surface-variant': '#343439',
+            'on-surface': '#e3e2e7',
+            'on-surface-variant': '#d2c5ab',
+            outline: '#9a9078',
+            'outline-variant': '#4e4632',
+            'surface-tint': '#f1c100',
+            primary: '#ffedc3',
+            'on-primary': '#3d2f00',
+            'primary-container': '#ffcc00',
+            'on-primary-container': '#6f5700',
+            'primary-fixed-dim': '#f1c100',
+            secondary: '#ddfcff',
+            'on-secondary': '#00363a',
+            'secondary-container': '#00f1fe',
+            'on-secondary-container': '#006a70',
+            'secondary-fixed-dim': '#00dbe7',
+            tertiary: '#ffe9ea',
+            'on-tertiary': '#67001d',
+            'on-tertiary-container': '#ff00ff',
+            'tertiary-fixed-dim': '#ffb2b8',
+            error: '#ffb4ab',
+            p1: '#00f1fe',
+            p2: '#ff00ff',
+          },
+          spacing: {
+            'gutter-md': '1.5rem',
+            'gutter-sm': '1rem',
+            'corner-safe': '1.25rem',
+            'thumb-zone': '120px',
+            'touch-target': '3rem',
+          },
+          fontFamily: {
+            display: ['Anybody', 'sans-serif'],
+            headline: ['Anybody', 'sans-serif'],
+            body: ['Hanken Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          fontSize: {
+            'display-xl': ['64px', { lineHeight: '60px', letterSpacing: '-0.04em', fontWeight: '900' }],
+            'headline-lg': ['36px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '800' }],
+            'headline-mobile': ['28px', { lineHeight: '32px', fontWeight: '800' }],
+            'button-text': ['18px', { lineHeight: '20px', fontWeight: '800' }],
+            'label-mono': ['12px', { lineHeight: '16px', letterSpacing: '0.1em', fontWeight: '700' }],
+            'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+          },
+        },
+      },
+    };
+  </script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -67,672 +135,130 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/icon-192.svg" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      touch-action: none;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: #0f0f1a;
-      color: #e2e8f0;
-    }
-
-    #app {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-    }
-
-    .corner {
-      position: absolute;
-      width: clamp(88px, 28vw, 160px);
-      height: clamp(88px, 28vw, 160px);
-      border-radius: 50%;
-      border: 3px solid #334155;
-      background: #1e293b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, opacity 0.3s;
-      z-index: 2;
-    }
-
-    .corner.inactive {
-      opacity: 0.25;
-      pointer-events: none;
-      background: #0f172a;
-      border-color: #1e293b;
-    }
-
-    .corner.pressed {
-      background: #f59e0b;
-      border-color: #fbbf24;
-      box-shadow: 0 0 32px rgba(245, 158, 11, 0.55);
-    }
-
-    .corner.p1 { bottom: env(safe-area-inset-bottom, 12px); }
-    .corner.p2 {
-      top: env(safe-area-inset-top, 12px);
-      transform: rotate(180deg);
-    }
-    .corner.left { left: env(safe-area-inset-left, 12px); }
-    .corner.right { right: env(safe-area-inset-right, 12px); }
-
-    .corner-label {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      opacity: 0.6;
-      position: absolute;
-      bottom: 18%;
-    }
-
-    #board {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: min(92vw, 420px);
-      min-height: 200px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      padding: 1.25rem;
-      text-align: center;
-      z-index: 3;
-      pointer-events: none;
-    }
-
-    #board > * { pointer-events: auto; }
-
-    #board.flip {
-      transform: translate(-50%, -50%) rotate(180deg);
-    }
-
-    .player-tag {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #94a3b8;
-    }
-
-    .player-tag.active { color: #f59e0b; }
-
-    h1 {
-      font-size: clamp(1.5rem, 5vw, 2rem);
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .phase-msg {
-      font-size: clamp(1.25rem, 4vw, 1.75rem);
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .countdown {
-      font-size: clamp(4rem, 18vw, 7rem);
-      font-weight: 800;
-      color: #f59e0b;
-      line-height: 1;
-    }
-
-    .guess-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      max-width: 100%;
-    }
-
-    button {
-      font: inherit;
-      cursor: pointer;
-      border: none;
-      border-radius: 12px;
-      touch-action: manipulation;
-    }
-
-    .guess-btn {
-      min-width: 3rem;
-      height: 3rem;
-      padding: 0 0.75rem;
-      background: #334155;
-      color: #f8fafc;
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .guess-btn:active { background: #475569; }
-
-    .primary-btn {
-      padding: 0.85rem 1.5rem;
-      background: #f59e0b;
-      color: #0f0f1a;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .primary-btn:active { background: #fbbf24; }
-
-    .ghost-btn {
-      padding: 0.85rem 1.5rem;
-      background: transparent;
-      color: #cbd5e1;
-      border: 1px solid #475569;
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .ghost-btn:active {
-      background: rgba(71, 85, 105, 0.25);
-      color: #f8fafc;
-    }
-
-    .secondary-btn {
-      padding: 0.65rem 1.25rem;
-      background: #334155;
-      color: #e2e8f0;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .result {
-      font-size: 1rem;
-      color: #cbd5e1;
-      line-height: 1.5;
-    }
-
-    .result strong { color: #f59e0b; }
-
-    .eliminate-hint {
-      font-size: 0.85rem;
-      color: #94a3b8;
-      margin-top: 0.25rem;
-    }
-
-    #install-banner {
-      position: fixed;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-      gap: 0.5rem;
-      align-items: center;
-      padding: 0.5rem 0.75rem;
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 999px;
-      z-index: 10;
-      font-size: 0.8rem;
-    }
-
-    #install-banner.visible { display: flex; }
-
-    .divider {
-      width: 60%;
-      height: 1px;
-      background: #334155;
-      margin: 0.25rem 0;
-    }
-
-    .start-rules {
-      font-size: 0.9rem;
-      color: #94a3b8;
-      line-height: 1.6;
-      max-width: 280px;
-    }
-
-    .name-form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      width: min(280px, 85vw);
-    }
-
-    .name-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      text-align: left;
-    }
-
-    .name-field label {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: #94a3b8;
-    }
-
-    .name-field input {
-      font: inherit;
-      padding: 0.65rem 0.85rem;
-      border: 2px solid #334155;
-      border-radius: 10px;
-      background: #1e293b;
-      color: #f8fafc;
-      font-size: 1rem;
-      font-weight: 600;
-      width: 100%;
-      touch-action: manipulation;
-    }
-
-    .name-field input:focus {
-      outline: none;
-      border-color: #f59e0b;
-    }
-
-    .name-field input::placeholder {
-      color: #64748b;
-      font-weight: 400;
-    }
-
-    .name-input-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .name-input-row input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .cpu-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.75rem;
-      color: #cbd5e1;
-      white-space: nowrap;
-    }
-
-    .cpu-toggle input {
-      width: 1rem;
-      height: 1rem;
-      accent-color: #f59e0b;
-    }
-
-    .session-score {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      letter-spacing: 0.02em;
-    }
-
-    .session-score strong {
-      color: #fbbf24;
-      font-weight: 800;
-    }
-
-    .session-score.celebration-score {
-      font-size: clamp(1rem, 3.5vw, 1.2rem);
-      margin-top: 0.25rem;
-    }
-
-    .session-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .session-primary-actions {
-      display: flex;
-      gap: 0.6rem;
-    }
-
-    .text-btn {
-      padding: 0.35rem 0.5rem;
-      background: transparent;
-      color: #64748b;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
-
-    .text-btn:active { color: #94a3b8; }
-
-    #app.idle .corner,
-    #app.setup .corner {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-
-    #about-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 45;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(2, 6, 23, 0.76);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.2s ease, visibility 0.2s ease;
-      padding: 1rem;
-    }
-
-    #about-modal.visible {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .about-modal-card {
-      width: min(420px, 92vw);
-      background: #111827;
-      border: 1px solid #334155;
-      border-radius: 14px;
-      padding: 1rem 1rem 0.9rem;
-      text-align: left;
-      box-shadow: 0 20px 45px rgba(2, 6, 23, 0.5);
-    }
-
-    .about-modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .about-modal-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #f8fafc;
-    }
-
-    .about-modal-close {
-      width: 2rem;
-      height: 2rem;
-      border-radius: 999px;
-      background: #1f2937;
-      color: #cbd5e1;
-      font-size: 1.15rem;
-      line-height: 1;
-      border: 1px solid #334155;
-    }
-
-    .about-modal-body {
-      color: #cbd5e1;
-      font-size: 0.92rem;
-      line-height: 1.6;
-    }
-
-    #celebration {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1.25rem;
-      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 70%);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.4s ease, visibility 0.4s;
-      overflow: hidden;
-      padding: 2rem;
-      text-align: center;
-    }
-
-    #celebration.visible {
-      opacity: 1;
-      visibility: visible;
-      transition: opacity 0.4s ease, visibility 0s;
-    }
-
-    #celebration.flip {
-      transform: rotate(180deg);
-    }
-
-    .celebration-burst {
-      position: absolute;
-      width: 120vmax;
-      height: 120vmax;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 60%);
-      animation: burst-pulse 2s ease-out infinite;
-      pointer-events: none;
-    }
-
-    @keyframes burst-pulse {
-      0%, 100% { transform: scale(0.6); opacity: 0.6; }
-      50% { transform: scale(1); opacity: 1; }
-    }
-
-    .celebration-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      animation: winner-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    }
-
-    @keyframes winner-pop {
-      0% { transform: scale(0.3); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .celebration-emoji {
-      font-size: clamp(4rem, 16vw, 6rem);
-      line-height: 1;
-      animation: trophy-bounce 1s ease-in-out 0.5s infinite alternate;
-    }
-
-    @keyframes trophy-bounce {
-      from { transform: translateY(0) rotate(-5deg); }
-      to { transform: translateY(-12px) rotate(5deg); }
-    }
-
-    .celebration-label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #fbbf24;
-    }
-
-    .celebration-winner {
-      font-size: clamp(2.5rem, 12vw, 4.5rem);
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.1;
-    }
-
-    .celebration-sub {
-      font-size: clamp(1rem, 3.5vw, 1.25rem);
-      color: #cbd5e1;
-      font-weight: 500;
-    }
-
-    .celebration-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.65rem;
-      margin-top: 1rem;
-      animation: btn-fade-in 0.5s ease 1.2s both;
-      position: relative;
-      z-index: 2;
-    }
-
-    #celebration.flip .celebration-actions {
-      transform: rotate(180deg);
-    }
-
-    #celebration .primary-btn {
-      font-size: 1.1rem;
-      padding: 1rem 2.5rem;
-    }
-
-    #celebration .secondary-btn {
-      font-size: 0.95rem;
-      padding: 0.75rem 1.75rem;
-    }
-
-    #celebration-share-btn[disabled] {
-      opacity: 0.55;
-      cursor: wait;
-    }
-
-    @keyframes btn-fade-in {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .confetti-container {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .confetti-piece {
-      position: absolute;
-      top: -10px;
-      width: 10px;
-      height: 10px;
-      opacity: 0;
-      animation: confetti-fall linear forwards;
-    }
-
-    @keyframes confetti-fall {
-      0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg) scale(0.5); opacity: 0.3; }
-    }
-
-    .target-history {
-      position: absolute;
-      left: calc(env(safe-area-inset-left, 0px) + 24px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.35rem;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s;
-    }
-
-    .target-history.visible { opacity: 1; }
-
-    .target-history.p1 {
-      top: auto;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(96px, 28vw, 168px));
-      transform: none;
-    }
-
-    .target-history.p2 {
-      left: auto;
-      right: calc(env(safe-area-inset-right, 0px) + 24px);
-      top: calc(env(safe-area-inset-top, 0px) + clamp(96px, 28vw, 168px));
-      bottom: auto;
-      transform: rotate(180deg);
-    }
-
-    .target-history-item {
-      width: 1.75rem;
-      height: 1.75rem;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 800;
-      background: #1e293b;
-      border: 2px solid #334155;
-      color: #94a3b8;
-      flex-shrink: 0;
-    }
-
-    .target-history-item.recent {
-      background: #422006;
-      border-color: #f59e0b;
-      color: #fbbf24;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
-    }
-  </style>
 </head>
-<body>
-  <div id="app">
-    <div id="corner-p1-left" class="corner p1 left" data-corner="p1Left" aria-label="Player 1 left thumb">
-      <span class="corner-label">P1</span>
-      👍
+<body class="font-body text-on-surface italic overflow-x-hidden">
+  <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md h-16 pt-[env(safe-area-inset-top)]">
+    <div class="flex items-center gap-3">
+      <button type="button" id="menu-btn" class="text-primary-container neon-gold-glow" aria-label="Open menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <h1 class="font-display text-headline-mobile uppercase text-primary-container neon-gold-text tracking-tighter not-italic">SUUKEN</h1>
     </div>
-    <div id="corner-p1-right" class="corner p1 right" data-corner="p1Right" aria-label="Player 1 right thumb">
-      <span class="corner-label">P1</span>
-      👍
+    <div class="flex items-center gap-2">
+      <span id="session-badge" class="font-mono text-label-mono text-primary-fixed-dim uppercase tracking-widest hidden sm:block not-italic" hidden></span>
+      <span class="material-symbols-outlined text-primary-container">sports_kabaddi</span>
     </div>
-    <div id="corner-p2-left" class="corner p2 left" data-corner="p2Left" aria-label="Player 2 left thumb">
-      <span class="corner-label">P2</span>
-      👍
-    </div>
-    <div id="corner-p2-right" class="corner p2 right" data-corner="p2Right" aria-label="Player 2 right thumb">
-      <span class="corner-label">P2</span>
-      👍
+  </header>
+
+  <div id="app" class="pt-16 pb-20">
+    <div id="p2-arena" class="arena-half absolute top-0 left-0 right-0 h-1/2 rotate-180 overflow-hidden relative">
+      <div class="player-identity player-identity-p2 pointer-events-none z-[2]">
+        <div class="font-mono text-label-mono text-p2 uppercase tracking-widest not-italic">Commander</div>
+        <div id="p2-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">P2</div>
+      </div>
+      <div id="corner-p2-left" class="corner p2 left absolute bottom-[env(safe-area-inset-bottom,12px)] left-[env(safe-area-inset-left,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p2 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p2Left" aria-label="Player 2 left thumb">
+        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P2</span>
+        👍
+      </div>
+      <div id="corner-p2-right" class="corner p2 right absolute bottom-[env(safe-area-inset-bottom,12px)] right-[env(safe-area-inset-right,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p2 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p2Right" aria-label="Player 2 right thumb">
+        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P2</span>
+        👍
+      </div>
+      <aside id="history-p2" class="target-history absolute left-gutter-sm bottom-[calc(env(safe-area-inset-bottom,12px)+clamp(96px,28vw,168px)+0.75rem)] flex flex-col justify-end gap-2 z-[1] pointer-events-none opacity-0 transition-opacity duration-250" aria-label="Recent target numbers for challenger" hidden></aside>
     </div>
 
-    <aside id="history-p1" class="target-history p1" aria-label="Recent target numbers for home player" hidden></aside>
-    <aside id="history-p2" class="target-history p2" aria-label="Recent target numbers for challenger" hidden></aside>
+    <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-px bg-gradient-to-r from-transparent via-outline to-transparent opacity-30 z-[1] pointer-events-none"></div>
 
-    <main id="board" aria-live="polite"></main>
+    <div id="p1-arena" class="arena-half absolute bottom-0 left-0 right-0 h-1/2 overflow-hidden relative">
+      <div class="player-identity player-identity-p1 pointer-events-none z-[2]">
+        <div class="font-mono text-label-mono text-secondary-fixed-dim uppercase tracking-widest not-italic">Recruit</div>
+        <div id="p1-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">P1</div>
+      </div>
+      <div id="corner-p1-left" class="corner p1 left absolute bottom-[env(safe-area-inset-bottom,12px)] left-[env(safe-area-inset-left,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p1 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p1Left" aria-label="Player 1 left thumb">
+        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P1</span>
+        👍
+      </div>
+      <div id="corner-p1-right" class="corner p1 right absolute bottom-[env(safe-area-inset-bottom,12px)] right-[env(safe-area-inset-right,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p1 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p1Right" aria-label="Player 1 right thumb">
+        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P1</span>
+        👍
+      </div>
+      <aside id="history-p1" class="target-history absolute left-gutter-sm bottom-[calc(env(safe-area-inset-bottom,12px)+clamp(96px,28vw,168px)+0.75rem)] flex flex-col justify-end gap-2 z-[1] pointer-events-none opacity-0 transition-opacity duration-250" aria-label="Recent target numbers for home player" hidden></aside>
+    </div>
+
+    <main id="board" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,420px)] min-h-[200px] flex flex-col items-center justify-center gap-4 p-gutter-sm text-center z-[3] pointer-events-none not-italic" aria-live="polite"></main>
   </div>
 
-  <div id="celebration" aria-hidden="true" role="dialog" aria-label="Winner celebration">
-    <div class="celebration-burst" aria-hidden="true"></div>
-    <div class="confetti-container" id="confetti-container" aria-hidden="true"></div>
-    <div class="celebration-content">
-      <span class="celebration-emoji" aria-hidden="true">🏆</span>
-      <p class="celebration-label">Winner</p>
-      <p class="celebration-winner" id="celebration-winner"></p>
-      <p class="celebration-sub">First to put both thumbs down!</p>
-      <p class="session-score celebration-score" id="celebration-session-score" hidden></p>
-      <div class="celebration-actions">
-        <button type="button" class="primary-btn" id="celebration-start-btn">Re-match</button>
-        <button type="button" class="secondary-btn" id="celebration-share-btn">Share Results</button>
-        <button type="button" class="secondary-btn" id="celebration-new-players-btn">New player(s)</button>
+  <nav id="bottom-nav" class="fixed bottom-0 w-full z-50 bg-background/90 backdrop-blur-xl border-t-4 border-primary-container skew-box flex justify-around items-stretch h-20 pb-[env(safe-area-inset-bottom)]">
+    <button type="button" id="nav-arena" class="nav-tab nav-tab-active flex flex-col items-center justify-center text-on-primary-container py-2 px-6 unskew-content not-italic active:translate-y-0.5 transition-all">
+      <span class="material-symbols-outlined">sports_kabaddi</span>
+      <span class="font-display text-button-text italic uppercase">Arena</span>
+    </button>
+    <button type="button" id="nav-ranking" class="nav-tab flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 unskew-content not-italic hover:text-primary-fixed-dim active:translate-y-0.5 transition-all">
+      <span class="material-symbols-outlined">military_tech</span>
+      <span class="font-display text-button-text italic uppercase">Ranking</span>
+    </button>
+    <button type="button" id="nav-rules" class="nav-tab flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 unskew-content not-italic hover:text-primary-fixed-dim active:translate-y-0.5 transition-all">
+      <span class="material-symbols-outlined">menu_book</span>
+      <span class="font-display text-button-text italic uppercase">Rules</span>
+    </button>
+  </nav>
+
+  <div id="celebration" class="fixed inset-0 z-50 flex flex-col items-center justify-center gap-5 bg-[radial-gradient(ellipse_at_center,#1a1b20_0%,#0d0e12_70%)] opacity-0 invisible transition-all duration-400 overflow-hidden p-8 text-center not-italic" aria-hidden="true" role="dialog" aria-label="Winner celebration">
+    <div class="celebration-burst absolute w-[120vmax] h-[120vmax] rounded-full bg-[radial-gradient(circle,rgba(255,204,0,0.25)_0%,transparent_60%)] pointer-events-none" style="animation: burst-pulse 2s ease-out infinite" aria-hidden="true"></div>
+    <div class="confetti-container absolute inset-0 pointer-events-none overflow-hidden" id="confetti-container" aria-hidden="true"></div>
+    <div class="celebration-content relative z-[2] flex flex-col items-center gap-3 -translate-y-10" style="animation: winner-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards">
+      <div class="celebration-medal transform -skew-x-12 scale-125 neon-gold-glow">
+        <span class="material-symbols-outlined filled text-primary-container text-8xl">workspace_premium</span>
+      </div>
+      <p class="font-mono text-label-mono text-primary-fixed-dim tracking-[0.5em] uppercase">Champion Declared</p>
+      <p class="font-display text-display-xl text-primary-container italic uppercase tracking-widest neon-gold-text text-[clamp(2.5rem,12vw,4rem)] leading-none" id="celebration-winner"></p>
+      <p class="font-body text-body-md text-on-surface-variant not-italic celebration-sub">First to put both thumbs down!</p>
+      <p class="font-body text-body-md text-on-surface session-score not-italic" id="celebration-session-score" hidden></p>
+      <div class="celebration-actions flex flex-col items-center gap-3 mt-4 relative z-[2]" style="animation: btn-fade-in 0.5s ease 1.2s both">
+        <div class="flex gap-2 items-center">
+          <button type="button" class="px-6 py-3 bg-primary-container skew-box touch-manipulation" id="celebration-start-btn">
+            <span class="unskew-content font-display text-button-text text-on-primary italic uppercase">Rematch</span>
+          </button>
+          <button type="button" class="px-4 py-3 border-2 border-primary-container skew-box touch-manipulation" id="celebration-share-btn">
+            <span class="unskew-content material-symbols-outlined text-primary-container">share</span>
+          </button>
+        </div>
+        <button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest underline underline-offset-4 not-italic" id="celebration-new-players-btn">New player(s)</button>
+        <button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest underline underline-offset-4 not-italic" id="celebration-ranking-btn">View ranking</button>
       </div>
     </div>
   </div>
 
-  <div id="about-modal" aria-hidden="true">
-    <div class="about-modal-card" role="dialog" aria-modal="true" aria-labelledby="about-title">
-      <div class="about-modal-head">
-        <h2 class="about-modal-title" id="about-title">About Suuken</h2>
-        <button type="button" class="about-modal-close" id="about-close-btn" aria-label="Close about dialog">✕</button>
-      </div>
-      <p class="about-modal-body">Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/sukken<br><br>Desktop test mode, keyboard controls are [ ; ] and [ ' ] for Player 1 and [ a ] and [ s ] for Player 2.</p>
+  <div id="about-modal" class="fixed inset-0 z-[45] flex items-center justify-center bg-background/80 backdrop-blur-md opacity-0 invisible pointer-events-none transition-all duration-200 p-4 not-italic" aria-hidden="true">
+    <div class="about-modal-card w-[min(420px,92vw)] bg-surface-container-low border-2 border-outline p-gutter-sm" role="dialog" aria-modal="true" aria-labelledby="about-title">
+        <div class="flex items-center justify-between gap-3 mb-3 border-b-2 border-outline-variant pb-3">
+          <h2 class="font-display text-headline-mobile italic uppercase text-primary-container" id="about-title">Rules</h2>
+          <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="about-close-btn" aria-label="Close about dialog">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/suuken<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2.</p>
     </div>
   </div>
 
-  <div id="install-banner">
-    <span>Install Suuken</span>
-    <button type="button" class="secondary-btn" id="install-btn">Add to Home Screen</button>
-    <button type="button" class="secondary-btn" id="dismiss-install" aria-label="Dismiss">✕</button>
+  <div id="ranking-panel" class="fixed inset-0 z-[44] flex items-end sm:items-center justify-center bg-background/80 backdrop-blur-md opacity-0 invisible pointer-events-none transition-all duration-200 p-4 not-italic" aria-hidden="true">
+    <div class="w-[min(420px,92vw)] bg-surface-container-low border-2 border-primary-container skew-box mb-20 sm:mb-0">
+      <div class="unskew-content p-gutter-md">
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <h2 class="font-display text-headline-mobile italic uppercase text-primary-container">Ranking</h2>
+          <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="ranking-close-btn" aria-label="Close ranking">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <p id="ranking-content" class="font-display text-headline-mobile italic text-on-surface uppercase text-center py-6"></p>
+      </div>
+    </div>
+  </div>
+
+  <div id="install-banner" class="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] left-1/2 -translate-x-1/2 hidden gap-2 items-center px-3 py-2 bg-surface-container-high border-2 border-outline z-10 text-sm not-italic skew-box">
+    <span class="unskew-content font-body text-body-md text-on-surface not-italic">Install Suuken</span>
+    <button type="button" class="unskew-content px-3 py-1 bg-surface-container border-2 border-outline font-mono text-label-mono uppercase not-italic" id="install-btn">Add</button>
+    <button type="button" class="unskew-content px-2 py-1 border-2 border-outline not-italic" id="dismiss-install" aria-label="Dismiss">✕</button>
   </div>
 
   <script>
@@ -777,11 +303,20 @@
     const celebration = document.getElementById('celebration');
     const confettiContainer = document.getElementById('confetti-container');
     const aboutModal = document.getElementById('about-modal');
+    const rankingPanel = document.getElementById('ranking-panel');
+    const topAppBar = document.getElementById('top-app-bar');
+    const bottomNav = document.getElementById('bottom-nav');
+    const sessionBadge = document.getElementById('session-badge');
+    const p1BadgeName = document.getElementById('p1-badge-name');
+    const p2BadgeName = document.getElementById('p2-badge-name');
+    const p2Arena = document.getElementById('p2-arena');
+    const p1Arena = document.getElementById('p1-arena');
     const cornerEls = Object.fromEntries(
       CORNERS.map((id) => [id, document.querySelector(`[data-corner="${id}"]`)])
     );
 
-    const CONFETTI_COLORS = ['#f59e0b', '#fbbf24', '#818cf8', '#34d399', '#f472b6', '#60a5fa', '#fcd34d'];
+    const CONFETTI_COLORS = ['#ffcc00', '#00f1fe', '#ff00ff', '#f1c100', '#74f5ff', '#ffe08b'];
+    const IMMERSIVE_PHASES = ['COUNTDOWN', 'ACTION', 'RESOLUTION'];
 
     function trackAnalyticsEvent(eventName, params = {}) {
       if (typeof window.gtag !== 'function') return;
@@ -806,19 +341,51 @@
       return sessionRecord.P1 + sessionRecord.P2;
     }
 
+    function updateSessionBadge() {
+      if (!sessionBadge) return;
+      if (totalSessionGames() === 0) {
+        sessionBadge.hidden = true;
+        sessionBadge.textContent = '';
+        return;
+      }
+      sessionBadge.hidden = false;
+      sessionBadge.textContent = `${sessionRecord.P1} – ${sessionRecord.P2}`;
+    }
+
+    function updateRankingContent() {
+      const el = document.getElementById('ranking-content');
+      if (!el) return;
+      if (totalSessionGames() === 0) {
+        el.innerHTML = '<span class="text-on-surface-variant not-italic font-body text-body-md normal-case">No matches recorded yet.</span>';
+        return;
+      }
+      el.innerHTML = `${getPlayerName('P1')} <span class="text-primary-container neon-gold-text">${sessionRecord.P1}</span> – <span class="text-primary-container neon-gold-text">${sessionRecord.P2}</span> ${getPlayerName('P2')}`;
+    }
+
+    function updateImmersiveUI() {
+      const immersive = IMMERSIVE_PHASES.includes(state.phase);
+      document.body.classList.toggle('immersive', immersive);
+      if (p2Arena) p2Arena.classList.toggle('arena-scanlines', immersive);
+      if (p1Arena) p1Arena.classList.toggle('arena-scanlines', immersive);
+    }
+
     function formatSessionScore() {
       const p1 = getPlayerName('P1');
       const p2 = getPlayerName('P2');
-      return `${p1} <strong>${sessionRecord.P1}</strong> – <strong>${sessionRecord.P2}</strong> ${p2}`;
+      return `${p1} <strong class="text-primary-container">${sessionRecord.P1}</strong> – <strong class="text-primary-container">${sessionRecord.P2}</strong> ${p2}`;
     }
 
     function recordSessionWin(winner) {
       sessionRecord[winner] += 1;
+      updateSessionBadge();
+      updateRankingContent();
     }
 
     function resetSessionRecord() {
       sessionRecord.P1 = 0;
       sessionRecord.P2 = 0;
+      updateSessionBadge();
+      updateRankingContent();
     }
 
     function updateCelebrationSessionScore() {
@@ -834,12 +401,17 @@
     }
 
     function updateCornerLabels() {
+      const p1 = abbrevName(getPlayerName('P1'));
+      const p2 = abbrevName(getPlayerName('P2'));
       document.querySelectorAll('.corner.p1 .corner-label').forEach((el) => {
-        el.textContent = abbrevName(getPlayerName('P1'));
+        el.textContent = p1;
       });
       document.querySelectorAll('.corner.p2 .corner-label').forEach((el) => {
-        el.textContent = abbrevName(getPlayerName('P2'));
+        el.textContent = p2;
       });
+      if (p1BadgeName) p1BadgeName.textContent = p1;
+      if (p2BadgeName) p2BadgeName.textContent = p2;
+      updateSessionBadge();
       CORNERS.forEach((id) => {
         const player = P1_CORNERS.includes(id) ? 'P1' : 'P2';
         const side = id.includes('Left') ? 'left' : 'right';
@@ -905,56 +477,112 @@
       void content.offsetHeight;
       content.style.animation = '';
       updateCelebrationSessionScore();
-      celebration.classList.add('visible');
+      celebration.classList.remove('opacity-0', 'invisible');
+      celebration.classList.add('opacity-100', 'visible');
       celebration.setAttribute('aria-hidden', 'false');
     }
 
     function hideCelebration() {
-      celebration.classList.remove('visible', 'flip');
+      celebration.classList.remove('visible', 'opacity-100', 'flip');
+      celebration.classList.add('opacity-0', 'invisible');
       celebration.setAttribute('aria-hidden', 'true');
       celebration.setAttribute('aria-label', 'Winner celebration');
       celebration.querySelector('.celebration-sub').textContent =
         'First to put both thumbs down!';
       confettiContainer.replaceChildren();
+      updateImmersiveUI();
     }
 
     function showAboutModal() {
-      aboutModal.classList.add('visible');
+      aboutModal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+      aboutModal.classList.add('opacity-100', 'visible', 'pointer-events-auto');
       aboutModal.setAttribute('aria-hidden', 'false');
     }
 
     function hideAboutModal() {
-      aboutModal.classList.remove('visible');
+      aboutModal.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
+      aboutModal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
       aboutModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function isCelebrationVisible() {
+      return celebration.classList.contains('visible');
+    }
+
+    function showRankingPanel() {
+      updateRankingContent();
+      if (isCelebrationVisible()) {
+        rankingPanel.classList.add('z-[55]');
+      }
+      rankingPanel.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+      rankingPanel.classList.add('opacity-100', 'visible', 'pointer-events-auto');
+      rankingPanel.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideRankingPanel() {
+      rankingPanel.classList.remove('visible', 'opacity-100', 'pointer-events-auto', 'z-[55]');
+      rankingPanel.classList.add('opacity-0', 'invisible', 'pointer-events-none');
+      rankingPanel.setAttribute('aria-hidden', 'true');
+    }
+
+    const SHARE_PLAY_URL = 'https://porfir.io/suuken';
+
+    const SHARE_COLORS = {
+      gold: '#ffcc00',
+      goldDim: '#f1c100',
+      onSurface: '#e3e2e7',
+      onSurfaceVariant: '#d2c5ab',
+      outline: '#9a9078',
+      outlineVariant: '#4e4632',
+      bgInner: '#1a1b20',
+      bgOuter: '#0d0e12',
+    };
+
+    function buildCanvasFont(opts = {}) {
+      const {
+        size = 24,
+        weight = '600',
+        family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+        italic = false,
+      } = opts;
+      const style = italic ? 'italic ' : '';
+      return `${style}${weight} ${size}px ${family}`;
     }
 
     function canvasText(ctx, text, x, y, opts = {}) {
       const {
         size = 24,
         weight = '600',
-        color = '#e2e8f0',
+        color = SHARE_COLORS.onSurface,
+        family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+        italic = false,
         align = 'center',
+        letterSpacing,
         maxWidth,
       } = opts;
-      ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+      ctx.font = buildCanvasFont({ size, weight, family, italic });
       ctx.fillStyle = color;
       ctx.textAlign = align;
       ctx.textBaseline = 'middle';
+      if (letterSpacing) ctx.letterSpacing = letterSpacing;
       if (maxWidth) {
         ctx.fillText(text, x, y, maxWidth);
       } else {
         ctx.fillText(text, x, y);
       }
+      if (letterSpacing) ctx.letterSpacing = '0px';
     }
 
     function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, opts = {}) {
       const {
         size = 24,
         weight = '600',
-        color = '#e2e8f0',
+        color = SHARE_COLORS.onSurface,
+        family = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+        italic = false,
         align = 'center',
       } = opts;
-      ctx.font = `${weight} ${size}px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif`;
+      ctx.font = buildCanvasFont({ size, weight, family, italic });
       ctx.fillStyle = color;
       ctx.textAlign = align;
       ctx.textBaseline = 'middle';
@@ -978,95 +606,281 @@
       });
     }
 
-    function drawResultsImage() {
+    function drawNeonGoldText(ctx, text, x, y, opts = {}) {
+      const {
+        size = 52,
+        weight = '900',
+        family = 'Anybody, sans-serif',
+        italic = true,
+        align = 'center',
+        maxWidth = Infinity,
+      } = opts;
+      let fontSize = size;
+      const minSize = 28;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.font = buildCanvasFont({ size: fontSize, weight, family, italic });
+      while (ctx.measureText(text).width > maxWidth && fontSize > minSize) {
+        fontSize -= 2;
+        ctx.font = buildCanvasFont({ size: fontSize, weight, family, italic });
+      }
+      ctx.save();
+      ctx.shadowColor = 'rgba(255, 204, 0, 0.6)';
+      ctx.shadowBlur = 4;
+      ctx.fillStyle = SHARE_COLORS.gold;
+      ctx.fillText(text, x, y);
+      ctx.shadowBlur = 14;
+      ctx.globalAlpha = 0.45;
+      ctx.fillText(text, x, y);
+      ctx.restore();
+    }
+
+    function drawSegmentedText(ctx, segments, x, y, opts = {}) {
+      const {
+        size = 16,
+        weight = '400',
+        family = 'Hanken Grotesk, sans-serif',
+        maxWidth = Infinity,
+      } = opts;
+      let fontSize = size;
+      const minSize = 11;
+      ctx.textBaseline = 'middle';
+
+      const measureSegments = () => segments.map((seg) => {
+        ctx.font = buildCanvasFont({ size: fontSize, weight: seg.weight || weight, family, italic: seg.italic });
+        return ctx.measureText(seg.text).width;
+      });
+
+      let widths = measureSegments();
+      let totalWidth = widths.reduce((sum, w) => sum + w, 0);
+      while (totalWidth > maxWidth && fontSize > minSize) {
+        fontSize -= 1;
+        widths = measureSegments();
+        totalWidth = widths.reduce((sum, w) => sum + w, 0);
+      }
+
+      let cursor = x - totalWidth / 2;
+      segments.forEach((seg, i) => {
+        ctx.font = buildCanvasFont({ size: fontSize, weight: seg.weight || weight, family, italic: seg.italic });
+        ctx.fillStyle = seg.color;
+        ctx.textAlign = 'left';
+        ctx.fillText(seg.text, cursor, y);
+        cursor += widths[i];
+      });
+      ctx.textAlign = 'center';
+    }
+
+    const PREMIUM_ICON_PATH = 'm385-412 36-115-95-74h116l38-119 37 119h117l-95 74 35 115-94-71-95 71ZM244-40v-304q-45-47-64.5-103T160-560q0-136 92-228t228-92q136 0 228 92t92 228q0 57-19.5 113T716-344v304l-236-79-236 79Zm420.5-335.5Q740-451 740-560t-75.5-184.5Q589-820 480-820t-184.5 75.5Q220-669 220-560t75.5 184.5Q371-300 480-300t184.5-75.5ZM304-124l176-55 176 55v-171q-40 29-86 42t-90 13q-44 0-90-13t-86-42v171Zm176-86Z';
+
+    function loadSvgImage(svg) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+      });
+    }
+
+    function loadHtml2Canvas() {
+      if (window.html2canvas) return Promise.resolve(window.html2canvas);
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+        script.onload = () => resolve(window.html2canvas);
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    async function loadPremiumIconImage(size) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 -960 960 960"><path fill="${SHARE_COLORS.gold}" d="${PREMIUM_ICON_PATH}"/></svg>`;
+      return loadSvgImage(svg);
+    }
+
+    async function ensureShareFonts() {
+      await document.fonts.ready;
+      await Promise.all([
+        document.fonts.load('900 italic 52px Anybody'),
+        document.fonts.load('700 12px "JetBrains Mono"'),
+        document.fonts.load('400 16px "Hanken Grotesk"'),
+      ]);
+    }
+
+    function paintShareBackground(ctx, w, h, glowY = h * 0.28) {
+      const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.85);
+      bg.addColorStop(0, SHARE_COLORS.bgInner);
+      bg.addColorStop(0.7, SHARE_COLORS.bgOuter);
+      bg.addColorStop(1, SHARE_COLORS.bgOuter);
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      const glow = ctx.createRadialGradient(w / 2, glowY, 0, w / 2, glowY, Math.max(w, h) * 0.45);
+      glow.addColorStop(0, 'rgba(255, 204, 0, 0.25)');
+      glow.addColorStop(0.6, 'rgba(255, 204, 0, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    function drawSkewedPremiumIcon(ctx, img, cx, cy, size) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.transform(1, 0, -0.21, 1, 0, 0);
+      ctx.scale(1.25, 1.25);
+      ctx.shadowColor = 'rgba(255, 204, 0, 0.6)';
+      ctx.shadowBlur = 8;
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+      ctx.shadowBlur = 16;
+      ctx.globalAlpha = 0.35;
+      ctx.drawImage(img, -size / 2, -size / 2, size, size);
+      ctx.restore();
+    }
+
+    function canvasToBlob(canvas) {
+      return new Promise((resolve) => {
+        canvas.toBlob((blob) => resolve(blob), 'image/png');
+      });
+    }
+
+    function drawShareFooter(ctx, w, h) {
+      canvasText(ctx, 'Find your Suuken challenger at', w / 2, h - 56, {
+        size: 14,
+        weight: '400',
+        color: SHARE_COLORS.onSurfaceVariant,
+        family: 'Hanken Grotesk, sans-serif',
+      });
+      canvasText(ctx, SHARE_PLAY_URL, w / 2, h - 28, {
+        size: 12,
+        weight: '700',
+        color: SHARE_COLORS.goldDim,
+        family: '"JetBrains Mono", monospace',
+      });
+    }
+
+    async function captureCelebrationSnapshot() {
+      const content = celebration.querySelector('.celebration-content');
+      const actions = content.querySelector('.celebration-actions');
+      if (!content || !actions) return null;
+
+      const prevVisibility = actions.style.visibility;
+      const hadFlip = celebration.classList.contains('flip');
+      actions.style.visibility = 'hidden';
+      if (hadFlip) celebration.classList.remove('flip');
+      await document.fonts.ready;
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      try {
+        const html2canvas = await loadHtml2Canvas();
+        const snap = await html2canvas(content, {
+          backgroundColor: null,
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+
+        const scale = 2;
+        const padTop = 28;
+        const padBottom = 88;
+        const w = 600;
+        const contentH = snap.height / scale;
+        const h = contentH + padTop + padBottom;
+        const canvas = document.createElement('canvas');
+        canvas.width = w * scale;
+        canvas.height = h * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(scale, scale);
+
+        paintShareBackground(ctx, w, h, padTop + contentH * 0.2);
+        const x = (w - snap.width / scale) / 2;
+        ctx.drawImage(snap, x, padTop, snap.width / scale, contentH);
+        drawShareFooter(ctx, w, h);
+
+        return canvasToBlob(canvas);
+      } finally {
+        actions.style.visibility = prevVisibility;
+        if (hadFlip) celebration.classList.add('flip');
+      }
+    }
+
+    async function drawResultsImageCanvas() {
       const winner = state.winner;
-      if (!winner) return Promise.resolve(null);
+      if (!winner) return null;
+
+      await ensureShareFonts();
 
       const winnerName = getPlayerName(winner);
       const p1Name = getPlayerName('P1');
       const p2Name = getPlayerName('P2');
       const sub = `${winnerName} put both thumbs down first!`;
       const hasSession = totalSessionGames() > 0;
+      const title = `${winnerName} Wins!`.toUpperCase();
 
       const canvas = document.createElement('canvas');
       const scale = 2;
       const w = 600;
-      const h = hasSession ? 820 : 760;
+      const h = hasSession ? 760 : 700;
       canvas.width = w * scale;
       canvas.height = h * scale;
       const ctx = canvas.getContext('2d');
       ctx.scale(scale, scale);
 
-      const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w * 0.75);
-      bg.addColorStop(0, '#1a1a2e');
-      bg.addColorStop(1, '#0f0f1a');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, w, h);
+      paintShareBackground(ctx, w, h, 150);
 
-      const glow = ctx.createRadialGradient(w / 2, 220, 0, w / 2, 220, 220);
-      glow.addColorStop(0, 'rgba(245, 158, 11, 0.22)');
-      glow.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, w, h);
+      const iconSize = 88;
+      const iconImg = await loadPremiumIconImage(iconSize);
+      drawSkewedPremiumIcon(ctx, iconImg, w / 2, 100, iconSize);
 
-      canvasText(ctx, '🏆', w / 2, 150, { size: 88 });
-      canvasText(ctx, 'WINNER', w / 2, 250, {
-        size: 18,
+      canvasText(ctx, 'CHAMPION DECLARED', w / 2, 218, {
+        size: 12,
         weight: '700',
-        color: '#fbbf24',
+        color: SHARE_COLORS.goldDim,
+        family: '"JetBrains Mono", monospace',
+        letterSpacing: '0.5em',
       });
 
-      const titleGrad = ctx.createLinearGradient(w / 2 - 180, 0, w / 2 + 180, 0);
-      titleGrad.addColorStop(0, '#fbbf24');
-      titleGrad.addColorStop(0.5, '#f59e0b');
-      titleGrad.addColorStop(1, '#fcd34d');
-      ctx.font = '900 52px system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
-      ctx.fillStyle = titleGrad;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`${winnerName} Wins!`, w / 2, 330);
+      drawNeonGoldText(ctx, title, w / 2, 300, {
+        size: 52,
+        weight: '900',
+        family: 'Anybody, sans-serif',
+        italic: true,
+        maxWidth: w - 64,
+      });
 
-      wrapCanvasText(ctx, sub, w / 2, 410, w - 80, 34, {
-        size: 22,
-        weight: '500',
-        color: '#cbd5e1',
+      wrapCanvasText(ctx, sub, w / 2, 380, w - 80, 28, {
+        size: 16,
+        weight: '400',
+        color: SHARE_COLORS.onSurfaceVariant,
+        family: 'Hanken Grotesk, sans-serif',
       });
 
       if (hasSession) {
-        ctx.strokeStyle = '#334155';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(80, 490);
-        ctx.lineTo(w - 80, 490);
-        ctx.stroke();
-
-        canvasText(ctx, 'Session', w / 2, 540, {
-          size: 16,
-          weight: '700',
-          color: '#94a3b8',
-        });
-        canvasText(ctx, `${p1Name}  ${sessionRecord.P1} – ${sessionRecord.P2}  ${p2Name}`, w / 2, 590, {
-          size: 28,
-          weight: '800',
-          color: '#fbbf24',
-          maxWidth: w - 60,
-        });
+        drawSegmentedText(ctx, [
+          { text: 'Session: ', color: SHARE_COLORS.onSurface },
+          { text: p1Name, color: SHARE_COLORS.onSurface },
+          { text: ' ', color: SHARE_COLORS.onSurface },
+          { text: String(sessionRecord.P1), color: SHARE_COLORS.gold, weight: '700' },
+          { text: ' – ', color: SHARE_COLORS.onSurface },
+          { text: String(sessionRecord.P2), color: SHARE_COLORS.gold, weight: '700' },
+          { text: ' ', color: SHARE_COLORS.onSurface },
+          { text: p2Name, color: SHARE_COLORS.onSurface },
+        ], w / 2, 450, { size: 16, family: 'Hanken Grotesk, sans-serif', maxWidth: w - 64 });
       }
 
-      canvasText(ctx, 'Suuken', w / 2, h - 68, {
-        size: 20,
-        weight: '800',
-        color: '#64748b',
-      });
-      canvasText(ctx, 'https://porfir.io/suuken', w / 2, h - 36, {
-        size: 16,
-        weight: '600',
-        color: '#475569',
-      });
+      drawShareFooter(ctx, w, h);
 
-      return new Promise((resolve) => {
-        canvas.toBlob((blob) => resolve(blob), 'image/png');
-      });
+      return canvasToBlob(canvas);
+    }
+
+    async function drawResultsImage() {
+      if (!state.winner) return null;
+
+      try {
+        const snapshot = await captureCelebrationSnapshot();
+        if (snapshot) return snapshot;
+      } catch (err) {
+        console.warn('Celebration snapshot failed, using canvas fallback:', err);
+      }
+
+      return drawResultsImageCanvas();
     }
 
     async function shareResults() {
@@ -1074,8 +888,7 @@
       if (!btn || btn.disabled) return;
 
       btn.disabled = true;
-      const prevLabel = btn.textContent;
-      btn.textContent = 'Preparing…';
+      btn.classList.add('opacity-55');
 
       try {
         const blob = await drawResultsImage();
@@ -1104,7 +917,7 @@
         }
       } finally {
         btn.disabled = false;
-        btn.textContent = prevLabel;
+        btn.classList.remove('opacity-55');
       }
     }
 
@@ -1154,8 +967,23 @@
     function syncCornerUI() {
       CORNERS.forEach((id) => {
         const el = cornerEls[id];
+        const isP1 = P1_CORNERS.includes(id);
         el.classList.toggle('inactive', !state.activeCorners[id]);
         el.classList.toggle('pressed', state.pressedCorners[id]);
+        el.classList.toggle('neon-cyan-glow', isP1 && state.pressedCorners[id]);
+        el.classList.toggle('neon-magenta-glow', !isP1 && state.pressedCorners[id]);
+        if (state.pressedCorners[id]) {
+          el.classList.add('bg-primary-container', 'border-primary-container');
+          el.classList.remove('bg-surface-container-high');
+        } else if (state.activeCorners[id]) {
+          el.classList.remove('bg-primary-container', 'border-primary-container', 'bg-surface-container-lowest', 'opacity-25');
+          el.classList.add('bg-surface-container-high', 'opacity-100');
+          el.classList.toggle('border-p1', isP1);
+          el.classList.toggle('border-p2', !isP1);
+        } else {
+          el.classList.remove('bg-primary-container', 'border-primary-container', 'neon-cyan-glow', 'neon-magenta-glow', 'opacity-100');
+          el.classList.add('bg-surface-container-lowest', 'opacity-25');
+        }
       });
     }
 
@@ -1172,10 +1000,12 @@
       updateTargetHistoryUI();
     }
 
-    function buildHistoryItem(value, isRecent) {
+    function buildHistoryItem(value, isRecent, playerSide) {
       const span = document.createElement('span');
-      span.className = `target-history-item${isRecent ? ' recent' : ''}`;
+      const sideClass = playerSide === 'P1' ? 'p1' : 'p2';
+      span.className = `history-segment${isRecent ? ` recent-${sideClass} neon-${sideClass === 'p1' ? 'cyan' : 'magenta'}-glow` : ` filled-${sideClass}`}`;
       span.textContent = String(value);
+      span.setAttribute('aria-label', `Target ${value}`);
       return span;
     }
 
@@ -1183,11 +1013,12 @@
       return [...targetHistory].reverse();
     }
 
-    function renderHistoryContainer(container, animateInsert) {
+    function renderHistoryContainer(container, playerSide, animateInsert) {
       const inGame = state.phase !== 'SETUP' && state.phase !== 'GAMEOVER';
       const displayValues = getHistoryDisplayValues();
       container.hidden = !inGame || displayValues.length === 0;
-      container.classList.toggle('visible', inGame && displayValues.length > 0);
+      container.classList.toggle('opacity-100', inGame && displayValues.length > 0);
+      container.classList.toggle('opacity-0', !(inGame && displayValues.length > 0));
 
       if (!inGame || displayValues.length === 0) {
         container.replaceChildren();
@@ -1203,29 +1034,30 @@
         const oldLen = prevRects.length;
         container.replaceChildren();
         displayValues.forEach((value, index) => {
-          container.appendChild(buildHistoryItem(value, index === displayValues.length - 1));
+          container.appendChild(buildHistoryItem(value, index === displayValues.length - 1, playerSide));
         });
 
         const newLen = container.children.length;
-        const droppedOldest = oldLen > 0 && newLen === oldLen;
+        const droppedOldest = oldLen >= TARGET_HISTORY_MAX && newLen === oldLen;
 
         [...container.children].forEach((el, index) => {
           const isNewest = index === newLen - 1;
+
           if (isNewest) {
             el.animate([
-              { transform: 'translateY(130%) scale(0.8)', opacity: 0 },
-              { transform: 'translateY(0) scale(1)', opacity: 1 },
+              { transform: 'scale(0.85)', opacity: 0 },
+              { transform: 'scale(1)', opacity: 1 },
             ], { duration: 460, easing: 'cubic-bezier(0.34, 1.25, 0.64, 1)' });
             return;
           }
 
-          let fromRect;
+          let fromRect = null;
           if (droppedOldest) {
-            fromRect = prevRects[index + 1];
+            fromRect = prevRects[index + 1] ?? null;
           } else if (index === newLen - 2) {
-            fromRect = prevRects[oldLen - 1];
+            fromRect = prevRects[oldLen - 1] ?? null;
           } else {
-            fromRect = prevRects[index];
+            fromRect = prevRects[index] ?? null;
           }
 
           if (!fromRect) return;
@@ -1244,20 +1076,30 @@
 
       container.replaceChildren();
       displayValues.forEach((value, index) => {
-        container.appendChild(buildHistoryItem(value, index === displayValues.length - 1));
+        container.appendChild(buildHistoryItem(value, index === displayValues.length - 1, playerSide));
       });
 
       if (animateInsert && container.children.length === 1) {
         container.lastElementChild.animate([
-          { transform: 'translateY(130%) scale(0.8)', opacity: 0 },
-          { transform: 'translateY(0) scale(1)', opacity: 1 },
+          { transform: 'scale(0.85)', opacity: 0 },
+          { transform: 'scale(1)', opacity: 1 },
         ], { duration: 460, easing: 'cubic-bezier(0.34, 1.25, 0.64, 1)' });
       }
     }
 
+    function syncTargetHistoryVisibility() {
+      const inGame = state.phase !== 'SETUP' && state.phase !== 'GAMEOVER';
+      const displayValues = getHistoryDisplayValues();
+      [historyP1, historyP2].forEach((container) => {
+        container.hidden = !inGame || displayValues.length === 0;
+        container.classList.toggle('opacity-100', inGame && displayValues.length > 0);
+        container.classList.toggle('opacity-0', !(inGame && displayValues.length > 0));
+      });
+    }
+
     function updateTargetHistoryUI(animateInsert = false) {
-      renderHistoryContainer(historyP1, animateInsert);
-      renderHistoryContainer(historyP2, animateInsert);
+      renderHistoryContainer(historyP1, 'P1', animateInsert);
+      renderHistoryContainer(historyP2, 'P2', animateInsert);
     }
 
     function setPhase(phase) {
@@ -1267,43 +1109,55 @@
     }
 
     function renderBoard() {
-      updateTargetHistoryUI();
+      syncTargetHistoryVisibility();
+      updateImmersiveUI();
       app.classList.toggle('idle', state.phase === 'SETUP');
       app.classList.toggle('setup', state.phase === 'SETUP');
       const flip = state.turn === 'P2' && ['COUNTDOWN', 'RESOLUTION'].includes(state.phase);
-      board.classList.toggle('flip', flip);
+      if (flip) {
+        board.style.transform = 'translate(-50%, -50%) rotate(180deg)';
+      } else {
+        board.style.transform = 'translate(-50%, -50%)';
+      }
 
       if (state.phase === 'SETUP') {
         const sessionBlock = totalSessionGames() > 0
-          ? `<p class="session-score">Session: ${formatSessionScore()}</p>`
+          ? `<p class="font-body text-body-md text-on-surface not-italic">Session: ${formatSessionScore()}</p>`
           : '';
         board.innerHTML = `
-          <h1>Suuken</h1>
-          <p class="start-rules">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.</p>
-          <div class="divider"></div>
-          <div class="name-form">
-            <div class="name-field">
-              <label for="p1-name">Home Player</label>
-              <input type="text" id="p1-name" maxlength="20" placeholder="Player 1" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" />
+          <h1 class="font-display text-headline-mobile uppercase italic text-primary-container neon-gold-text tracking-tighter pointer-events-auto">Suuken</h1>
+          <div class="w-[60%] h-px bg-outline-variant my-1 pointer-events-none"></div>
+          <div class="flex flex-col gap-3 w-[min(300px,85vw)] pointer-events-auto">
+            <div class="skew-box bg-primary-container p-1 shadow-[4px_4px_0_0_#3d2f00]">
+              <div class="unskew-content p-3 flex flex-col gap-1 text-left">
+                <label for="p1-name" class="font-mono text-label-mono text-on-primary-container uppercase not-italic">Entry Name · Recruit</label>
+                <input type="text" id="p1-name" maxlength="20" placeholder="P1_NOVA" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-primary uppercase focus:ring-0 w-full not-italic" />
+              </div>
             </div>
-            <div class="name-field">
-              <label for="p2-name">Challenger</label>
-              <div class="name-input-row">
-                <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} />
-                <label class="cpu-toggle" for="p2-cpu">
-                  <input type="checkbox" id="p2-cpu" ${state.cpuEnabled ? 'checked' : ''} />
-                  CPU
-                </label>
+            <div class="skew-box bg-surface-container-highest p-1 neon-magenta-glow">
+              <div class="unskew-content p-3 flex flex-col gap-1 text-left">
+                <label for="p2-name" class="font-mono text-label-mono text-p2 uppercase not-italic">Entry Name · Commander</label>
+                <div class="flex items-center gap-2">
+                  <input type="text" id="p2-name" maxlength="20" placeholder="P2_ROGUE" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-surface uppercase focus:ring-0 flex-1 min-w-0 not-italic" />
+                  <label class="cpu-toggle flex items-center gap-1 font-mono text-label-mono text-on-surface-variant uppercase whitespace-nowrap not-italic" for="p2-cpu">
+                    <input type="checkbox" id="p2-cpu" ${state.cpuEnabled ? 'checked' : ''} class="accent-primary-container w-4 h-4" />
+                    CPU
+                  </label>
+                </div>
               </div>
             </div>
           </div>
           ${sessionBlock}
-          <div class="session-actions">
-            <div class="session-primary-actions">
-              <button type="button" class="primary-btn" id="start-btn">Start</button>
-              <button type="button" class="ghost-btn" id="about-btn">About</button>
+          <div class="flex flex-col items-center gap-2 pointer-events-auto">
+            <div class="flex gap-3 w-full max-w-[300px]">
+              <button type="button" class="flex-1 skew-box bg-surface-container-highest border-2 border-p1 p-3 neon-cyan-glow touch-manipulation" id="start-btn">
+                <span class="unskew-content font-display text-button-text text-p1 italic uppercase">Join Arena</span>
+              </button>
+              <button type="button" class="w-12 h-12 skew-box border-2 border-outline flex items-center justify-center touch-manipulation" id="about-btn" aria-label="About">
+                <span class="unskew-content material-symbols-outlined text-on-surface">settings</span>
+              </button>
             </div>
-            ${totalSessionGames() > 0 ? '<button type="button" class="text-btn" id="reset-session-btn">Reset session record</button>' : ''}
+            ${totalSessionGames() > 0 ? '<button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase underline underline-offset-4 not-italic" id="reset-session-btn">Reset session record</button>' : ''}
           </div>
         `;
         document.getElementById('start-btn').onclick = beginGame;
@@ -1344,25 +1198,24 @@
       }
 
       const activeTag = getPlayerTag(state.turn);
-      const p1Name = getPlayerName('P1');
-      const p2Name = getPlayerName('P2');
 
       if (state.phase === 'COUNTDOWN') {
+        const roundLabel = String(state.currentMatchRounds + 1).padStart(2, '0');
         board.innerHTML = `
-          <p class="player-tag active">${activeTag}'s turn</p>
-          <h1>Suuken</h1>
-          <p class="countdown" id="countdown-num">3</p>
-          <p class="phase-msg">Get ready…</p>
+          <p class="font-mono text-label-mono text-on-surface-variant tracking-[0.4em] uppercase not-italic pointer-events-none">Round ${roundLabel}</p>
+          <p class="font-mono text-label-mono text-${state.turn === 'P1' ? 'p1' : 'p2'} uppercase tracking-widest not-italic pointer-events-none">${activeTag}</p>
+          <p class="font-display text-[clamp(4rem,18vw,7rem)] font-black text-primary-container leading-none neon-gold-text italic pointer-events-none" id="countdown-num">3</p>
+          <p class="font-display text-headline-mobile italic uppercase text-on-surface pointer-events-none">Get Ready</p>
         `;
         return;
       }
 
       if (state.phase === 'ACTION') {
         board.innerHTML = `
-          <p class="player-tag">${p1Name} & ${p2Name}</p>
-          <p class="countdown" style="font-size: clamp(2.5rem, 12vw, 4rem);">GO!</p>
-          <p class="phase-msg">Hold the corners you raise</p>
-          <p class="result">Tally in 1 second…</p>
+          <p class="font-mono text-label-mono text-on-surface-variant tracking-[0.4em] uppercase not-italic pointer-events-none">Round ${String(state.currentMatchRounds + 1).padStart(2, '0')}</p>
+          <p class="font-display text-[clamp(2.5rem,12vw,4rem)] font-black text-primary-container italic uppercase neon-gold-text pointer-events-none">Go!</p>
+          <p class="font-display text-headline-mobile italic uppercase text-on-surface pointer-events-none">Hold Your Corners</p>
+          <p class="font-body text-body-md text-on-surface-variant not-italic pointer-events-none">Tally in 1 second…</p>
         `;
         return;
       }
@@ -1374,18 +1227,22 @@
         const needsPick = roundSuccess && remaining.length > 1;
         let extra = '';
         if (needsPick) {
-          extra = `<p class="eliminate-hint">${getPlayerName(state.turn)}: tap one of your corners to put it away</p>`;
+          extra = `<p class="font-body text-body-md text-on-surface-variant not-italic pointer-events-none">${getPlayerName(state.turn)}: tap one of your corners to put it away</p>`;
         } else if (roundSuccess && state.thumbDropped) {
-          extra = `<p class="result">One thumb put away.</p>`;
+          extra = `<p class="font-body text-body-md text-on-surface-variant not-italic pointer-events-none">One thumb put away.</p>`;
         }
+        const matchHeadline = roundSuccess
+          ? `<div class="glitch-text font-display text-[clamp(2.5rem,12vw,4rem)] text-primary-container italic uppercase pointer-events-none">Match!</div>`
+          : `<p class="font-display text-headline-mobile italic uppercase text-on-surface-variant pointer-events-none">No Match</p>`;
         board.innerHTML = `
-          <p class="player-tag active">${activeTag}</p>
-          <p class="phase-msg">${roundSuccess ? 'Match!' : 'No match'}</p>
-          <p class="result">
-            Target was <strong>${targetTotal}</strong> — thumbs raised: <strong>${lastTotal}</strong>
+          <p class="font-mono text-label-mono text-on-surface-variant tracking-[0.4em] uppercase not-italic pointer-events-none">Round ${String(state.currentMatchRounds).padStart(2, '0')}</p>
+          <p class="font-mono text-label-mono text-${state.turn === 'P1' ? 'p1' : 'p2'} uppercase tracking-widest not-italic pointer-events-none">${activeTag}</p>
+          ${matchHeadline}
+          <p class="font-body text-body-md text-on-surface-variant not-italic pointer-events-none">
+            Target <strong class="text-primary-container">${targetTotal}</strong> — raised <strong class="text-primary-container">${lastTotal}</strong>
           </p>
           ${extra}
-          ${!needsPick ? '<button type="button" class="primary-btn" id="next-btn">Next Turn</button>' : ''}
+          ${!needsPick ? `<button type="button" class="skew-box bg-primary-container px-6 py-3 touch-manipulation pointer-events-auto mt-2" id="next-btn"><span class="unskew-content font-display text-button-text text-on-primary italic uppercase">Next Turn</span></button>` : ''}
         `;
         const next = document.getElementById('next-btn');
         if (next) next.onclick = nextTurn;
@@ -1662,12 +1519,27 @@
     document.getElementById('celebration-start-btn').onclick = beginGame;
     document.getElementById('celebration-share-btn').onclick = shareResults;
     document.getElementById('celebration-new-players-btn').onclick = startNewPlayersSession;
+    document.getElementById('celebration-ranking-btn').onclick = showRankingPanel;
     document.getElementById('about-close-btn').onclick = hideAboutModal;
+    document.getElementById('menu-btn').onclick = showAboutModal;
+    document.getElementById('nav-rules').onclick = showAboutModal;
+    document.getElementById('nav-ranking').onclick = showRankingPanel;
+    document.getElementById('ranking-close-btn').onclick = hideRankingPanel;
+    rankingPanel.addEventListener('click', (e) => {
+      if (e.target === rankingPanel) hideRankingPanel();
+    });
+    document.getElementById('nav-arena').onclick = () => {
+      hideAboutModal();
+      hideRankingPanel();
+    };
     aboutModal.addEventListener('click', (e) => {
       if (e.target === aboutModal) hideAboutModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') hideAboutModal();
+      if (e.key === 'Escape') {
+        hideAboutModal();
+        hideRankingPanel();
+      }
     });
     document.addEventListener('click', (e) => {
       const button = e.target.closest('button');

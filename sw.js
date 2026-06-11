@@ -1,7 +1,8 @@
-const CACHE = 'suuken-v3';
+const CACHE = 'suuken-v4';
 const ASSETS = [
   './',
   './index.html',
+  './css/suuken.css',
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
