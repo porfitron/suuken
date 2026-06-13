@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://porfir.io/kinkeda/sitemap.xml
+Sitemap: https://kinkeda.com/sitemap.xml
