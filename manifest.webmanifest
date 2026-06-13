@@ -1,6 +1,6 @@
 {
-  "name": "Suuken",
-  "short_name": "Suuken",
+  "name": "Kinkeda",
+  "short_name": "Kinkeda",
   "description": "2-player thumb-guessing game for a shared multi-touch screen",
   "start_url": "./",
   "scope": "./",

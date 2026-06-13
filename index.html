@@ -6,33 +6,33 @@
   <meta name="theme-color" content="#121317" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="description" content="Suuken — 2-player thumb-guessing game on one shared screen" />
+  <meta name="description" content="Kinkeda — 2-player thumb-guessing game on one shared screen" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Porfirio, Michael, Toni and Laetitia" />
-  <meta name="application-name" content="Suuken" />
-  <meta name="apple-mobile-web-app-title" content="Suuken" />
-  <link rel="canonical" href="https://porfir.io/suuken" />
+  <meta name="application-name" content="Kinkeda" />
+  <meta name="apple-mobile-web-app-title" content="Kinkeda" />
+  <link rel="canonical" href="https://porfir.io/kinkeda" />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Suuken" />
-  <meta property="og:title" content="Suuken" />
-  <meta property="og:description" content="Let's play Suuken face-to-face — 2-player thumb-guessing on one shared screen" />
-  <meta property="og:url" content="https://porfir.io/suuken" />
+  <meta property="og:site_name" content="Kinkeda" />
+  <meta property="og:title" content="Kinkeda" />
+  <meta property="og:description" content="Let's play Kinkeda face-to-face — 2-player thumb-guessing on one shared screen" />
+  <meta property="og:url" content="https://porfir.io/kinkeda" />
   <meta property="og:locale" content="en_US" />
-  <meta property="og:image" content="https://porfir.io/suuken/icons/og-image.png" />
+  <meta property="og:image" content="https://porfir.io/kinkeda/icons/og-image.png" />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Suuken — 2-player thumb-guessing game on one shared screen" />
+  <meta property="og:image:alt" content="Kinkeda — 2-player thumb-guessing game on one shared screen" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Suuken" />
-  <meta name="twitter:description" content="Let's play Suuken face-to-face — 2-player thumb-guessing on one shared screen" />
-  <meta name="twitter:image" content="https://porfir.io/suuken/icons/og-image.png" />
-  <meta name="twitter:image:alt" content="Suuken — 2-player thumb-guessing game on one shared screen" />
-  <title>Suuken</title>
+  <meta name="twitter:title" content="Kinkeda" />
+  <meta name="twitter:description" content="Let's play Kinkeda face-to-face — 2-player thumb-guessing on one shared screen" />
+  <meta name="twitter:image" content="https://porfir.io/kinkeda/icons/og-image.png" />
+  <meta name="twitter:image:alt" content="Kinkeda — 2-player thumb-guessing game on one shared screen" />
+  <title>Kinkeda</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&family=Hanken+Grotesk:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/suuken.css" />
+  <link rel="stylesheet" href="css/kinkeda.css" />
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -101,13 +101,13 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "Suuken",
+      "name": "Kinkeda",
       "description": "2-player thumb-guessing game on one shared screen",
-      "url": "https://porfir.io/suuken",
+      "url": "https://porfir.io/kinkeda",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Any",
       "browserRequirements": "Requires JavaScript. Supports multi-touch.",
-      "image": "https://porfir.io/suuken/icons/og-image.png",
+      "image": "https://porfir.io/kinkeda/icons/og-image.png",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -154,7 +154,7 @@
           </button>
         </div>
       </div>
-      <h1 class="font-display text-headline-mobile uppercase text-primary-container neon-gold-text tracking-tighter not-italic">SUUKEN</h1>
+      <h1 class="font-display text-headline-mobile uppercase text-primary-container neon-gold-text tracking-tighter not-italic">KINKEDA</h1>
     </div>
     <div class="flex items-center gap-2">
       <span id="session-badge" class="font-mono text-label-mono text-primary-fixed-dim uppercase tracking-widest hidden sm:block not-italic" hidden></span>
@@ -165,16 +165,14 @@
   <div id="app">
     <div id="p2-arena" class="arena-half absolute top-0 left-0 right-0 h-1/2 rotate-180 overflow-hidden relative">
       <div class="player-identity player-identity-p2 pointer-events-none z-[2]">
-        <div class="font-mono text-label-mono text-p2 uppercase tracking-widest not-italic">Commander</div>
-        <div id="p2-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">P2</div>
+        <div class="font-mono text-label-mono text-p2 uppercase tracking-widest not-italic">Challenger</div>
+        <div id="p2-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">Player 2</div>
       </div>
       <div id="corner-p2-left" class="corner p2 left absolute bottom-[env(safe-area-inset-bottom,12px)] left-[env(safe-area-inset-left,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p2 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p2Left" aria-label="Player 2 left thumb">
-        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P2</span>
         👍
       </div>
       <div id="corner-p2-right" class="corner p2 right absolute bottom-[env(safe-area-inset-bottom,12px)] right-[env(safe-area-inset-right,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p2 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p2Right" aria-label="Player 2 right thumb">
-        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P2</span>
-        👍
+        <span class="inline-block -scale-x-100" aria-hidden="true">👍</span>
       </div>
       <aside id="history-p2" class="target-history absolute left-gutter-sm bottom-[calc(env(safe-area-inset-bottom,12px)+clamp(96px,28vw,168px)+0.75rem)] flex flex-col justify-end gap-2 z-[1] pointer-events-none opacity-0 transition-opacity duration-250" aria-label="Recent target numbers for challenger" hidden></aside>
     </div>
@@ -183,16 +181,14 @@
 
     <div id="p1-arena" class="arena-half absolute bottom-0 left-0 right-0 h-1/2 overflow-hidden relative">
       <div class="player-identity player-identity-p1 pointer-events-none z-[2]">
-        <div class="font-mono text-label-mono text-secondary-fixed-dim uppercase tracking-widest not-italic">Recruit</div>
-        <div id="p1-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">P1</div>
+        <div class="font-mono text-label-mono text-secondary-fixed-dim uppercase tracking-widest not-italic">My Phone</div>
+        <div id="p1-badge-name" class="font-display text-headline-mobile italic text-on-surface uppercase truncate max-w-full">Player 1</div>
       </div>
       <div id="corner-p1-left" class="corner p1 left absolute bottom-[env(safe-area-inset-bottom,12px)] left-[env(safe-area-inset-left,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p1 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p1Left" aria-label="Player 1 left thumb">
-        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P1</span>
         👍
       </div>
       <div id="corner-p1-right" class="corner p1 right absolute bottom-[env(safe-area-inset-bottom,12px)] right-[env(safe-area-inset-right,12px)] w-thumb-zone h-thumb-zone min-w-[88px] min-h-[88px] max-w-[160px] max-h-[160px] rounded-full border-[3px] border-p1 bg-surface-container-high flex items-center justify-center text-3xl z-[2] transition-all duration-150" data-corner="p1Right" aria-label="Player 1 right thumb">
-        <span class="corner-label font-mono text-label-mono absolute bottom-[18%] opacity-70 not-italic uppercase">P1</span>
-        👍
+        <span class="inline-block -scale-x-100" aria-hidden="true">👍</span>
       </div>
       <aside id="history-p1" class="target-history absolute left-gutter-sm bottom-[calc(env(safe-area-inset-bottom,12px)+clamp(96px,28vw,168px)+0.75rem)] flex flex-col justify-end gap-2 z-[1] pointer-events-none opacity-0 transition-opacity duration-250" aria-label="Recent target numbers for home player" hidden></aside>
     </div>
@@ -223,7 +219,10 @@
         <span class="material-symbols-outlined filled text-primary-container text-8xl">workspace_premium</span>
       </div>
       <p class="font-mono text-label-mono text-primary-fixed-dim tracking-[0.5em] uppercase">Champion Declared</p>
-      <p class="font-display text-display-xl text-primary-container italic uppercase tracking-widest neon-gold-text text-[clamp(2.5rem,12vw,4rem)] leading-none" id="celebration-winner"></p>
+      <p class="font-display text-display-xl text-primary-container italic uppercase tracking-widest neon-gold-text text-[clamp(2.5rem,12vw,4rem)] leading-none text-center" id="celebration-winner">
+        <span class="block" id="celebration-winner-name"></span>
+        <span class="block">Wins!</span>
+      </p>
       <p class="font-body text-body-md text-on-surface-variant not-italic celebration-sub">First to put both thumbs down!</p>
       <p class="font-body text-body-md text-on-surface session-score not-italic" id="celebration-session-score" hidden></p>
       <div class="celebration-actions flex flex-col items-center gap-3 mt-4 relative z-[2]" style="animation: btn-fade-in 0.5s ease 1.2s both">
@@ -249,26 +248,26 @@
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/suuken<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2.</p>
+        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/kinkeda<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2.</p>
     </div>
   </div>
 
   <div id="ranking-panel" class="fixed inset-0 z-[44] flex items-end sm:items-center justify-center bg-background/80 backdrop-blur-md opacity-0 invisible pointer-events-none transition-all duration-200 p-4 not-italic" aria-hidden="true">
-    <div class="w-[min(420px,92vw)] bg-surface-container-low border-2 border-primary-container skew-box mb-20 sm:mb-0">
-      <div class="unskew-content p-gutter-md">
+    <div class="w-[min(420px,92vw)] bg-surface-container-low border-2 border-primary-container mb-20 sm:mb-0">
+      <div class="p-gutter-md">
         <div class="flex items-center justify-between gap-3 mb-4">
           <h2 class="font-display text-headline-mobile italic uppercase text-primary-container">Ranking</h2>
           <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="ranking-close-btn" aria-label="Close ranking">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-        <p id="ranking-content" class="font-display text-headline-mobile italic text-on-surface uppercase text-center py-6"></p>
+        <div id="ranking-content" class="flex flex-col gap-1 not-italic"></div>
       </div>
     </div>
   </div>
 
   <div id="install-banner" class="fixed left-1/2 -translate-x-1/2 hidden gap-2 items-center px-3 py-2 bg-surface-container-high border-2 border-outline z-10 text-sm not-italic skew-box">
-    <span class="unskew-content font-body text-body-md text-on-surface not-italic">Install Suuken</span>
+    <span class="unskew-content font-body text-body-md text-on-surface not-italic">Install Kinkeda</span>
     <button type="button" class="unskew-content px-3 py-1 bg-surface-container border-2 border-outline font-mono text-label-mono uppercase not-italic" id="install-btn">Add</button>
     <button type="button" class="unskew-content px-2 py-1 border-2 border-outline not-italic" id="dismiss-install" aria-label="Dismiss">✕</button>
   </div>
@@ -285,6 +284,18 @@
       s: 'p2Right'
     };
     const TARGET_HISTORY_MAX = 10;
+    const STORAGE_KEYS = {
+      P1_NAME: 'kinkeda-player-p1-name',
+      P2_NAME: 'kinkeda-player-p2-name',
+      RANKING: 'kinkeda-ranking-history',
+    };
+    const RANKING_MAX_ROWS = 4;
+    const RANKING_DEMO = [
+      { p1Name: 'Porfirio', p2Name: 'Michael', p1Wins: 3, p2Wins: 2, rounds: 11 },
+      { p1Name: 'Toni', p2Name: 'Laetitia', p1Wins: 1, p2Wins: 4, rounds: 14 },
+      { p1Name: 'Porfirio', p2Name: 'Toni', p1Wins: 2, p2Wins: 1, rounds: 9 },
+      { p1Name: 'Michael', p2Name: 'Laetitia', p1Wins: 0, p2Wins: 3, rounds: 7 },
+    ];
 
     const state = {
       turn: 'P1',
@@ -306,6 +317,7 @@
     };
 
     const sessionRecord = { P1: 0, P2: 0 };
+    let rankingHistory = [];
     const targetHistory = [];
 
     const board = document.getElementById('board');
@@ -316,6 +328,11 @@
     const confettiContainer = document.getElementById('confetti-container');
     const aboutModal = document.getElementById('about-modal');
     const rankingPanel = document.getElementById('ranking-panel');
+    const navTabs = {
+      arena: document.getElementById('nav-arena'),
+      ranking: document.getElementById('nav-ranking'),
+      rules: document.getElementById('nav-rules'),
+    };
     const topAppBar = document.getElementById('top-app-bar');
     const bottomNav = document.getElementById('bottom-nav');
     const sessionBadge = document.getElementById('session-badge');
@@ -335,9 +352,105 @@
       window.gtag('event', eventName, params);
     }
 
+    function loadPlayerNamesFromStorage() {
+      try {
+        state.playerNames.P1 = localStorage.getItem(STORAGE_KEYS.P1_NAME)?.trim() || '';
+        state.lastHumanP2Name = localStorage.getItem(STORAGE_KEYS.P2_NAME)?.trim() || '';
+        state.playerNames.P2 = state.lastHumanP2Name;
+      } catch (_) {}
+    }
+
+    function savePlayerNamesToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.P1_NAME, state.playerNames.P1.trim());
+        localStorage.setItem(STORAGE_KEYS.P2_NAME, state.lastHumanP2Name.trim());
+      } catch (_) {}
+    }
+
+    function isDevMode() {
+      return new URLSearchParams(window.location.search).get('dev') === '1';
+    }
+
+    function normalizeRankingRow(row) {
+      return {
+        p1Name: row.p1Name,
+        p2Name: row.p2Name,
+        p1Wins: Number(row.p1Wins) || 0,
+        p2Wins: Number(row.p2Wins) || 0,
+        rounds: Number(row.rounds) || 0,
+      };
+    }
+
+    function isDemoRankingRow(row) {
+      const normalized = normalizeRankingRow(row);
+      return RANKING_DEMO.some(
+        (demo) =>
+          demo.p1Name === normalized.p1Name &&
+          demo.p2Name === normalized.p2Name &&
+          demo.p1Wins === normalized.p1Wins &&
+          demo.p2Wins === normalized.p2Wins
+      );
+    }
+
+    function loadRankingHistory() {
+      if (isDevMode()) {
+        rankingHistory = RANKING_DEMO.map((row) => ({ ...row }));
+        return;
+      }
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.RANKING);
+        if (!raw) {
+          rankingHistory = [];
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) {
+          rankingHistory = [];
+          return;
+        }
+        const loaded = parsed
+          .filter((row) => row && typeof row.p1Name === 'string' && typeof row.p2Name === 'string')
+          .slice(0, RANKING_MAX_ROWS)
+          .map(normalizeRankingRow);
+        rankingHistory = loaded.filter((row) => !isDemoRankingRow(row));
+        if (rankingHistory.length !== loaded.length) {
+          saveRankingHistory();
+        }
+      } catch (_) {
+        rankingHistory = [];
+      }
+    }
+
+    function saveRankingHistory() {
+      if (isDevMode()) return;
+      try {
+        localStorage.setItem(STORAGE_KEYS.RANKING, JSON.stringify(rankingHistory));
+      } catch (_) {}
+    }
+
+    function recordRankingMatch() {
+      rankingHistory.unshift({
+        p1Name: getPlayerName('P1'),
+        p2Name: getPlayerName('P2'),
+        p1Wins: sessionRecord.P1,
+        p2Wins: sessionRecord.P2,
+        rounds: state.currentMatchRounds,
+      });
+      rankingHistory = rankingHistory.slice(0, RANKING_MAX_ROWS);
+      saveRankingHistory();
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
     function getPlayerName(player) {
       const name = state.playerNames[player]?.trim();
-      return name || player;
+      return name || (player === 'P1' ? 'Player 1' : 'Player 2');
     }
 
     function getPlayerTag(player) {
@@ -367,11 +480,36 @@
     function updateRankingContent() {
       const el = document.getElementById('ranking-content');
       if (!el) return;
-      if (totalSessionGames() === 0) {
-        el.innerHTML = '<span class="text-on-surface-variant not-italic font-body text-body-md normal-case">No matches recorded yet.</span>';
-        return;
-      }
-      el.innerHTML = `${getPlayerName('P1')} <span class="text-primary-container neon-gold-text">${sessionRecord.P1}</span> – <span class="text-primary-container neon-gold-text">${sessionRecord.P2}</span> ${getPlayerName('P2')}`;
+      const crownIcon = '<span class="material-symbols-outlined filled text-primary-container text-lg leading-none shrink-0" aria-hidden="true">crown</span>';
+      const header = `
+        <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 items-end pb-2 mb-2 border-b border-outline-variant">
+          <span class="font-mono text-label-mono text-p1 uppercase tracking-widest">Player 1</span>
+          <span class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest text-center px-2">Rounds</span>
+          <span class="font-mono text-label-mono text-p2 uppercase tracking-widest text-right">Player 2</span>
+        </div>
+      `;
+      const rows = rankingHistory.map((row) => {
+        const p1Leading = row.p1Wins > row.p2Wins;
+        const p2Leading = row.p2Wins > row.p1Wins;
+        const p1Wins = `<span class="font-mono text-label-mono text-primary-container neon-gold-text not-italic">${row.p1Wins}</span>`;
+        const p2Wins = `<span class="font-mono text-label-mono text-primary-container neon-gold-text not-italic">${row.p2Wins}</span>`;
+        return `
+        <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 items-center py-2 border-b border-outline-variant/40 last:border-b-0">
+          <div class="flex items-center gap-1 min-w-0 font-display text-button-text italic uppercase text-on-surface">
+            <span class="min-w-0">${escapeHtml(row.p1Name)}</span>
+            ${p1Leading ? crownIcon : ''}
+            ${p1Wins}
+          </div>
+          <span class="font-mono text-label-mono text-on-surface text-center px-2 not-italic">${row.rounds}</span>
+          <div class="flex items-center gap-1 min-w-0 justify-end font-display text-button-text italic uppercase text-on-surface text-right">
+            ${p2Wins}
+            ${p2Leading ? crownIcon : ''}
+            <span class="min-w-0">${escapeHtml(row.p2Name)}</span>
+          </div>
+        </div>
+      `;
+      }).join('');
+      el.innerHTML = header + rows;
     }
 
     function updateImmersiveUI() {
@@ -389,6 +527,7 @@
 
     function recordSessionWin(winner) {
       sessionRecord[winner] += 1;
+      recordRankingMatch();
       updateSessionBadge();
       updateRankingContent();
     }
@@ -415,12 +554,6 @@
     function updateCornerLabels() {
       const p1 = abbrevName(getPlayerName('P1'));
       const p2 = abbrevName(getPlayerName('P2'));
-      document.querySelectorAll('.corner.p1 .corner-label').forEach((el) => {
-        el.textContent = p1;
-      });
-      document.querySelectorAll('.corner.p2 .corner-label').forEach((el) => {
-        el.textContent = p2;
-      });
       if (p1BadgeName) p1BadgeName.textContent = p1;
       if (p2BadgeName) p2BadgeName.textContent = p2;
       updateSessionBadge();
@@ -446,6 +579,7 @@
         state.playerNames.P2 = p2Input.value.trim();
         state.lastHumanP2Name = state.playerNames.P2;
       }
+      savePlayerNamesToStorage();
       updateCornerLabels();
     }
 
@@ -478,7 +612,7 @@
 
     function showCelebration(winner) {
       const name = getPlayerName(winner);
-      document.getElementById('celebration-winner').textContent = `${name} Wins!`;
+      document.getElementById('celebration-winner-name').textContent = name;
       celebration.querySelector('.celebration-sub').textContent =
         `${name} put both thumbs down first!`;
       celebration.classList.toggle('flip', winner === 'P2');
@@ -505,16 +639,29 @@
       updateImmersiveUI();
     }
 
+    function setActiveNavTab(tab) {
+      Object.entries(navTabs).forEach(([key, el]) => {
+        if (!el) return;
+        const isActive = key === tab;
+        el.classList.toggle('nav-tab-active', isActive);
+        el.classList.toggle('text-on-primary-container', isActive);
+        el.classList.toggle('text-on-surface-variant', !isActive);
+      });
+    }
+
     function showAboutModal() {
+      hideRankingPanel();
       aboutModal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
       aboutModal.classList.add('opacity-100', 'visible', 'pointer-events-auto');
       aboutModal.setAttribute('aria-hidden', 'false');
+      setActiveNavTab('rules');
     }
 
     function hideAboutModal() {
       aboutModal.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
       aboutModal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
       aboutModal.setAttribute('aria-hidden', 'true');
+      setActiveNavTab('arena');
     }
 
     function isCelebrationVisible() {
@@ -522,6 +669,7 @@
     }
 
     function showRankingPanel() {
+      hideAboutModal();
       updateRankingContent();
       if (isCelebrationVisible()) {
         rankingPanel.classList.add('z-[55]');
@@ -529,15 +677,19 @@
       rankingPanel.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
       rankingPanel.classList.add('opacity-100', 'visible', 'pointer-events-auto');
       rankingPanel.setAttribute('aria-hidden', 'false');
+      setActiveNavTab('ranking');
     }
 
     function hideRankingPanel() {
       rankingPanel.classList.remove('visible', 'opacity-100', 'pointer-events-auto', 'z-[55]');
       rankingPanel.classList.add('opacity-0', 'invisible', 'pointer-events-none');
       rankingPanel.setAttribute('aria-hidden', 'true');
+      if (aboutModal.getAttribute('aria-hidden') !== 'false') {
+        setActiveNavTab('arena');
+      }
     }
 
-    const SHARE_PLAY_URL = 'https://porfir.io/suuken';
+    const SHARE_PLAY_URL = 'https://kinkeda.com';
 
     const SHARE_COLORS = {
       gold: '#ffcc00',
@@ -754,7 +906,7 @@
     }
 
     function drawShareFooter(ctx, w, h) {
-      canvasText(ctx, 'Find your Suuken challenger at', w / 2, h - 56, {
+      canvasText(ctx, 'Find your Kinkeda challenger at', w / 2, h - 56, {
         size: 14,
         weight: '400',
         color: SHARE_COLORS.onSurfaceVariant,
@@ -824,12 +976,12 @@
       const p2Name = getPlayerName('P2');
       const sub = `${winnerName} put both thumbs down first!`;
       const hasSession = totalSessionGames() > 0;
-      const title = `${winnerName} Wins!`.toUpperCase();
+      const winnerTitle = winnerName.toUpperCase();
 
       const canvas = document.createElement('canvas');
       const scale = 2;
       const w = 600;
-      const h = hasSession ? 760 : 700;
+      const h = hasSession ? 780 : 720;
       canvas.width = w * scale;
       canvas.height = h * scale;
       const ctx = canvas.getContext('2d');
@@ -849,7 +1001,7 @@
         letterSpacing: '0.5em',
       });
 
-      drawNeonGoldText(ctx, title, w / 2, 300, {
+      drawNeonGoldText(ctx, winnerTitle, w / 2, 278, {
         size: 52,
         weight: '900',
         family: 'Anybody, sans-serif',
@@ -857,7 +1009,15 @@
         maxWidth: w - 64,
       });
 
-      wrapCanvasText(ctx, sub, w / 2, 380, w - 80, 28, {
+      drawNeonGoldText(ctx, 'WINS!', w / 2, 338, {
+        size: 52,
+        weight: '900',
+        family: 'Anybody, sans-serif',
+        italic: true,
+        maxWidth: w - 64,
+      });
+
+      wrapCanvasText(ctx, sub, w / 2, 410, w - 80, 28, {
         size: 16,
         weight: '400',
         color: SHARE_COLORS.onSurfaceVariant,
@@ -874,7 +1034,7 @@
           { text: String(sessionRecord.P2), color: SHARE_COLORS.gold, weight: '700' },
           { text: ' ', color: SHARE_COLORS.onSurface },
           { text: p2Name, color: SHARE_COLORS.onSurface },
-        ], w / 2, 450, { size: 16, family: 'Hanken Grotesk, sans-serif', maxWidth: w - 64 });
+        ], w / 2, 480, { size: 16, family: 'Hanken Grotesk, sans-serif', maxWidth: w - 64 });
       }
 
       drawShareFooter(ctx, w, h);
@@ -896,12 +1056,12 @@
     }
 
     function getShareInviteText() {
-      return `Let's play Suuken face-to-face at ${SHARE_PLAY_URL}`;
+      return `Let's play Kinkeda face-to-face at ${SHARE_PLAY_URL}`;
     }
 
     async function shareApp() {
       const shareData = {
-        title: 'Suuken',
+        title: 'Kinkeda',
         text: getShareInviteText(),
         url: SHARE_PLAY_URL,
       };
@@ -932,10 +1092,10 @@
         const blob = await drawResultsImage();
         if (!blob) return;
 
-        const file = new File([blob], 'suuken-results.png', { type: 'image/png' });
+        const file = new File([blob], 'kinkeda-results.png', { type: 'image/png' });
         const shareData = {
           files: [file],
-          title: 'Suuken Results',
+          title: 'Kinkeda Results',
           text: `${getPlayerName(state.winner)} wins!`,
         };
 
@@ -945,7 +1105,7 @@
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = 'suuken-results.png';
+          link.download = 'kinkeda-results.png';
           link.click();
           URL.revokeObjectURL(url);
         }
@@ -971,9 +1131,7 @@
       state.roundSuccess = false;
       state.thumbDropped = false;
       state.cpuEnabled = false;
-      state.playerNames.P1 = '';
-      state.playerNames.P2 = '';
-      state.lastHumanP2Name = '';
+      loadPlayerNamesFromStorage();
       CORNERS.forEach((c) => {
         state.activeCorners[c] = true;
         state.pressedCorners[c] = false;
@@ -1163,20 +1321,20 @@
           ? `<p class="font-body text-body-md text-on-surface not-italic">Session: ${formatSessionScore()}</p>`
           : '';
         board.innerHTML = `
-          <h1 class="font-display text-headline-mobile uppercase italic text-primary-container neon-gold-text tracking-tighter pointer-events-auto">Suuken</h1>
+          <h1 class="font-display text-headline-mobile uppercase italic text-primary-container neon-gold-text tracking-tighter pointer-events-auto">Kinkeda</h1>
           <div class="w-[60%] h-px bg-outline-variant my-1 pointer-events-none"></div>
           <div class="flex flex-col gap-3 w-[min(300px,85vw)] pointer-events-auto">
             <div class="skew-box bg-primary-container p-1 shadow-[4px_4px_0_0_#3d2f00]">
               <div class="unskew-content p-3 flex flex-col gap-1 text-left">
-                <label for="p1-name" class="font-mono text-label-mono text-on-primary-container uppercase not-italic">Entry Name · Recruit</label>
-                <input type="text" id="p1-name" maxlength="20" placeholder="P1_NOVA" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-primary uppercase focus:ring-0 w-full not-italic" />
+                <label for="p1-name" class="font-mono text-label-mono text-on-primary-container uppercase not-italic">Entry Name · My Phone</label>
+                <input type="text" id="p1-name" maxlength="20" placeholder="Player 1" autocomplete="nickname" enterkeyhint="next" value="${state.playerNames.P1.replace(/"/g, '&quot;')}" class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-primary uppercase focus:ring-0 w-full not-italic" />
               </div>
             </div>
             <div class="skew-box bg-surface-container-highest p-1 neon-magenta-glow">
               <div class="unskew-content p-3 flex flex-col gap-1 text-left">
-                <label for="p2-name" class="font-mono text-label-mono text-p2 uppercase not-italic">Entry Name · Commander</label>
+                <label for="p2-name" class="font-mono text-label-mono text-p2 uppercase not-italic">Entry Name · Challenger</label>
                 <div class="flex items-center gap-2">
-                  <input type="text" id="p2-name" maxlength="20" placeholder="P2_ROGUE" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-surface uppercase focus:ring-0 flex-1 min-w-0 not-italic" />
+                  <input type="text" id="p2-name" maxlength="20" placeholder="Player 2" autocomplete="nickname" enterkeyhint="go" value="${(state.cpuEnabled ? 'Computer' : state.playerNames.P2).replace(/"/g, '&quot;')}" ${state.cpuEnabled ? 'disabled' : ''} class="bg-transparent border-none p-0 font-display text-headline-mobile italic text-on-surface uppercase focus:ring-0 flex-1 min-w-0 not-italic" />
                   <label class="cpu-toggle flex items-center gap-1 font-mono text-label-mono text-on-surface-variant uppercase whitespace-nowrap not-italic" for="p2-cpu">
                     <input type="checkbox" id="p2-cpu" ${state.cpuEnabled ? 'checked' : ''} class="accent-primary-container w-4 h-4" />
                     CPU
@@ -1210,6 +1368,16 @@
         document.getElementById('p2-name').addEventListener('keydown', (e) => {
           if (e.key === 'Enter') beginGame();
         });
+        document.getElementById('p1-name').addEventListener('input', (e) => {
+          state.playerNames.P1 = e.target.value.trim();
+          savePlayerNamesToStorage();
+        });
+        document.getElementById('p2-name').addEventListener('input', (e) => {
+          if (state.cpuEnabled) return;
+          state.playerNames.P2 = e.target.value.trim();
+          state.lastHumanP2Name = state.playerNames.P2;
+          savePlayerNamesToStorage();
+        });
         const cpuToggle = document.getElementById('p2-cpu');
         if (cpuToggle) {
           cpuToggle.addEventListener('change', () => {
@@ -1223,6 +1391,7 @@
             } else {
               state.playerNames.P2 = state.lastHumanP2Name;
             }
+            savePlayerNamesToStorage();
             syncCpuNameField();
           });
           syncCpuNameField();
@@ -1418,6 +1587,14 @@
       startPlayerTurn();
     }
 
+    function canAdvanceTurn() {
+      if (state.phase !== 'RESOLUTION') return false;
+      if (!state.roundSuccess) return true;
+      const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
+      const remaining = playerCorners.filter((c) => state.activeCorners[c]);
+      return remaining.length <= 1;
+    }
+
     function beginGame() {
       if (state.phase === 'SETUP') readNamesFromForm();
       hideCelebration();
@@ -1502,6 +1679,13 @@
 
     document.addEventListener('keydown', (e) => {
       if (shouldIgnoreKeyboardEvent(e)) return;
+      if (e.code === 'Space' || e.key === ' ') {
+        if (canAdvanceTurn()) {
+          e.preventDefault();
+          nextTurn();
+          return;
+        }
+      }
       const corner = cornerFromKeyEvent(e);
       if (!corner) return;
       if (state.phase === 'ACTION') {
@@ -1531,7 +1715,7 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredInstall = e;
-      if (!localStorage.getItem('suuken-install-dismissed')) {
+      if (!localStorage.getItem('kinkeda-install-dismissed')) {
         banner.classList.add('visible');
       }
     });
@@ -1544,7 +1728,7 @@
     };
     document.getElementById('dismiss-install').onclick = () => {
       banner.classList.remove('visible');
-      localStorage.setItem('suuken-install-dismissed', '1');
+      localStorage.setItem('kinkeda-install-dismissed', '1');
     };
 
     /* Service worker */
@@ -1613,6 +1797,7 @@
     document.getElementById('nav-arena').onclick = () => {
       hideAboutModal();
       hideRankingPanel();
+      setActiveNavTab('arena');
     };
     aboutModal.addEventListener('click', (e) => {
       if (e.target === aboutModal) hideAboutModal();
@@ -1643,6 +1828,9 @@
       });
     });
 
+    loadPlayerNamesFromStorage();
+    loadRankingHistory();
+    updateRankingContent();
     updateCornerLabels();
     syncCornerUI();
     renderBoard();

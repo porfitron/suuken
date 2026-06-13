@@ -1,8 +1,8 @@
-const CACHE = 'suuken-v5';
+const CACHE = 'kinkeda-v1';
 const ASSETS = [
   './',
   './index.html',
-  './css/suuken.css',
+  './css/kinkeda.css',
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg',

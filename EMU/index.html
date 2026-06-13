@@ -26,10 +26,10 @@
 		window.edgeSqViewportScale = scaleViewport();
 	</script>
 
-	<title>Suuken — Mobile Preview</title>
-	<meta name="application-name" content="Suuken Mobile Preview"/>
-	<meta name="apple-mobile-web-app-title" content="Suuken Preview">
-	<meta name="description" content="Preview Suuken on simulated mobile devices with notches, cutouts, and edge-to-edge displays.">
+	<title>Kinkeda — Mobile Preview</title>
+	<meta name="application-name" content="Kinkeda Mobile Preview"/>
+	<meta name="apple-mobile-web-app-title" content="Kinkeda Preview">
+	<meta name="description" content="Preview Kinkeda on simulated mobile devices with notches, cutouts, and edge-to-edge displays.">
 	<meta name="theme-color" content="#0f0f1a">
 	<link rel="icon" href="../icons/icon-192.svg" type="image/svg+xml">
 	<link rel="apple-touch-icon" href="../icons/icon-192.svg">
@@ -106,7 +106,7 @@
 	</div>
 	<!-- CONTROLS -->
 	<div id="controls" class="hidden" style="display: none;">
-		<h3>Suuken Mobile Preview</h3>
+		<h3>Kinkeda Mobile Preview</h3>
 		<div>
 			<p>App URL</p>
 			<input id="app-url" type="url" spellcheck="false" placeholder="../index.html" onchange="EdgeSq.setAppUrl(this.value);">
@@ -234,7 +234,7 @@
 			</div>
 		</div>
 		<!-- APP -->
-		<iframe id="app" src="../index.html" title="Suuken Preview" allow="geolocation;microphone"></iframe>
+		<iframe id="app" src="../index.html" title="Kinkeda Preview" allow="geolocation;microphone"></iframe>
 		<!-- NAVIGATION BARS -->
 		<div id="nav-bar">
 			<!-- Default Android on-screen navigation bar -->
@@ -259,13 +259,13 @@
 	<!-- Overlays 2 -->
 	<div id="info-popup" style="display: none;">
 		<div id="info-popup-content">
-			<h3>Suuken Mobile Preview</h3>
-			<p>Preview Suuken inside simulated mobile devices with notches, camera cutouts, status bars, and navigation bars.</p>
+			<h3>Kinkeda Mobile Preview</h3>
+			<p>Preview Kinkeda inside simulated mobile devices with notches, camera cutouts, status bars, and navigation bars.</p>
 			<h3>Getting started</h3>
 			<ul>
-				<li>Suuken loads automatically from <code>../index.html</code></li>
+				<li>Kinkeda loads automatically from <code>../index.html</code></li>
 				<li>Choose a device from the selector (iPhone 13 Pro is the default)</li>
-				<li>Adjust status bar and navigation bar colors to match Suuken's theme</li>
+				<li>Adjust status bar and navigation bar colors to match Kinkeda's theme</li>
 				<li>Use the settings panel (tune icon) to switch devices or reload a different URL</li>
 			</ul>
 			<h3>Good to know</h3>
@@ -376,9 +376,9 @@
 			Object.keys(EdgeSq.devices).forEach(function(key){
 				deviceSelector.innerHTML += "<option value='" + key + "'>" + EdgeSq.devices[key].name + "</option>";
 			});
-			EdgeSq.activeDevice = localStorage.getItem('suuken-emu-device') || "iphone_13_pro";
-			EdgeSq.scale = localStorage.getItem('suuken-emu-scale') || "viewport";
-			EdgeSq.deviceScalingFactor = localStorage.getItem('suuken-emu-scale-factor') || 0.6;
+			EdgeSq.activeDevice = localStorage.getItem('kinkeda-emu-device') || "iphone_13_pro";
+			EdgeSq.scale = localStorage.getItem('kinkeda-emu-scale') || "viewport";
+			EdgeSq.deviceScalingFactor = localStorage.getItem('kinkeda-emu-scale-factor') || 0.6;
 			
 			//DOM
 			//TODO: make hard-coded IDs configurable
@@ -392,10 +392,10 @@
 			applyIconToClass("sb-email", "email");
 			
 			//colors
-			EdgeSq.activeSbBackground = localStorage.getItem('suuken-emu-status-bar-bg') || "#0f0f1a";
-			EdgeSq.activeSbColor = localStorage.getItem('suuken-emu-status-bar-col') || "#ffffff";
-			EdgeSq.activeNavBackground = localStorage.getItem('suuken-emu-nav-bar-bg') || "#0f0f1a";
-			EdgeSq.activeNavColor = localStorage.getItem('suuken-emu-nav-bar-col') || "#ffffff";
+			EdgeSq.activeSbBackground = localStorage.getItem('kinkeda-emu-status-bar-bg') || "#0f0f1a";
+			EdgeSq.activeSbColor = localStorage.getItem('kinkeda-emu-status-bar-col') || "#ffffff";
+			EdgeSq.activeNavBackground = localStorage.getItem('kinkeda-emu-nav-bar-bg') || "#0f0f1a";
+			EdgeSq.activeNavColor = localStorage.getItem('kinkeda-emu-nav-bar-col') || "#ffffff";
 					
 			//controls
 			
@@ -403,29 +403,29 @@
 			EdgeSq.setAppUrl = function(url){
 				document.getElementById('app-url').value = url;
 				document.getElementById('app').src = url;
-				localStorage.setItem('suuken-emu-app-url', url);
+				localStorage.setItem('kinkeda-emu-app-url', url);
 			}
 			
 			EdgeSq.setStatusBarBackground = function(color){
 				document.documentElement.style.setProperty('--status-bar-bg', color);
 				sbBackColor = color;
 				//document.getElementById('status-bar-background').value = color;
-				localStorage.setItem('suuken-emu-status-bar-bg', color);
+				localStorage.setItem('kinkeda-emu-status-bar-bg', color);
 			}
 			EdgeSq.setStatusBarColor = function(color){
 				document.documentElement.style.setProperty('--status-bar-col', color);
 				//document.getElementById('status-bar-color').value = color;
-				localStorage.setItem('suuken-emu-status-bar-col',color);
+				localStorage.setItem('kinkeda-emu-status-bar-col',color);
 			}
 			EdgeSq.setNavBarBackground = function(color){
 				document.documentElement.style.setProperty('--nav-bar-bg', color);
 				//document.getElementById('nav-bar-background').value = color;
-				localStorage.setItem('suuken-emu-nav-bar-bg', color);
+				localStorage.setItem('kinkeda-emu-nav-bar-bg', color);
 			}
 			EdgeSq.setNavBarColor = function(color){
 				document.documentElement.style.setProperty('--nav-bar-col', color);
 				//document.getElementById('nav-bar-color').value = color;
-				localStorage.setItem('suuken-emu-nav-bar-col', color);
+				localStorage.setItem('kinkeda-emu-nav-bar-col', color);
 			}
 			
 			EdgeSq.setDevice = function(deviceId){
@@ -446,7 +446,7 @@
 					navbars[i].style.display = "none";
 				}
 				document.getElementById(deviceData.navBar).style.removeProperty("display");
-				localStorage.setItem('suuken-emu-device', deviceId);
+				localStorage.setItem('kinkeda-emu-device', deviceId);
 				EdgeSq.activeDevice = deviceId;
 				refreshDeviceScale();
 			}
@@ -491,7 +491,7 @@
 			
 			EdgeSq.setDeviceScalingFactor = function(newFactor){
 				EdgeSq.deviceScalingFactor = newFactor;
-				localStorage.setItem('suuken-emu-scale-factor', newFactor);
+				localStorage.setItem('kinkeda-emu-scale-factor', newFactor);
 				refreshDeviceScale();
 			}
 			EdgeSq.toggleDeviceScale = function(){
@@ -500,7 +500,7 @@
 				}else{
 					EdgeSq.scale = "viewport";
 				}
-				localStorage.setItem('suuken-emu-scale', EdgeSq.scale);
+				localStorage.setItem('kinkeda-emu-scale', EdgeSq.scale);
 				refreshDeviceScale();
 			}
 			function refreshDeviceScale(){
@@ -599,7 +599,7 @@
 			
 			//initialize
 			
-			EdgeSq.setAppUrl(localStorage.getItem('suuken-emu-app-url') || "../index.html");
+			EdgeSq.setAppUrl(localStorage.getItem('kinkeda-emu-app-url') || "../index.html");
 			EdgeSq.setDevice(EdgeSq.activeDevice);
 			EdgeSq.setStatusBarBackground(EdgeSq.activeSbBackground);
 			EdgeSq.setStatusBarColor(EdgeSq.activeSbColor);
