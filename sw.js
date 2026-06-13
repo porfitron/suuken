@@ -1,4 +1,4 @@
-const CACHE = 'kinkeda-v1';
+const CACHE = 'kinkeda-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,11 @@ const ASSETS = [
   './manifest.webmanifest',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-512-maskable.png',
+  './icons/apple-touch-icon.png',
+  './icons/favicon-32.png',
   './icons/og-image.png',
   './robots.txt',
   './sitemap.xml',

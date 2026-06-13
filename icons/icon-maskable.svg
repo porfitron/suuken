@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#1a1b20"/>
+      <stop offset="72%" stop-color="#121317"/>
+      <stop offset="100%" stop-color="#0d0e12"/>
+    </radialGradient>
+    <radialGradient id="goldGlow" cx="50%" cy="46%" r="34%">
+      <stop offset="0%" stop-color="#ffcc00" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#ffcc00" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="neonGold" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="5" flood-color="#ffcc00" flood-opacity="0.5"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#ffcc00" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Full-bleed background for adaptive/maskable icons -->
+  <rect width="512" height="512" fill="#121317"/>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#goldGlow)"/>
+  <!-- Safe-zone content (~80% center) -->
+  <g transform="translate(0 8)">
+    <circle cx="118" cy="118" r="34" fill="#1f1f24" stroke="#ff00ff" stroke-width="5"/>
+    <circle cx="394" cy="118" r="34" fill="#1f1f24" stroke="#ff00ff" stroke-width="5"/>
+    <circle cx="118" cy="394" r="34" fill="#1f1f24" stroke="#00f1fe" stroke-width="5"/>
+    <circle cx="394" cy="394" r="34" fill="#1f1f24" stroke="#00f1fe" stroke-width="5"/>
+    <g transform="translate(256 252) skewX(-15)" filter="url(#neonGold)">
+      <text text-anchor="middle" dominant-baseline="middle" font-family="Anybody, sans-serif" font-size="168" font-weight="900" font-style="italic" fill="#ffcc00" letter-spacing="-0.04em">K</text>
+    </g>
+  </g>
+</svg>

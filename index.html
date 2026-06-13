@@ -133,8 +133,9 @@
     gtag('config', 'G-B90DQQ81ZW');
   </script>
   <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="icons/icon-192.svg" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180" />
 </head>
 <body class="font-body text-on-surface italic overflow-x-hidden">
   <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
@@ -151,6 +152,10 @@
           <button type="button" id="menu-share" class="app-menu-item" role="menuitem">
             <span class="material-symbols-outlined text-primary-container text-xl">share</span>
             <span class="font-display text-button-text italic uppercase text-on-surface">Share</span>
+          </button>
+          <button type="button" id="menu-reset" class="app-menu-item" role="menuitem">
+            <span class="material-symbols-outlined text-primary-container text-xl">delete</span>
+            <span class="font-display text-button-text italic uppercase text-on-surface">Reset</span>
           </button>
         </div>
       </div>
@@ -248,7 +253,26 @@
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. (c) 2026 https://porfir.io/kinkeda<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2.</p>
+        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. &copy; 2026 https://kinkeda.com<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2. Spacebar for next turn.</p>
+    </div>
+  </div>
+
+  <div id="reset-modal" class="fixed inset-0 z-[45] flex items-center justify-center bg-background/80 backdrop-blur-md opacity-0 invisible pointer-events-none transition-all duration-200 p-4 not-italic" aria-hidden="true">
+    <div class="about-modal-card w-[min(420px,92vw)] bg-surface-container-low border-2 border-outline p-gutter-sm" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+      <div class="flex items-center justify-between gap-3 mb-3 border-b-2 border-outline-variant pb-3">
+        <h2 class="font-display text-headline-mobile italic uppercase text-primary-container" id="reset-title">Reset</h2>
+        <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="reset-close-btn" aria-label="Close reset dialog">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic">Reset the player names and erase leaderboard?</p>
+      <div class="flex flex-col sm:flex-row gap-3 mt-5">
+        <button type="button" class="flex-1 px-4 py-3 bg-primary-container border-2 border-primary-container font-display text-button-text text-on-primary italic uppercase flex items-center justify-center gap-2 not-italic" id="reset-confirm-btn">
+          <span class="material-symbols-outlined text-xl not-italic">delete</span>
+          <span class="not-italic">Yes</span>
+        </button>
+        <button type="button" class="flex-1 px-4 py-3 bg-surface-container-high border-2 border-outline font-display text-button-text text-on-surface italic uppercase" id="reset-cancel-btn">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -327,6 +351,7 @@
     const celebration = document.getElementById('celebration');
     const confettiContainer = document.getElementById('confetti-container');
     const aboutModal = document.getElementById('about-modal');
+    const resetModal = document.getElementById('reset-modal');
     const rankingPanel = document.getElementById('ranking-panel');
     const navTabs = {
       arena: document.getElementById('nav-arena'),
@@ -662,6 +687,52 @@
       aboutModal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
       aboutModal.setAttribute('aria-hidden', 'true');
       setActiveNavTab('arena');
+    }
+
+    function showResetModal() {
+      hideAboutModal();
+      hideRankingPanel();
+      resetModal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
+      resetModal.classList.add('opacity-100', 'visible', 'pointer-events-auto');
+      resetModal.setAttribute('aria-hidden', 'false');
+    }
+
+    function hideResetModal() {
+      resetModal.classList.remove('visible', 'opacity-100', 'pointer-events-auto');
+      resetModal.classList.add('opacity-0', 'invisible', 'pointer-events-none');
+      resetModal.setAttribute('aria-hidden', 'true');
+    }
+
+    function clearAppLocalStorage() {
+      try {
+        localStorage.removeItem(STORAGE_KEYS.P1_NAME);
+        localStorage.removeItem(STORAGE_KEYS.P2_NAME);
+        localStorage.removeItem(STORAGE_KEYS.RANKING);
+      } catch (_) {}
+      state.playerNames.P1 = '';
+      state.playerNames.P2 = '';
+      state.lastHumanP2Name = '';
+      state.cpuEnabled = false;
+      rankingHistory = [];
+      clearInterval(state.countdownTimer);
+      clearTimeout(state.actionTimer);
+      hideCelebration();
+      resetSessionRecord();
+      state.turn = 'P1';
+      state.phase = 'SETUP';
+      state.winner = null;
+      state.targetTotal = null;
+      state.roundSuccess = false;
+      state.thumbDropped = false;
+      CORNERS.forEach((c) => {
+        state.activeCorners[c] = true;
+        state.pressedCorners[c] = false;
+      });
+      clearTargetHistory();
+      syncCornerUI();
+      updateCornerLabels();
+      updateRankingContent();
+      renderBoard();
     }
 
     function isCelebrationVisible() {
@@ -1788,6 +1859,21 @@
       await shareApp();
     };
 
+    document.getElementById('menu-reset').onclick = () => {
+      closeAppMenu();
+      showResetModal();
+    };
+
+    document.getElementById('reset-close-btn').onclick = hideResetModal;
+    document.getElementById('reset-cancel-btn').onclick = hideResetModal;
+    document.getElementById('reset-confirm-btn').onclick = () => {
+      clearAppLocalStorage();
+      hideResetModal();
+    };
+    resetModal.addEventListener('click', (e) => {
+      if (e.target === resetModal) hideResetModal();
+    });
+
     document.getElementById('nav-rules').onclick = showAboutModal;
     document.getElementById('nav-ranking').onclick = showRankingPanel;
     document.getElementById('ranking-close-btn').onclick = hideRankingPanel;
@@ -1797,6 +1883,7 @@
     document.getElementById('nav-arena').onclick = () => {
       hideAboutModal();
       hideRankingPanel();
+      hideResetModal();
       setActiveNavTab('arena');
     };
     aboutModal.addEventListener('click', (e) => {
@@ -1807,6 +1894,7 @@
         closeAppMenu();
         hideAboutModal();
         hideRankingPanel();
+        hideResetModal();
       }
     });
     document.addEventListener('click', (e) => {

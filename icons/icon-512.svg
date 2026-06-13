@@ -1,8 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <rect width="512" height="512" rx="80" fill="#0f0f1a"/>
-  <circle cx="88" cy="88" r="52" fill="#f59e0b"/>
-  <circle cx="424" cy="88" r="52" fill="#f59e0b"/>
-  <circle cx="88" cy="424" r="52" fill="#f59e0b"/>
-  <circle cx="424" cy="424" r="52" fill="#f59e0b"/>
-  <text x="256" y="290" text-anchor="middle" font-family="system-ui,sans-serif" font-size="96" font-weight="700" fill="#e2e8f0">Kinkeda</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="72%">
+      <stop offset="0%" stop-color="#1a1b20"/>
+      <stop offset="72%" stop-color="#121317"/>
+      <stop offset="100%" stop-color="#0d0e12"/>
+    </radialGradient>
+    <radialGradient id="goldGlow" cx="50%" cy="46%" r="38%">
+      <stop offset="0%" stop-color="#ffcc00" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#ffcc00" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="neonGold" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#ffcc00" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#ffcc00" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#goldGlow)"/>
+  <!-- P2 thumb zones (top) -->
+  <circle cx="92" cy="92" r="44" fill="#1f1f24" stroke="#ff00ff" stroke-width="6"/>
+  <circle cx="420" cy="92" r="44" fill="#1f1f24" stroke="#ff00ff" stroke-width="6"/>
+  <!-- P1 thumb zones (bottom) -->
+  <circle cx="92" cy="420" r="44" fill="#1f1f24" stroke="#00f1fe" stroke-width="6"/>
+  <circle cx="420" cy="420" r="44" fill="#1f1f24" stroke="#00f1fe" stroke-width="6"/>
+  <g transform="translate(256 262) skewX(-15)" filter="url(#neonGold)">
+    <text text-anchor="middle" dominant-baseline="middle" font-family="Anybody, sans-serif" font-size="220" font-weight="900" font-style="italic" fill="#ffcc00" letter-spacing="-0.04em">K</text>
+  </g>
 </svg>
