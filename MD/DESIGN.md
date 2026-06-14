@@ -92,7 +92,7 @@ spacing:
 
 ## Brand & Style
 
-This design system draws direct inspiration from modern fighting game franchises like *Street Fighter 6* and *Tekken*. It is built to evoke high-stakes tournament energy, treating every round of Suuken as a cinematic confrontation. 
+This design system draws direct inspiration from modern fighting game franchises like *Street Fighter 6* and *Tekken*. It is built to evoke high-stakes tournament energy, treating every round of Kinkeda as a cinematic confrontation. 
 
 The aesthetic is **Cinematic Brutalism**: raw, high-contrast, and aggressive. It utilizes heavy borders, slanted geometry, and gritty textures to move away from the "casual app" look into a "competitive arena" experience. The interface should feel like a "heads-up display" (HUD) overlaying an intense battle.
 
@@ -122,7 +122,7 @@ The typography system is built for speed and impact.
 
 ## Layout & Spacing
 
-The layout is a **Fixed Edge-Anchor Grid**. Since Suuken is a head-to-head physical game played on one device, the layout prioritizes the four corners of the screen.
+The layout is a **Fixed Edge-Anchor Grid**. Since Kinkeda is a head-to-head physical game played on one device, the layout prioritizes the four corners of the screen.
 
 - **The Combat Zone:** The four corners are reserved for thumb inputs. These "zones" have a minimum hit area of 120px.
 - **The HUD (Center):** Game status, round numbers, and the "Match!" callouts are vertically centered to be visible to both players.

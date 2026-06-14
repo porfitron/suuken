@@ -1780,16 +1780,19 @@
 
     document.addEventListener('gesturestart', (e) => e.preventDefault());
 
-    /* PWA install prompt */
+    /* PWA install prompt (browser only; hidden in Capacitor native shells) */
+    const isNativeApp = window.Capacitor?.isNativePlatform?.() ?? false;
     let deferredInstall = null;
     const banner = document.getElementById('install-banner');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredInstall = e;
-      if (!localStorage.getItem('kinkeda-install-dismissed')) {
-        banner.classList.add('visible');
-      }
-    });
+    if (!isNativeApp) {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstall = e;
+        if (!localStorage.getItem('kinkeda-install-dismissed')) {
+          banner.classList.add('visible');
+        }
+      });
+    }
     document.getElementById('install-btn').onclick = async () => {
       if (!deferredInstall) return;
       deferredInstall.prompt();

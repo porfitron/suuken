@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Kinkeda</string>
+    <string name="title_activity_main">Kinkeda</string>
+    <string name="package_name">com.kinkeda.app</string>
+    <string name="custom_url_scheme">com.kinkeda.app</string>
+</resources>

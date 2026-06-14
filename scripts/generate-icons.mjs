@@ -38,6 +38,7 @@ function renderSvg(svgPath, outPath, width, height) {
 const exports_ = [
   { svg: 'icon.svg', out: 'icon-192.png', width: 192 },
   { svg: 'icon.svg', out: 'icon-512.png', width: 512 },
+  { svg: 'icon.svg', out: 'app-icon-1024.png', width: 1024 },
   { svg: 'icon-maskable.svg', out: 'icon-512-maskable.png', width: 512 },
   { svg: 'icon.svg', out: 'apple-touch-icon.png', width: 180 },
   { svg: 'icon.svg', out: 'favicon-32.png', width: 32 },
