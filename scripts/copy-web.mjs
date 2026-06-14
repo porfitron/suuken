@@ -8,6 +8,7 @@ const out = join(root, 'www');
 const entries = [
   'index.html',
   'css',
+  'js',
   'icons',
   'sw.js',
   'manifest.webmanifest',

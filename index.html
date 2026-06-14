@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <style>html,body{background-color:#0d0e12;color-scheme:dark}</style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#121317" />
+  <meta name="theme-color" content="#0d0e12" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="description" content="Kinkeda — 2-player thumb-guessing game on one shared screen" />
@@ -136,8 +137,61 @@
   <link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png" />
   <link rel="icon" href="icons/icon-192.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180" />
+  <script>
+    (function detectNativeShell() {
+      var w = window;
+      var native = (w.webkit && w.webkit.messageHandlers && w.webkit.messageHandlers.bridge)
+        || w.androidBridge
+        || (w.Capacitor && w.Capacitor.isNativePlatform && w.Capacitor.isNativePlatform());
+      if (native) w.document.documentElement.classList.add('native-boot');
+    }());
+  </script>
+  <style id="native-boot-critical">
+    html.native-boot,
+    html.native-boot body {
+      background: #0d0e12 !important;
+    }
+    html.native-boot .native-loading {
+      display: flex !important;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      flex-direction: column;
+      background: #0d0e12;
+    }
+  </style>
 </head>
 <body class="font-body text-on-surface italic overflow-x-hidden">
+  <div id="native-loading" class="native-loading" aria-live="polite" aria-busy="true" aria-hidden="true">
+    <div class="native-loading__grid" aria-hidden="true"></div>
+    <div class="native-loading__stage">
+      <div class="native-loading__hero">
+        <div class="native-loading__team native-loading__team--p1" aria-hidden="true">
+          <span class="native-loading__circle"></span>
+          <span class="native-loading__circle"></span>
+        </div>
+        <div class="native-loading__wordmark">
+          <div class="native-loading__title">Kinkeda</div>
+          <div class="native-loading__tagline">A player is you</div>
+        </div>
+        <div class="native-loading__team native-loading__team--p2" aria-hidden="true">
+          <span class="native-loading__circle"></span>
+          <span class="native-loading__circle"></span>
+        </div>
+      </div>
+    </div>
+    <div class="native-loading__footer">
+      <div class="native-loading__label">
+        <span>Loading arena</span>
+        <span id="native-loading-pct">0%</span>
+      </div>
+      <div class="native-loading__track">
+        <div class="native-loading__fill" id="native-loading-fill"></div>
+      </div>
+    </div>
+  </div>
+  <script src="js/native-loading.js"></script>
+  <script src="js/match-haptics.js"></script>
   <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
     <div class="flex items-center gap-3">
       <div class="relative" id="menu-anchor">
@@ -1573,6 +1627,7 @@
       state.currentMatchRounds += 1;
 
       if (state.roundSuccess) {
+        window.KinkedaMatchHaptics?.playMatchBuzz?.();
         const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
         const active = playerCorners.filter((c) => state.activeCorners[c]);
         if (active.length === 1) {
@@ -1925,6 +1980,15 @@
     updateCornerLabels();
     syncCornerUI();
     renderBoard();
+
+    if (window.KinkedaNativeLoading) {
+      window.KinkedaNativeLoading.finishWhenReady();
+    } else if (window.webkit?.messageHandlers?.bridge || window.androidBridge) {
+      window.setTimeout(function () {
+        document.documentElement.classList.remove('native-boot', 'native-ready');
+        document.getElementById('native-loading')?.remove();
+      }, 500);
+    }
   </script>
 </body>
 </html>

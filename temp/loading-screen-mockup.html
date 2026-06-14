@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Kinkeda — Native Loading Screen Mockup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,800;0,900;1,800;1,900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0e12;
+      --bg-mid: #121317;
+      --p1: #00f1fe;
+      --p2: #ff00ff;
+      --gold: #ffcc00;
+      --gold-dim: #f1c100;
+      --on-surface: #e3e2e7;
+      --outline-variant: #4e4632;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      background: #050508;
+      color: var(--on-surface);
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      padding: 2rem 1rem;
+    }
+
+    .meta {
+      max-width: 420px;
+      text-align: center;
+      opacity: 0.65;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .meta strong { color: var(--gold); }
+
+    /* Phone frame for preview context */
+    .phone {
+      width: min(390px, 92vw);
+      aspect-ratio: 390 / 844;
+      border-radius: 44px;
+      border: 3px solid #2a2b30;
+      box-shadow:
+        0 0 0 8px #1a1b20,
+        0 24px 80px rgba(0, 0, 0, 0.65),
+        inset 0 0 60px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      position: relative;
+      background: var(--bg);
+    }
+
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      z-index: 20;
+    }
+
+    /* === LOADING SCREEN === */
+    .loading-screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(ellipse 120% 80% at 50% 55%, rgba(255, 204, 0, 0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 18% 50%, rgba(0, 241, 254, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 82% 50%, rgba(255, 0, 255, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-mid) 0%, var(--bg) 100%);
+      overflow: hidden;
+    }
+
+    /* CRT scanlines */
+    .loading-screen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(18, 19, 23, 0) 50%, rgba(0, 0, 0, 0.18) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.015), rgba(0, 0, 255, 0.03));
+      background-size: 100% 4px, 3px 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Subtle grid floor */
+    .arena-grid {
+      position: absolute;
+      bottom: 18%;
+      left: -10%;
+      right: -10%;
+      height: 35%;
+      background:
+        linear-gradient(transparent 0%, rgba(255, 204, 0, 0.04) 100%),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 39px,
+          rgba(78, 70, 50, 0.15) 39px,
+          rgba(78, 70, 50, 0.15) 40px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 39px,
+          rgba(78, 70, 50, 0.12) 39px,
+          rgba(78, 70, 50, 0.12) 40px
+        );
+      transform: perspective(400px) rotateX(58deg);
+      transform-origin: bottom center;
+      opacity: 0.5;
+      mask-image: linear-gradient(to top, black 20%, transparent 100%);
+    }
+
+    .fighters-stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12% 1rem 0;
+      z-index: 2;
+    }
+
+    .hero-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(0.65rem, 3.5vw, 1.1rem);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .team-circles {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(0.35rem, 2vw, 0.5rem);
+    }
+
+    .team-circle {
+      width: clamp(30px, 8.5vw, 38px);
+      height: clamp(30px, 8.5vw, 38px);
+      border-radius: 50%;
+      background: #1f1f24;
+      border: 3px solid transparent;
+      flex-shrink: 0;
+    }
+
+    .team-circles--p1 .team-circle {
+      border-color: var(--p1);
+      animation: circle-pulse-p1 2s ease-in-out infinite;
+    }
+
+    .team-circles--p1 .team-circle:nth-child(2) {
+      animation-delay: 0.25s;
+    }
+
+    .team-circles--p2 .team-circle {
+      border-color: var(--p2);
+      animation: circle-pulse-p2 2s ease-in-out infinite;
+    }
+
+    .team-circles--p2 .team-circle:nth-child(2) {
+      animation-delay: 0.25s;
+    }
+
+    @keyframes circle-pulse-p1 {
+      0%, 100% {
+        box-shadow:
+          0 0 4px rgba(0, 241, 254, 0.55),
+          0 0 12px rgba(0, 241, 254, 0.35),
+          inset 0 0 8px rgba(0, 241, 254, 0.12);
+      }
+      50% {
+        box-shadow:
+          0 0 8px rgba(0, 241, 254, 0.75),
+          0 0 20px rgba(0, 241, 254, 0.45),
+          inset 0 0 12px rgba(0, 241, 254, 0.18);
+      }
+    }
+
+    @keyframes circle-pulse-p2 {
+      0%, 100% {
+        box-shadow:
+          0 0 4px rgba(255, 0, 255, 0.55),
+          0 0 12px rgba(255, 0, 255, 0.35),
+          inset 0 0 8px rgba(255, 0, 255, 0.12);
+      }
+      50% {
+        box-shadow:
+          0 0 8px rgba(255, 0, 255, 0.75),
+          0 0 20px rgba(255, 0, 255, 0.45),
+          inset 0 0 12px rgba(255, 0, 255, 0.18);
+      }
+    }
+
+    /* Wordmark */
+    .wordmark-wrap {
+      flex: 1 1 auto;
+      min-width: 0;
+      position: relative;
+      z-index: 4;
+      transform: skewX(-12deg);
+      text-align: center;
+      pointer-events: none;
+      padding: 0 0.15rem;
+    }
+
+    .wordmark {
+      font-family: 'Anybody', sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      font-size: clamp(2rem, 9vw, 2.65rem);
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow:
+        0 0 4px rgba(255, 204, 0, 0.7),
+        0 0 16px rgba(255, 204, 0, 0.45),
+        0 0 32px rgba(241, 193, 0, 0.25);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .wordmark-sub {
+      margin-top: 0.5rem;
+      font-family: 'Anybody', sans-serif;
+      font-style: italic;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(227, 226, 231, 0.55);
+      transform: skewX(12deg);
+    }
+
+    /* Loading bar */
+    .loading-footer {
+      position: relative;
+      z-index: 6;
+      padding: 0 1.5rem calc(1.75rem + env(safe-area-inset-bottom, 0px));
+    }
+
+    .loading-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(227, 226, 231, 0.55);
+    }
+
+    .loading-label span:last-child {
+      color: var(--gold-dim);
+    }
+
+    .loading-track {
+      position: relative;
+      height: 6px;
+      background: rgba(52, 52, 57, 0.8);
+      border: 2px solid var(--outline-variant);
+      transform: skewX(-12deg);
+      overflow: hidden;
+    }
+
+    .loading-track::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 8px,
+        rgba(0, 0, 0, 0.25) 8px,
+        rgba(0, 0, 0, 0.25) 9px
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .loading-fill {
+      height: 100%;
+      width: var(--progress, 65%);
+      background: linear-gradient(
+        90deg,
+        var(--p1) 0%,
+        var(--gold) 50%,
+        var(--p2) 100%
+      );
+      box-shadow:
+        0 0 8px rgba(0, 241, 254, 0.5),
+        0 0 12px rgba(255, 204, 0, 0.4),
+        0 0 8px rgba(255, 0, 255, 0.4);
+      animation: load-demo 3.5s ease-in-out infinite;
+    }
+
+    @keyframes load-demo {
+      0% { width: 8%; }
+      45% { width: 72%; }
+      70% { width: 72%; }
+      100% { width: 100%; }
+    }
+
+    /* Notes panel */
+    .notes {
+      max-width: 420px;
+      padding: 1rem 1.25rem;
+      background: #1a1b20;
+      border: 2px solid var(--outline-variant);
+      transform: skewX(-6deg);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    .notes h2 {
+      font-family: 'Anybody', sans-serif;
+      font-style: italic;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      transform: skewX(6deg);
+    }
+
+    .notes ul {
+      transform: skewX(6deg);
+      padding-left: 1.1rem;
+      opacity: 0.85;
+    }
+
+    .notes li { margin-bottom: 0.35rem; }
+
+    .swatch {
+      display: inline-block;
+      width: 0.65rem;
+      height: 0.65rem;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-right: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <p class="meta">
+    <strong>Native loading screen mockup</strong> — open this file in a browser to preview animations.
+    Saved to <code>temp/loading-screen-mockup.html</code>
+  </p>
+
+  <div class="phone">
+    <div class="loading-screen">
+      <div class="arena-grid"></div>
+
+      <div class="fighters-stage">
+        <div class="hero-row">
+          <div class="team-circles team-circles--p1" aria-hidden="true">
+            <span class="team-circle"></span>
+            <span class="team-circle"></span>
+          </div>
+
+          <div class="wordmark-wrap">
+            <div class="wordmark">Kinkeda</div>
+            <div class="wordmark-sub">A player is you</div>
+          </div>
+
+          <div class="team-circles team-circles--p2" aria-hidden="true">
+            <span class="team-circle"></span>
+            <span class="team-circle"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="loading-footer">
+        <div class="loading-label">
+          <span>Loading arena</span>
+          <span id="pct">—</span>
+        </div>
+        <div class="loading-track">
+          <div class="loading-fill" id="fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h2>Approved direction</h2>
+    <ul>
+      <li><span class="swatch" style="background:#00f1fe"></span>P1 — 2 cyan corner circles left (stacked, neon pulse)</li>
+      <li><span class="swatch" style="background:#ff00ff"></span>P2 — 2 magenta circles right, matching in-game thumb zones</li>
+      <li><span class="swatch" style="background:#ffcc00"></span>Center — KINKEDA wordmark + “A player is you”</li>
+      <li>Footer — “Loading arena” label + skewed cyan → gold → magenta bar</li>
+      <li><strong>Replaces</strong> current Capacitor static splash (iOS LaunchScreen + Android splash drawable)</li>
+    </ul>
+  </div>
+
+  <script>
+    const fill = document.getElementById('fill');
+    const pct = document.getElementById('pct');
+    function tick() {
+      const w = fill.getBoundingClientRect().width;
+      const track = fill.parentElement.getBoundingClientRect().width;
+      pct.textContent = Math.round((w / track) * 100) + '%';
+      requestAnimationFrame(tick);
+    }
+    tick();
+  </script>
+</body>
+</html>
