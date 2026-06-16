@@ -174,8 +174,23 @@ GitHub Pages serves files from the **repository root** — not from `www/`. Depl
 - `sw.js`
 - `manifest.webmanifest`
 - `robots.txt`, `sitemap.xml`
+- `downloads/` — Android APK for tester sideloading (see below)
 
 The `www/` folder is gitignored and is **not** part of the web deploy.
+
+### Tester APK downloads
+
+After building a signed release APK in Android Studio (`android/app/release/app-release.apk`):
+
+```bash
+npm run build:android-download
+```
+
+This copies the APK to `downloads/` with a versioned filename and refreshes `downloads/manifest.json`. Commit and push `downloads/` so testers can install from:
+
+**https://kinkeda.com/downloads/**
+
+Bump `versionName` / `versionCode` in `android/app/build.gradle` before each new tester build so filenames stay distinct.
 
 ### Deploy steps
 

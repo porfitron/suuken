@@ -11,7 +11,8 @@
     "cap:open:android": "cap open android",
     "cap:open:ios": "cap open ios",
     "cap:run:android": "cap run android",
-    "cap:run:ios": "cap run ios"
+    "cap:run:ios": "cap run ios",
+    "build:android-download": "node scripts/copy-android-download.mjs"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.2",

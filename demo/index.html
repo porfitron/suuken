@@ -142,6 +142,8 @@
 		</p>
 	</div>
 	<!-- SIM -->
+	<div id="sim-stage">
+	<div id="display-frame">
 	<div id="display">
 		<!-- STATUS BARS / CUTOUTS / NOTCHES -->
 		<div id="status-bar">
@@ -256,6 +258,8 @@
 			<div id="nav-hardware" class="nav-bar-theme" style="display: none;">
 			</div>
 		</div>
+	</div>
+	</div>
 	</div>
 	<!-- Overlays 2 -->
 	<div id="info-popup" style="display: none;">
@@ -506,28 +510,47 @@
 			}
 			function refreshDeviceScale(){
 				var display = document.getElementById("display");
+				var frame = document.getElementById("display-frame");
 				var btn = document.getElementById("toggle-scale");
 				var dsIn = document.getElementById("device-scale-factor");
+				display.style.removeProperty("transform");
+				frame.style.removeProperty("width");
+				frame.style.removeProperty("height");
 				if (EdgeSq.scale == "viewport"){
 					btn.innerHTML = "Viewport";
 					dsIn.classList.add("hidden");
-					display.style.removeProperty("transform");
+					var pad = 32;
+					var scale = Math.min(
+						1,
+						(window.innerWidth - pad) / display.offsetWidth,
+						(window.innerHeight - pad) / display.offsetHeight
+					);
+					if (scale < 1){
+						display.style.transform = "scale(" + scale + ")";
+						frame.style.width = Math.round(display.offsetWidth * scale) + "px";
+						frame.style.height = Math.round(display.offsetHeight * scale) + "px";
+					}
 				}else{
 					btn.innerHTML = "Real";
 					dsIn.classList.remove("hidden");
 					var d = EdgeSq.devices[EdgeSq.activeDevice];
+					var scale;
 					if (d.physWidth){
 						var physWidth = d.physWidth[0];
 						var widthPx = Number.parseInt(d.displayWidth);
 						var factorPx = Math.round((referenceDisplayWidth / widthPx)*1000)/1000;
 						var factorReal = Math.round((physWidth / referencePhysWidth)*1000)/1000;
-						display.style.transform = "scale(" + (factorPx * factorReal * EdgeSq.deviceScalingFactor) + ")";
+						scale = factorPx * factorReal * EdgeSq.deviceScalingFactor;
 					}else{
-						display.style.transform = "scale(" + (EdgeSq.deviceScalingFactor) + ")";
+						scale = EdgeSq.deviceScalingFactor;
 					}
+					display.style.transform = "scale(" + scale + ")";
+					frame.style.width = Math.round(display.offsetWidth * scale) + "px";
+					frame.style.height = Math.round(display.offsetHeight * scale) + "px";
 				}
 				dsIn.value = EdgeSq.deviceScalingFactor;
 			}
+			window.addEventListener("resize", refreshDeviceScale);
 			
 			//helpers
 			
