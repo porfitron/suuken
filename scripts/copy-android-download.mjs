@@ -22,6 +22,15 @@ try {
 
 const apkName = `kinkeda-android-${versionName}.apk`;
 const apkDest = join(downloadsDir, apkName);
+const manifestPath = join(downloadsDir, 'manifest.json');
+
+let testFlightUrl = '';
+try {
+  const existing = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  if (existing.testFlightUrl) testFlightUrl = existing.testFlightUrl;
+} catch {
+  // First publish — set testFlightUrl in downloads/manifest.json manually.
+}
 
 mkdirSync(downloadsDir, { recursive: true });
 copyFileSync(apkSource, apkDest);
@@ -31,9 +40,10 @@ const manifest = {
   versionCode,
   applicationId: 'com.kinkeda.app',
   file: apkName,
+  testFlightUrl,
   updatedAt: new Date().toISOString(),
 };
 
-writeFileSync(join(downloadsDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 console.log(`Copied ${apkSource} → downloads/${apkName}`);

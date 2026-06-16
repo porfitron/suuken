@@ -3,5 +3,6 @@
   "versionCode": 1,
   "applicationId": "com.kinkeda.app",
   "file": "kinkeda-android-1.0.apk",
+  "testFlightUrl": "https://testflight.apple.com/join/BammT53U",
   "updatedAt": "2026-06-16T15:40:28.094Z"
 }

@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="install-page">
 <head>
+  <style>
+    html.install-page,
+    html.install-page body {
+      position: static;
+      height: auto;
+      min-height: 100%;
+      overflow: auto;
+      touch-action: auto;
+      -webkit-user-select: text;
+      user-select: text;
+      inset: auto;
+    }
+  </style>
   <style>html,body{background-color:#0d0e12;color-scheme:dark}</style>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0d0e12" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Install the Kinkeda Android beta for testing." />
-  <title>Kinkeda — Android beta download</title>
+  <meta name="description" content="Install Kinkeda on iOS, Android, or as a web app." />
+  <title>Kinkeda — Install</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Anybody:wght@800;900&family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../css/kinkeda.css" />
@@ -47,42 +60,97 @@
     </a>
 
     <header class="mb-10">
-      <p class="text-sm uppercase tracking-[0.2em] text-p1 mb-2">Android beta</p>
+      <p class="text-sm uppercase tracking-[0.2em] text-p1 mb-2">Install</p>
       <h1 class="font-display font-black text-4xl sm:text-5xl leading-tight glitch-text">Kinkeda</h1>
-      <p class="mt-4 text-on-surface-variant text-lg">Install the test build on your Android phone.</p>
+      <p class="mt-4 text-on-surface-variant text-lg">Be an early tester for Kinkeda on your phone.</p>
     </header>
 
-    <section class="bg-surface-container rounded-2xl p-6 mb-8 border border-outline/20">
-      <div class="flex items-start justify-between gap-4 mb-6">
-        <div>
-          <p class="text-sm text-on-surface-variant">Current build</p>
-          <p id="version" class="text-2xl font-bold mt-1">Loading…</p>
+    <div class="space-y-8">
+      <!-- iPhone -->
+      <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
+        <h2 class="font-display font-bold text-xl mb-4">iPhone (Beta)</h2>
+        <p class="text-on-surface-variant mb-5">Install the beta through Apple&rsquo;s TestFlight app.</p>
+
+        <a
+          id="testflight-btn"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hidden block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
+        >
+          Open in TestFlight
+        </a>
+        <p id="testflight-unavailable" class="hidden text-sm text-on-surface-variant bg-surface-container-high rounded-xl px-4 py-3">
+          TestFlight link not published yet. Ask the team for an invite.
+        </p>
+
+        <ol class="list-decimal list-inside mt-5 space-y-2 text-on-surface-variant text-sm leading-relaxed">
+          <li>Tap <strong class="text-on-surface">Open in TestFlight</strong> above (or use the invite link you received).</li>
+          <li>Install <strong class="text-on-surface">TestFlight</strong> from the App Store if you don&rsquo;t have it.</li>
+          <li>Accept the invite and tap <strong class="text-on-surface">Install</strong> on the Kinkeda beta.</li>
+          <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen or TestFlight.</li>
+        </ol>
+      </section>
+
+      <!-- Android -->
+      <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
+        <h2 class="font-display font-bold text-xl mb-4">Android (APK)</h2>
+        <p class="text-on-surface-variant mb-2">Current build: <strong id="version" class="text-on-surface">Loading…</strong></p>
+        <p id="updated" class="text-sm text-on-surface-variant mb-5"></p>
+
+        <a
+          id="download-btn"
+          href="#"
+          class="block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
+        >
+          Download APK
+        </a>
+
+        <ol class="list-decimal list-inside mt-5 space-y-2 text-on-surface-variant text-sm leading-relaxed">
+          <li>Tap <strong class="text-on-surface">Download APK</strong> above.</li>
+          <li>When prompted, allow your browser to install unknown apps (one-time permission).</li>
+          <li>Open the downloaded file and tap <strong class="text-on-surface">Install</strong>.</li>
+          <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen.</li>
+        </ol>
+        <p class="text-sm text-on-surface-variant mt-4">
+          Pre-release build for testers. Uninstall an older test build before installing a new one if needed.
+        </p>
+      </section>
+
+      <!-- PWA -->
+      <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
+        <h2 class="font-display font-bold text-xl mb-4">Web app (PWA)</h2>
+        <p class="text-on-surface-variant mb-5">
+          Add to your home screen for a full-screen app with offline play.
+        </p>
+
+        <div class="space-y-5">
+          <div class="bg-surface-container-high rounded-xl p-4">
+            <h3 class="font-bold text-on-surface mb-3">iPhone / iPad (Safari)</h3>
+            <ol class="list-decimal list-inside space-y-2 text-on-surface-variant text-sm leading-relaxed">
+              <li>Open <a href="/" class="text-p1 underline underline-offset-2">kinkeda.com</a> in <strong class="text-on-surface">Safari</strong> (other browsers on iOS cannot install PWAs).</li>
+              <li>Tap the <strong class="text-on-surface">Share</strong> button <span aria-hidden="true">(□↑)</span> at the bottom of the screen.</li>
+              <li>Scroll down and tap <strong class="text-on-surface">Add to Home Screen</strong>.</li>
+              <li>Tap <strong class="text-on-surface">Add</strong>, then open Kinkeda from your home screen.</li>
+            </ol>
+          </div>
+
+          <div class="bg-surface-container-high rounded-xl p-4">
+            <h3 class="font-bold text-on-surface mb-3">Android (Chrome)</h3>
+            <ol class="list-decimal list-inside space-y-2 text-on-surface-variant text-sm leading-relaxed">
+              <li>Open <a href="/" class="text-p1 underline underline-offset-2">kinkeda.com</a> in <strong class="text-on-surface">Chrome</strong>.</li>
+              <li>Tap the <strong class="text-on-surface">Install</strong> banner if it appears at the bottom of the game, <em>or</em></li>
+              <li>Tap the menu <span aria-hidden="true">(⋮)</span> → <strong class="text-on-surface">Install app</strong> or <strong class="text-on-surface">Add to Home screen</strong>.</li>
+              <li>Confirm, then launch Kinkeda from your home screen or app drawer.</li>
+            </ol>
+          </div>
         </div>
-        <img src="../icons/icon-192.png" alt="" width="64" height="64" class="rounded-2xl" />
-      </div>
 
-      <a
-        id="download-btn"
-        href="#"
-        class="block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
-      >
-        Download APK
-      </a>
-      <p id="updated" class="text-sm text-on-surface-variant mt-4"></p>
-    </section>
-
-    <section class="space-y-4">
-      <h2 class="font-display font-bold text-xl">Install steps</h2>
-      <ol class="list-decimal list-inside space-y-3 text-on-surface-variant leading-relaxed">
-        <li>Tap <strong class="text-on-surface">Download APK</strong> above.</li>
-        <li>When prompted, allow your browser to install unknown apps (one-time permission).</li>
-        <li>Open the downloaded file and tap <strong class="text-on-surface">Install</strong>.</li>
-        <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen.</li>
-      </ol>
-      <p class="text-sm text-on-surface-variant pt-2">
-        This is a pre-release build for testers. You may need to uninstall an older test build before installing a new one.
-      </p>
-    </section>
+        <p class="text-sm text-on-surface-variant mt-4">
+          The web version updates automatically when you revisit — no manual reinstall needed.
+        </p>
+      </section>
+    </div>
   </main>
 
   <script>
@@ -92,6 +160,7 @@
         document.getElementById('version').textContent = `v${data.versionName} (${data.versionCode})`;
         document.getElementById('download-btn').href = `./${data.file}`;
         document.getElementById('download-btn').setAttribute('download', data.file);
+
         if (data.updatedAt) {
           const date = new Date(data.updatedAt);
           document.getElementById('updated').textContent = `Uploaded ${date.toLocaleDateString(undefined, {
@@ -100,11 +169,21 @@
             day: 'numeric',
           })}`;
         }
+
+        const testFlightBtn = document.getElementById('testflight-btn');
+        const testFlightUnavailable = document.getElementById('testflight-unavailable');
+        if (data.testFlightUrl) {
+          testFlightBtn.href = data.testFlightUrl;
+          testFlightBtn.classList.remove('hidden');
+        } else {
+          testFlightUnavailable.classList.remove('hidden');
+        }
       })
       .catch(() => {
         document.getElementById('version').textContent = 'Unavailable';
         document.getElementById('download-btn').classList.add('opacity-50', 'pointer-events-none');
         document.getElementById('download-btn').textContent = 'APK not published yet';
+        document.getElementById('testflight-unavailable').classList.remove('hidden');
       });
   </script>
 </body>

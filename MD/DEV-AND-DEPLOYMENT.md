@@ -186,9 +186,15 @@ After building a signed release APK in Android Studio (`android/app/release/app-
 npm run build:android-download
 ```
 
-This copies the APK to `downloads/` with a versioned filename and refreshes `downloads/manifest.json`. Commit and push `downloads/` so testers can install from:
+This copies the APK to `downloads/` with a versioned filename and refreshes `downloads/manifest.json` (preserving any existing `testFlightUrl`). Commit and push `downloads/` so testers can install from:
 
 **https://kinkeda.com/downloads/**
+
+Set the public TestFlight join link once in `downloads/manifest.json`:
+
+```json
+"testFlightUrl": "https://testflight.apple.com/join/XXXXXXXX"
+```
 
 Bump `versionName` / `versionCode` in `android/app/build.gradle` before each new tester build so filenames stay distinct.
 
