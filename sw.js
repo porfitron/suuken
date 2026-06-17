@@ -1,4 +1,4 @@
-const CACHE = 'kinkeda-v2';
+const CACHE = 'kinkeda-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -14,6 +14,9 @@ const ASSETS = [
   './icons/og-image.png',
   './robots.txt',
   './sitemap.xml',
+  './sounds/match_freesound_community-cheering-and-clapping-crowd-1-5995.mp3',
+  './sounds/winner_freesound_community-group_yay_cheer-101509.mp3',
+  './sounds/suspense_universfield-crowd-disappointment-reaction-352718.mp3',
 ];
 
 self.addEventListener('install', (event) => {

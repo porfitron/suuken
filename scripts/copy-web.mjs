@@ -10,6 +10,7 @@ const entries = [
   'css',
   'js',
   'icons',
+  'sounds',
   'sw.js',
   'manifest.webmanifest',
   'robots.txt',

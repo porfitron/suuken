@@ -190,6 +190,7 @@
       </div>
     </div>
   </div>
+  <script src="js/orientation-lock.js"></script>
   <script src="js/native-loading.js"></script>
   <script src="js/match-haptics.js"></script>
   <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
@@ -203,9 +204,17 @@
             <span class="material-symbols-outlined text-primary-container text-xl">menu_book</span>
             <span class="font-display text-button-text italic uppercase text-on-surface">Rules</span>
           </button>
+          <button type="button" id="menu-sound" class="app-menu-item" role="menuitem" aria-pressed="true">
+            <span id="menu-sound-icon" class="material-symbols-outlined text-primary-container text-xl">volume_up</span>
+            <span id="menu-sound-label" class="font-display text-button-text italic uppercase text-on-surface">Sound On</span>
+          </button>
           <button type="button" id="menu-share" class="app-menu-item" role="menuitem">
             <span class="material-symbols-outlined text-primary-container text-xl">share</span>
             <span class="font-display text-button-text italic uppercase text-on-surface">Share</span>
+          </button>
+          <button type="button" id="menu-about" class="app-menu-item" role="menuitem">
+            <span class="material-symbols-outlined text-primary-container text-xl">info</span>
+            <span class="font-display text-button-text italic uppercase text-on-surface">About</span>
           </button>
           <button type="button" id="menu-reset" class="app-menu-item" role="menuitem">
             <span class="material-symbols-outlined text-primary-container text-xl">delete</span>
@@ -262,7 +271,7 @@
     </button>
     <button type="button" id="nav-ranking" class="nav-tab flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 unskew-content not-italic hover:text-primary-fixed-dim active:translate-y-0.5 transition-all">
       <span class="material-symbols-outlined">military_tech</span>
-      <span class="font-display text-button-text italic uppercase">Ranking</span>
+      <span class="font-display text-button-text italic uppercase">Standings</span>
     </button>
     <button type="button" id="nav-rules" class="nav-tab flex flex-col items-center justify-center text-on-surface-variant py-2 px-6 unskew-content not-italic hover:text-primary-fixed-dim active:translate-y-0.5 transition-all">
       <span class="material-symbols-outlined">menu_book</span>
@@ -294,7 +303,7 @@
           </button>
         </div>
         <button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest underline underline-offset-4 not-italic" id="celebration-new-players-btn">New player(s)</button>
-        <button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest underline underline-offset-4 not-italic" id="celebration-ranking-btn">View ranking</button>
+        <button type="button" class="font-mono text-label-mono text-on-surface-variant uppercase tracking-widest underline underline-offset-4 not-italic" id="celebration-ranking-btn">View standings</button>
       </div>
     </div>
   </div>
@@ -307,7 +316,7 @@
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body">Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it's your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set. &copy; 2026 https://kinkeda.com<br><br>Desktop test mode: [ ; ] and [ ' ] for Player 1, [ a ] and [ s ] for Player 2. Spacebar for next turn.</p>
+        <p class="font-body text-body-md text-on-surface-variant leading-relaxed not-italic about-modal-body"></p>
     </div>
   </div>
 
@@ -334,8 +343,8 @@
     <div class="w-[min(420px,92vw)] bg-surface-container-low border-2 border-primary-container mb-20 sm:mb-0">
       <div class="p-gutter-md">
         <div class="flex items-center justify-between gap-3 mb-4">
-          <h2 class="font-display text-headline-mobile italic uppercase text-primary-container">Ranking</h2>
-          <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="ranking-close-btn" aria-label="Close ranking">
+          <h2 class="font-display text-headline-mobile italic uppercase text-primary-container">Standings</h2>
+          <button type="button" class="w-10 h-10 border-2 border-outline bg-surface-container-high text-on-surface flex items-center justify-center" id="ranking-close-btn" aria-label="Close standings">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -397,6 +406,7 @@
     const sessionRecord = { P1: 0, P2: 0 };
     let rankingHistory = [];
     const targetHistory = [];
+    let noMatchStreak = 0;
 
     const board = document.getElementById('board');
     const historyP1 = document.getElementById('history-p1');
@@ -405,6 +415,8 @@
     const celebration = document.getElementById('celebration');
     const confettiContainer = document.getElementById('confetti-container');
     const aboutModal = document.getElementById('about-modal');
+    const aboutTitle = document.getElementById('about-title');
+    const aboutBody = aboutModal.querySelector('.about-modal-body');
     const resetModal = document.getElementById('reset-modal');
     const rankingPanel = document.getElementById('ranking-panel');
     const navTabs = {
@@ -425,6 +437,19 @@
 
     const CONFETTI_COLORS = ['#ffcc00', '#00f1fe', '#ff00ff', '#f1c100', '#74f5ff', '#ffe08b'];
     const IMMERSIVE_PHASES = ['COUNTDOWN', 'ACTION', 'RESOLUTION'];
+
+    const INFO_MODAL = {
+      rules: {
+        title: 'Rules',
+        body:
+          'Each player takes a side of the screen to choose how many thumbs to raise. Every round, guess the called number. If it\'s your turn and the total thumbs up matches, you win the round. Win the most rounds to take the match.<br><br>Desktop test mode: [ ; ] and [ \' ] for Player 1, [ a ] and [ s ] for Player 2. Spacebar for next turn.',
+      },
+      about: {
+        title: 'About',
+        body:
+          'Developed in equal partnership by Porfirio, Michael, Toni and Laetitia. No personal data is collected; no cookies are set.<br><br>&copy; 2026 https://kinkeda.com<br><br>Sound effects from Pixabay: Match by freesound_community, Winner by freesound_community, Suspense by Universfield.',
+      },
+    };
 
     function trackAnalyticsEvent(eventName, params = {}) {
       if (typeof window.gtag !== 'function') return;
@@ -559,7 +584,7 @@
     function updateRankingContent() {
       const el = document.getElementById('ranking-content');
       if (!el) return;
-      const crownIcon = '<span class="material-symbols-outlined filled text-primary-container text-lg leading-none shrink-0" aria-hidden="true">crown</span>';
+      const crownIcon = (recent) => `<span class="material-symbols-outlined filled ${recent ? 'text-primary-container' : 'text-on-surface-variant'} text-lg leading-none shrink-0" aria-hidden="true">crown</span>`;
       const header = `
         <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 items-end pb-2 mb-2 border-b border-outline-variant">
           <span class="font-mono text-label-mono text-p1 uppercase tracking-widest">Player 1</span>
@@ -567,22 +592,27 @@
           <span class="font-mono text-label-mono text-p2 uppercase tracking-widest text-right">Player 2</span>
         </div>
       `;
-      const rows = rankingHistory.map((row) => {
+      const rows = rankingHistory.map((row, index) => {
+        const isRecent = index === 0;
+        const textClass = isRecent ? 'text-white' : 'text-on-surface-variant';
+        const winsClass = isRecent
+          ? 'font-mono text-label-mono text-primary-container neon-gold-text not-italic'
+          : 'font-mono text-label-mono text-on-surface-variant not-italic';
         const p1Leading = row.p1Wins > row.p2Wins;
         const p2Leading = row.p2Wins > row.p1Wins;
-        const p1Wins = `<span class="font-mono text-label-mono text-primary-container neon-gold-text not-italic">${row.p1Wins}</span>`;
-        const p2Wins = `<span class="font-mono text-label-mono text-primary-container neon-gold-text not-italic">${row.p2Wins}</span>`;
+        const p1Wins = `<span class="${winsClass}">${row.p1Wins}</span>`;
+        const p2Wins = `<span class="${winsClass}">${row.p2Wins}</span>`;
         return `
         <div class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] gap-2 items-center py-2 border-b border-outline-variant/40 last:border-b-0">
-          <div class="flex items-center gap-1 min-w-0 font-display text-button-text italic uppercase text-on-surface">
+          <div class="flex items-center gap-1 min-w-0 font-display text-button-text italic uppercase ${textClass}">
             <span class="min-w-0">${escapeHtml(row.p1Name)}</span>
-            ${p1Leading ? crownIcon : ''}
+            ${p1Leading ? crownIcon(isRecent) : ''}
             ${p1Wins}
           </div>
-          <span class="font-mono text-label-mono text-on-surface text-center px-2 not-italic">${row.rounds}</span>
-          <div class="flex items-center gap-1 min-w-0 justify-end font-display text-button-text italic uppercase text-on-surface text-right">
+          <span class="font-mono text-label-mono ${textClass} text-center px-2 not-italic">${row.rounds}</span>
+          <div class="flex items-center gap-1 min-w-0 justify-end font-display text-button-text italic uppercase ${textClass} text-right">
             ${p2Wins}
-            ${p2Leading ? crownIcon : ''}
+            ${p2Leading ? crownIcon(isRecent) : ''}
             <span class="min-w-0">${escapeHtml(row.p2Name)}</span>
           </div>
         </div>
@@ -690,6 +720,7 @@
     }
 
     function showCelebration(winner) {
+      window.KinkedaMatchHaptics?.playWinnerCelebration?.();
       const name = getPlayerName(winner);
       document.getElementById('celebration-winner-name').textContent = name;
       celebration.querySelector('.celebration-sub').textContent =
@@ -728,12 +759,24 @@
       });
     }
 
-    function showAboutModal() {
+    function showInfoModal(kind) {
+      const info = INFO_MODAL[kind];
+      if (!info) return;
       hideRankingPanel();
+      aboutTitle.textContent = info.title;
+      aboutBody.innerHTML = info.body;
       aboutModal.classList.remove('opacity-0', 'invisible', 'pointer-events-none');
       aboutModal.classList.add('opacity-100', 'visible', 'pointer-events-auto');
       aboutModal.setAttribute('aria-hidden', 'false');
-      setActiveNavTab('rules');
+      if (kind === 'rules') setActiveNavTab('rules');
+    }
+
+    function showRulesModal() {
+      showInfoModal('rules');
+    }
+
+    function showAboutModal() {
+      showInfoModal('about');
     }
 
     function hideAboutModal() {
@@ -1627,7 +1670,7 @@
       state.currentMatchRounds += 1;
 
       if (state.roundSuccess) {
-        window.KinkedaMatchHaptics?.playMatchBuzz?.();
+        noMatchStreak = 0;
         const playerCorners = state.turn === 'P1' ? P1_CORNERS : P2_CORNERS;
         const active = playerCorners.filter((c) => state.activeCorners[c]);
         if (active.length === 1) {
@@ -1640,6 +1683,8 @@
           state.thumbDropped = true;
           syncCornerUI();
         }
+      } else {
+        noMatchStreak += 1;
       }
 
       trackAnalyticsEvent('round_completed', {
@@ -1652,6 +1697,12 @@
 
       recordTargetHistory(state.targetTotal);
       if (checkWinner()) return;
+
+      if (state.roundSuccess) {
+        window.KinkedaMatchHaptics?.playMatchBuzz?.();
+      } else if (noMatchStreak === 11) {
+        window.KinkedaMatchHaptics?.playNoMatchSuspense?.();
+      }
 
       setPhase('RESOLUTION');
     }
@@ -1733,6 +1784,7 @@
       state.roundSuccess = false;
       state.thumbDropped = false;
       state.currentMatchRounds = 0;
+      noMatchStreak = 0;
       CORNERS.forEach((c) => {
         state.activeCorners[c] = true;
         state.pressedCorners[c] = false;
@@ -1876,6 +1928,17 @@
     const menuBtn = document.getElementById('menu-btn');
     const appMenu = document.getElementById('app-menu');
     const menuAnchor = document.getElementById('menu-anchor');
+    const menuSoundBtn = document.getElementById('menu-sound');
+    const menuSoundIcon = document.getElementById('menu-sound-icon');
+    const menuSoundLabel = document.getElementById('menu-sound-label');
+
+    function updateSoundMenuItem() {
+      const haptics = window.KinkedaMatchHaptics;
+      const enabled = haptics?.isSoundEnabled?.() ?? true;
+      if (menuSoundIcon) menuSoundIcon.textContent = enabled ? 'volume_up' : 'volume_off';
+      if (menuSoundLabel) menuSoundLabel.textContent = enabled ? 'Sound On' : 'Sound Off';
+      if (menuSoundBtn) menuSoundBtn.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+    }
 
     function isAppMenuOpen() {
       return appMenu?.classList.contains('is-open');
@@ -1883,6 +1946,7 @@
 
     function openAppMenu() {
       if (!appMenu || !menuBtn) return;
+      updateSoundMenuItem();
       appMenu.hidden = false;
       requestAnimationFrame(() => appMenu.classList.add('is-open'));
       menuBtn.setAttribute('aria-expanded', 'true');
@@ -1909,12 +1973,25 @@
 
     document.getElementById('menu-rules').onclick = () => {
       closeAppMenu();
-      showAboutModal();
+      showRulesModal();
+    };
+
+    document.getElementById('menu-sound').onclick = () => {
+      const haptics = window.KinkedaMatchHaptics;
+      if (haptics?.setSoundEnabled && haptics?.isSoundEnabled) {
+        haptics.setSoundEnabled(!haptics.isSoundEnabled());
+        updateSoundMenuItem();
+      }
     };
 
     document.getElementById('menu-share').onclick = async () => {
       closeAppMenu();
       await shareApp();
+    };
+
+    document.getElementById('menu-about').onclick = () => {
+      closeAppMenu();
+      showAboutModal();
     };
 
     document.getElementById('menu-reset').onclick = () => {
@@ -1932,7 +2009,7 @@
       if (e.target === resetModal) hideResetModal();
     });
 
-    document.getElementById('nav-rules').onclick = showAboutModal;
+    document.getElementById('nav-rules').onclick = showRulesModal;
     document.getElementById('nav-ranking').onclick = showRankingPanel;
     document.getElementById('ranking-close-btn').onclick = hideRankingPanel;
     rankingPanel.addEventListener('click', (e) => {
