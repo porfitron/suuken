@@ -25,12 +25,21 @@ const apkDest = join(downloadsDir, apkName);
 const manifestPath = join(downloadsDir, 'manifest.json');
 
 let testFlightUrl = '';
+let iosVersionName = versionName;
+let iosBuildNumber = versionCode;
+let iosReleasedAt = '';
 try {
   const existing = JSON.parse(readFileSync(manifestPath, 'utf8'));
   if (existing.testFlightUrl) testFlightUrl = existing.testFlightUrl;
+  if (existing.iosVersionName) iosVersionName = existing.iosVersionName;
+  if (existing.iosBuildNumber) iosBuildNumber = existing.iosBuildNumber;
+  if (existing.iosReleasedAt) iosReleasedAt = existing.iosReleasedAt;
 } catch {
-  // First publish — set testFlightUrl in downloads/manifest.json manually.
+  // First publish — set testFlightUrl and iOS fields in downloads/manifest.json manually.
 }
+
+const updatedAt = new Date().toISOString();
+if (!iosReleasedAt) iosReleasedAt = updatedAt;
 
 mkdirSync(downloadsDir, { recursive: true });
 copyFileSync(apkSource, apkDest);
@@ -41,7 +50,10 @@ const manifest = {
   applicationId: 'com.kinkeda.app',
   file: apkName,
   testFlightUrl,
-  updatedAt: new Date().toISOString(),
+  updatedAt,
+  iosVersionName,
+  iosBuildNumber,
+  iosReleasedAt,
 };
 
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

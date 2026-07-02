@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" class="install-page">
+<head>
+  <style>
+    html.install-page,
+    html.install-page body {
+      position: static;
+      height: auto;
+      min-height: 100%;
+      overflow: auto;
+      touch-action: auto;
+      -webkit-user-select: text;
+      user-select: text;
+      inset: auto;
+    }
+  </style>
+  <style>html,body{background-color:#0d0e12;color-scheme:dark}</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0d0e12" />
+  <meta name="robots" content="index, follow" />
+  <meta name="description" content="Contact Kinkeda support for help with the app, beta testing, or general questions." />
+  <link rel="canonical" href="https://kinkeda.com/support/" />
+  <title>Kinkeda — Support</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Anybody:wght@800;900&family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/kinkeda.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: '#121317',
+            'surface-container': '#1f1f24',
+            'surface-container-high': '#292a2e',
+            'on-surface': '#e3e2e7',
+            'on-surface-variant': '#d2c5ab',
+            outline: '#9a9078',
+            primary: '#ffedc3',
+            'primary-container': '#ffcc00',
+            'on-primary-container': '#6f5700',
+            secondary: '#ddfcff',
+            p1: '#00f1fe',
+            p2: '#ff00ff',
+          },
+          fontFamily: {
+            display: ['Anybody', 'sans-serif'],
+            sans: ['Hanken Grotesk', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <script src="../js/analytics.js"></script>
+  <script>KinkedaAnalytics.init('support');</script>
+</head>
+<body class="bg-background text-on-surface font-sans min-h-screen">
+  <main class="max-w-xl mx-auto px-6 py-12">
+    <a href="/" class="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors mb-10">
+      <span aria-hidden="true">←</span>
+      Back to kinkeda.com
+    </a>
+    <header class="mb-10">
+      <p class="text-sm uppercase tracking-[0.2em] text-p1 mb-2">Support</p>
+      <h1 class="font-display font-black text-4xl sm:text-5xl leading-tight glitch-text">Kinkeda</h1>
+      <p class="mt-4 text-on-surface-variant text-lg">Need help? We&rsquo;re here for you.</p>
+    </header>
+
+    <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
+      <h2 class="font-display font-bold text-xl mb-4">Contact us</h2>
+      <p class="text-on-surface-variant mb-5">
+        For questions about the app, beta testing, or anything else, email us at:
+      </p>
+      <a
+        href="mailto:support@kinkeda.com"
+        class="inline-block font-bold text-lg text-p1 underline underline-offset-4 hover:text-primary transition-colors"
+      >
+        support@kinkeda.com
+      </a>
+    </section>
+  </main>
+</body>
+</html>

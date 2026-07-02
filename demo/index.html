@@ -30,7 +30,7 @@
 	<meta name="application-name" content="Kinkeda Mobile Preview"/>
 	<meta name="apple-mobile-web-app-title" content="Kinkeda Preview">
 	<meta name="description" content="Preview Kinkeda on simulated mobile devices with notches, cutouts, and edge-to-edge displays.">
-	<meta name="theme-color" content="#0f0f1a">
+	<meta name="theme-color" content="#1f1f24">
 	<link rel="icon" href="../icons/favicon-32.png" sizes="32x32" type="image/png">
 	<link rel="icon" href="../icons/icon-192.svg" type="image/svg+xml">
 	<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png" sizes="180x180">
@@ -52,6 +52,9 @@
 	
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="css/googleMaterialIcons.css">
+	<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700&display=swap" rel="stylesheet" />
+	<script src="../js/analytics.js"></script>
+	<script>KinkedaAnalytics.init('desktop-demo');</script>
 	<script>
 		//Add svg-inject if not file origin
 		if (window.location.origin.indexOf("file://") != 0){
@@ -91,26 +94,20 @@
 }
 </style>
 <body >
+	<a id="back-link" href="/">
+		<span aria-hidden="true">←</span>
+		Back to kinkeda.com
+	</a>
 	<!-- Overlays 1 -->
 	<div id="overlay-area">
-		<div class="overlay-buttons">
-			<button id="info-btn" title="Info" onclick="EdgeSq.toggleInfo();"><i class="material-icons">info</i></button>
-			<button id="ctrls-btn" title="Toggle settings" onclick="EdgeSq.toggleSettings();"><i class="material-icons">tune</i></button>
-			<button id="fullscreen-btn" title="Toggle fullscreen" onclick="EdgeSq.toggleFullScreen();"><i class="material-icons">fullscreen</i></button>
-			<!--<button id="fullscreen-exit-btn" onclick="EdgeSq.toggleFullScreen();" style="display: none;"><i class="material-icons">fullscreen_exit</i></button>-->
-			<button id="github-btn" title="Show on GitHub"><a href="https://github.com/bytemind-de/edge-sq-display-simulator"><img src="img/svg/github.svg"/></a></button>
-		</div>
-		<!--<div class="overlay-buttons">
-			<button id="twitter-btn"><img src="img/svg/twitter.svg" onload="SVGInject(this)"/></button>
-			<button id="sepia-btn"><img src="img/svg/sepia.svg" onload="SVGInject(this)"/></button>
-		</div>-->
+		<a id="github-btn" href="https://github.com/bytemind-de/edge-sq-display-simulator" target="_blank" rel="noopener noreferrer" title="Show on GitHub"><img src="img/svg/github.svg" alt="GitHub"/></a>
 	</div>
 	<!-- CONTROLS -->
 	<div id="controls" class="hidden" style="display: none;">
 		<h3>Kinkeda Mobile Preview</h3>
 		<div>
 			<p>App URL</p>
-			<input id="app-url" type="url" spellcheck="false" placeholder="../index.html" onchange="EdgeSq.setAppUrl(this.value);">
+			<input id="app-url" type="url" spellcheck="false" placeholder="/app/" onchange="EdgeSq.setAppUrl(this.value);">
 		</div>
 		<div>
 			<p>Device</p>
@@ -237,7 +234,7 @@
 			</div>
 		</div>
 		<!-- APP -->
-		<iframe id="app" src="../index.html" title="Kinkeda Preview" allow="geolocation;microphone"></iframe>
+		<iframe id="app" src="/app/" title="Kinkeda Preview" allow="geolocation;microphone"></iframe>
 		<!-- NAVIGATION BARS -->
 		<div id="nav-bar">
 			<!-- Default Android on-screen navigation bar -->
@@ -268,7 +265,7 @@
 			<p>Preview Kinkeda inside simulated mobile devices with notches, camera cutouts, status bars, and navigation bars.</p>
 			<h3>Getting started</h3>
 			<ul>
-				<li>Kinkeda loads automatically from <code>../index.html</code></li>
+				<li>Kinkeda loads automatically from <code>/app/</code></li>
 				<li>Choose a device from the selector (iPhone 13 Pro is the default)</li>
 				<li>Adjust status bar and navigation bar colors to match Kinkeda's theme</li>
 				<li>Use the settings panel (tune icon) to switch devices or reload a different URL</li>
@@ -508,14 +505,28 @@
 				localStorage.setItem('kinkeda-emu-scale', EdgeSq.scale);
 				refreshDeviceScale();
 			}
+			function syncFrameSize(width, height){
+				var frame = document.getElementById("display-frame");
+				var ctrls = document.getElementById("controls");
+				var root = document.documentElement;
+				if (width != null && height != null){
+					frame.style.width = width + "px";
+					frame.style.height = height + "px";
+					root.style.setProperty("--frame-w", width + "px");
+					root.style.setProperty("--frame-h", height + "px");
+				}else{
+					frame.style.removeProperty("width");
+					frame.style.removeProperty("height");
+					root.style.removeProperty("--frame-w");
+					root.style.removeProperty("--frame-h");
+				}
+			}
 			function refreshDeviceScale(){
 				var display = document.getElementById("display");
-				var frame = document.getElementById("display-frame");
 				var btn = document.getElementById("toggle-scale");
 				var dsIn = document.getElementById("device-scale-factor");
 				display.style.removeProperty("transform");
-				frame.style.removeProperty("width");
-				frame.style.removeProperty("height");
+				syncFrameSize(null, null);
 				if (EdgeSq.scale == "viewport"){
 					btn.innerHTML = "Viewport";
 					dsIn.classList.add("hidden");
@@ -527,8 +538,10 @@
 					);
 					if (scale < 1){
 						display.style.transform = "scale(" + scale + ")";
-						frame.style.width = Math.round(display.offsetWidth * scale) + "px";
-						frame.style.height = Math.round(display.offsetHeight * scale) + "px";
+						syncFrameSize(
+							Math.round(display.offsetWidth * scale),
+							Math.round(display.offsetHeight * scale)
+						);
 					}
 				}else{
 					btn.innerHTML = "Real";
@@ -545,8 +558,10 @@
 						scale = EdgeSq.deviceScalingFactor;
 					}
 					display.style.transform = "scale(" + scale + ")";
-					frame.style.width = Math.round(display.offsetWidth * scale) + "px";
-					frame.style.height = Math.round(display.offsetHeight * scale) + "px";
+					syncFrameSize(
+						Math.round(display.offsetWidth * scale),
+						Math.round(display.offsetHeight * scale)
+					);
 				}
 				dsIn.value = EdgeSq.deviceScalingFactor;
 			}
@@ -623,7 +638,7 @@
 			
 			//initialize
 			
-			EdgeSq.setAppUrl(localStorage.getItem('kinkeda-emu-app-url') || "../index.html");
+			EdgeSq.setAppUrl(localStorage.getItem('kinkeda-emu-app-url') || "/app/");
 			EdgeSq.setDevice(EdgeSq.activeDevice);
 			EdgeSq.setStatusBarBackground(EdgeSq.activeSbBackground);
 			EdgeSq.setStatusBarColor(EdgeSq.activeSbColor);

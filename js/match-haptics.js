@@ -2,10 +2,10 @@
   const SOUND_STORAGE_KEY = 'kinkeda-sound-enabled';
   const MATCH_BUZZ_MS = 500;
   const WINNER_BUZZ_MS = 1200;
-  const MATCH_SOUND_URL = 'sounds/match_freesound_community-cheering-and-clapping-crowd-1-5995.mp3';
-  const WINNER_SOUND_URL = 'sounds/winner_freesound_community-group_yay_cheer-101509.mp3';
+  const MATCH_SOUND_URL = '/sounds/match_freesound_community-cheering-and-clapping-crowd-1-5995.mp3';
+  const WINNER_SOUND_URL = '/sounds/winner_freesound_community-group_yay_cheer-101509.mp3';
   const NO_MATCH_SUSPENSE_SOUND_URL =
-    'sounds/suspense_universfield-crowd-disappointment-reaction-352718.mp3';
+    '/sounds/suspense_universfield-crowd-disappointment-reaction-352718.mp3';
 
   let matchAudio = null;
   let winnerAudio = null;

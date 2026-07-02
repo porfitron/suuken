@@ -18,8 +18,9 @@ html {
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	background-color: #eee;
-	color: #111;
+	background-color: #1f1f24;
+	color-scheme: dark;
+	color: #e3e2e7;
 }
 body {
 	position: relative;
@@ -43,6 +44,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
+	filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.28));
 }
 input, select {
 	min-height: 28px;
@@ -72,17 +74,13 @@ button {
 	right: 16px;
 	z-index: 10;
 	transform: translateY(-50%);
-	width: calc(360px + 24px);
-	height: calc(760px + 24px);
-	/*width: calc(var(--display-w) + 24px);*/
-	/*height: calc(var(--display-h) + 24px);*/
-	/*min-width: 360px;*/
-	/*min-height: 712px;*/
+	width: var(--frame-w, calc(var(--display-w) + 24px));
+	height: var(--frame-h, calc(var(--display-h) + 24px));
 	margin: 0;
 	padding: 16px;
 	background: #000;
 	color: #eee;
-	border-radius: 42px;
+	border-radius: var(--display-rad);
 	text-align: center;
 	transition: all .5s;
 	overflow: hidden;
@@ -128,55 +126,46 @@ button {
 	left: 0;
 }
 
+#back-link {
+	position: fixed;
+	top: 16px;
+	left: 16px;
+	z-index: 10;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: #d2c5ab;
+	font-family: 'Hanken Grotesk', sans-serif;
+	font-size: 1rem;
+	text-decoration: none;
+	transition: color 0.15s ease;
+}
+#back-link:hover {
+	color: #ffedc3;
+}
+
 #overlay-area {
 	position: fixed;
-	top: 0;
-	left: 0;
+	right: 16px;
+	bottom: 16px;
+	top: auto;
+	left: auto;
 	z-index: 10;
-	height: 100%;
-	width: 60px;
+}
+#github-btn {
 	display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-evenly;
-}
-@media only screen and (max-width: 1080px) {
-	#overlay-area {
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 60px;
-		flex-direction: row;
-	}
-	.overlay-buttons {
-		flex-direction: row !important;
-	}
-}
-.overlay-buttons {
-	display: flex;
-    flex-direction: column;
-	flex-wrap: wrap;
-    align-items: center;
-}
-.overlay-buttons button {
 	width: 31px;
-    min-width: 28px;
-    height: 31px;
-    min-height: 28px;
-    padding: 0;
-    margin: 8px;
-    display: flex;
+	height: 31px;
+	padding: 0;
+	margin: 0;
+	background: #eee;
+	border-radius: 4px;
+	cursor: pointer;
 }
-.overlay-buttons button > a {
-	width: 100%;
-}
-.overlay-buttons button img,
-.overlay-buttons button svg {
+#github-btn img,
+#github-btn svg {
 	width: 100%;
 	padding: 2px;
-}
-.overlay-buttons .material-icons {
-	font-size: 31px;
 }
 #info-popup {
 	position: fixed;

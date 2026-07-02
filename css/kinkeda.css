@@ -277,6 +277,22 @@ body {
   transition: background 0.15s ease;
 }
 
+a.app-menu-item {
+  text-decoration: none;
+  color: inherit;
+}
+
+.about-modal-body .about-modal-link {
+  color: #00f1fe;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.about-modal-body .about-modal-link:hover,
+.about-modal-body .about-modal-link:focus-visible {
+  color: #ffedc3;
+}
+
 .app-menu-item + .app-menu-item {
   border-top: 1px solid #4e4632;
 }
@@ -645,4 +661,46 @@ html.native-ready .native-loading {
     0 0 12px rgba(255, 204, 0, 0.4),
     0 0 8px rgba(255, 0, 255, 0.4);
   transition: none;
+}
+
+/* Marketing home — phone app preview */
+.marketing-phone {
+  container-type: inline-size;
+  width: min(220px, 58vw);
+  margin-inline: auto;
+  aspect-ratio: 390 / 844;
+  border-radius: 28px;
+  border: 2px solid #2a2b30;
+  box-shadow:
+    0 0 0 4px #1a1b20,
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    inset 0 0 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  background: #0d0e12;
+}
+
+.marketing-phone__screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.marketing-phone__screen iframe {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 390px;
+  height: 844px;
+  border: 0;
+  transform: translateX(-50%) scale(calc(100cqw / 390px));
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .marketing-phone {
+    width: min(240px, 100%);
+    margin-inline: 0 0 auto;
+  }
 }

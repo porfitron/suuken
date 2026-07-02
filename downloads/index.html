@@ -51,6 +51,8 @@
       },
     };
   </script>
+  <script src="../js/analytics.js"></script>
+  <script>KinkedaAnalytics.init('downloads');</script>
 </head>
 <body class="bg-background text-on-surface font-sans min-h-screen">
   <main class="max-w-xl mx-auto px-6 py-12">
@@ -58,7 +60,6 @@
       <span aria-hidden="true">←</span>
       Back to kinkeda.com
     </a>
-
     <header class="mb-10">
       <p class="text-sm uppercase tracking-[0.2em] text-p1 mb-2">Install</p>
       <h1 class="font-display font-black text-4xl sm:text-5xl leading-tight glitch-text">Kinkeda</h1>
@@ -68,7 +69,7 @@
     <div class="space-y-8">
       <!-- iPhone -->
       <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
-        <h2 class="font-display font-bold text-xl mb-4">iPhone (Beta)</h2>
+        <h2 id="ios-heading" class="font-display font-bold text-xl mb-4">iPhone (Beta)</h2>
         <p class="text-on-surface-variant mb-5">Install the beta through Apple&rsquo;s TestFlight app.</p>
 
         <a
@@ -94,9 +95,7 @@
 
       <!-- Android -->
       <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
-        <h2 class="font-display font-bold text-xl mb-4">Android (APK)</h2>
-        <p class="text-on-surface-variant mb-2">Current build: <strong id="version" class="text-on-surface">Loading…</strong></p>
-        <p id="updated" class="text-sm text-on-surface-variant mb-5"></p>
+        <h2 id="android-heading" class="font-display font-bold text-xl mb-4">Android (Beta)</h2>
 
         <a
           id="download-btn"
@@ -128,7 +127,7 @@
           <div class="bg-surface-container-high rounded-xl p-4">
             <h3 class="font-bold text-on-surface mb-3">iPhone / iPad (Safari)</h3>
             <ol class="list-decimal list-inside space-y-2 text-on-surface-variant text-sm leading-relaxed">
-              <li>Open <a href="/" class="text-p1 underline underline-offset-2">kinkeda.com</a> in <strong class="text-on-surface">Safari</strong> (other browsers on iOS cannot install PWAs).</li>
+              <li>Open <a href="/app/" class="text-p1 underline underline-offset-2">kinkeda.com/app</a> in <strong class="text-on-surface">Safari</strong> (other browsers on iOS cannot install PWAs).</li>
               <li>Tap the <strong class="text-on-surface">Share</strong> button <span aria-hidden="true">(□↑)</span> at the bottom of the screen.</li>
               <li>Scroll down and tap <strong class="text-on-surface">Add to Home Screen</strong>.</li>
               <li>Tap <strong class="text-on-surface">Add</strong>, then open Kinkeda from your home screen.</li>
@@ -138,7 +137,7 @@
           <div class="bg-surface-container-high rounded-xl p-4">
             <h3 class="font-bold text-on-surface mb-3">Android (Chrome)</h3>
             <ol class="list-decimal list-inside space-y-2 text-on-surface-variant text-sm leading-relaxed">
-              <li>Open <a href="/" class="text-p1 underline underline-offset-2">kinkeda.com</a> in <strong class="text-on-surface">Chrome</strong>.</li>
+              <li>Open <a href="/app/" class="text-p1 underline underline-offset-2">kinkeda.com/app</a> in <strong class="text-on-surface">Chrome</strong>.</li>
               <li>Tap the <strong class="text-on-surface">Install</strong> banner if it appears at the bottom of the game, <em>or</em></li>
               <li>Tap the menu <span aria-hidden="true">(⋮)</span> → <strong class="text-on-surface">Install app</strong> or <strong class="text-on-surface">Add to Home screen</strong>.</li>
               <li>Confirm, then launch Kinkeda from your home screen or app drawer.</li>
@@ -150,25 +149,99 @@
           The web version updates automatically when you revisit — no manual reinstall needed.
         </p>
       </section>
+
+      <!-- Desktop demo -->
+      <section class="hidden sm:block bg-surface-container rounded-2xl p-6 border border-outline/20">
+        <h2 class="font-display font-bold text-xl mb-4">Desktop demo</h2>
+        <p class="text-on-surface-variant mb-5">
+          Best on desktop, laptop, and tablets with a mouse and keyboard. Preview Kinkeda inside a simulated phone frame and play using keyboard controls.
+        </p>
+
+        <a
+          id="desktop-demo-btn"
+          href="/demo/"
+          data-cta="desktop_demo"
+          class="block w-full text-center font-bold text-lg py-4 px-6 rounded-xl border-2 border-outline/40 text-primary hover:border-p1/60 hover:text-p1 transition"
+        >
+          Open desktop demo
+        </a>
+
+        <div class="bg-surface-container-high rounded-xl p-4 mt-5">
+          <h3 class="font-bold text-on-surface mb-3">Keyboard controls</h3>
+          <ul class="space-y-2 text-on-surface-variant text-sm leading-relaxed">
+            <li>
+              <strong class="text-on-surface">Player 1:</strong>
+              <kbd class="px-1.5 py-0.5 rounded bg-background text-on-surface font-mono text-xs">;</kbd>
+              left thumb,
+              <kbd class="px-1.5 py-0.5 rounded bg-background text-on-surface font-mono text-xs">'</kbd>
+              right thumb
+            </li>
+            <li>
+              <strong class="text-on-surface">Player 2:</strong>
+              <kbd class="px-1.5 py-0.5 rounded bg-background text-on-surface font-mono text-xs">a</kbd>
+              left thumb,
+              <kbd class="px-1.5 py-0.5 rounded bg-background text-on-surface font-mono text-xs">s</kbd>
+              right thumb
+            </li>
+            <li>
+              <strong class="text-on-surface">Spacebar:</strong>
+              advance to the next turn when prompted
+            </li>
+            <li>
+              <strong class="text-on-surface">After a match:</strong>
+              press your thumb keys to drop them and win the round
+            </li>
+          </ul>
+        </div>
+      </section>
     </div>
   </main>
 
   <script>
+    function trackDownloadClick(target) {
+      KinkedaAnalytics.trackEvent('download_click', { target });
+    }
+
+    document.getElementById('testflight-btn').addEventListener('click', () => {
+      trackDownloadClick('testflight');
+    });
+    document.getElementById('download-btn').addEventListener('click', () => {
+      trackDownloadClick('apk');
+    });
+
+    KinkedaAnalytics.bindCtaClicks('[data-cta]');
+
+    function formatReleaseDate(iso) {
+      return new Date(iso).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    }
+
+    function formatBetaHeading(platform, versionName, buildNumber, releasedAt) {
+      const version = versionName ? `v${versionName} (build ${buildNumber})` : `build ${buildNumber}`;
+      const date = releasedAt ? ` · Released ${formatReleaseDate(releasedAt)}` : '';
+      return `${platform} (Beta) — ${version}${date}`;
+    }
+
     fetch('./manifest.json')
       .then((res) => res.json())
       .then((data) => {
-        document.getElementById('version').textContent = `v${data.versionName} (${data.versionCode})`;
+        const iosVersion = data.iosVersionName ?? data.versionName;
+        const iosBuild = data.iosBuildNumber ?? data.versionCode;
+        const iosReleased = data.iosReleasedAt ?? data.updatedAt;
+        document.getElementById('ios-heading').textContent = formatBetaHeading('iPhone', iosVersion, iosBuild, iosReleased);
+
+        document.getElementById('android-heading').textContent = formatBetaHeading(
+          'Android',
+          data.versionName,
+          data.versionCode,
+          data.updatedAt,
+        );
+
         document.getElementById('download-btn').href = `./${data.file}`;
         document.getElementById('download-btn').setAttribute('download', data.file);
-
-        if (data.updatedAt) {
-          const date = new Date(data.updatedAt);
-          document.getElementById('updated').textContent = `Uploaded ${date.toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}`;
-        }
 
         const testFlightBtn = document.getElementById('testflight-btn');
         const testFlightUnavailable = document.getElementById('testflight-unavailable');
@@ -180,7 +253,6 @@
         }
       })
       .catch(() => {
-        document.getElementById('version').textContent = 'Unavailable';
         document.getElementById('download-btn').classList.add('opacity-50', 'pointer-events-none');
         document.getElementById('download-btn').textContent = 'APK not published yet';
         document.getElementById('testflight-unavailable').classList.remove('hidden');
