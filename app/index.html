@@ -188,7 +188,30 @@
   <script src="../js/orientation-lock.js"></script>
   <script src="../js/native-loading.js"></script>
   <script src="../js/match-haptics.js"></script>
-  <header id="top-app-bar" class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
+  <div
+    id="ios-install-banner"
+    class="fixed inset-x-0 z-[60] hidden items-center gap-2.5 px-gutter-sm bg-surface-container border-b-2 border-outline not-italic"
+    role="region"
+    aria-label="Install Kinkeda for iPhone"
+    hidden
+  >
+    <img src="../icons/apple-touch-icon.png" alt="" width="28" height="28" class="shrink-0 rounded-[6px]" decoding="async" />
+    <div class="min-w-0 flex-1 leading-tight">
+      <div class="font-display text-sm font-bold uppercase text-on-surface truncate">Kinkeda</div>
+      <div class="font-body text-xs text-on-surface-variant truncate">Install for iPhone</div>
+    </div>
+    <a
+      href="https://testflight.apple.com/join/BammT53U"
+      id="ios-install-link"
+      class="shrink-0 px-3 py-1.5 bg-primary-container border-2 border-outline font-mono text-label-mono uppercase text-on-primary-container not-italic"
+      rel="noopener noreferrer"
+    >Get</a>
+    <button type="button" id="ios-install-dismiss" class="shrink-0 w-8 h-8 flex items-center justify-center text-on-surface-variant" aria-label="Dismiss install banner">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
+
+  <header id="top-app-bar" class="fixed w-full z-50 bg-background/80 backdrop-blur-md border-b-2 border-primary-container/30 flex items-center justify-between px-gutter-md">
     <div class="flex items-center gap-3">
       <div class="relative" id="menu-anchor">
         <button type="button" id="menu-btn" class="text-primary-container neon-gold-glow w-touch-target h-touch-target flex items-center justify-center -ml-2" aria-label="Open menu" aria-expanded="false" aria-haspopup="menu" aria-controls="app-menu">
@@ -211,14 +234,6 @@
             <span class="material-symbols-outlined text-primary-container text-xl">info</span>
             <span class="font-display text-button-text italic uppercase text-on-surface">About</span>
           </button>
-          <a href="https://kinkeda.com/support/" id="menu-support" class="app-menu-item" role="menuitem" target="_blank" rel="noopener noreferrer">
-            <span class="material-symbols-outlined text-primary-container text-xl">help</span>
-            <span class="font-display text-button-text italic uppercase text-on-surface">Support</span>
-          </a>
-          <a href="https://kinkeda.com/privacy-policy/" id="menu-privacy" class="app-menu-item" role="menuitem" target="_blank" rel="noopener noreferrer">
-            <span class="material-symbols-outlined text-primary-container text-xl">shield</span>
-            <span class="font-display text-button-text italic uppercase text-on-surface">Privacy</span>
-          </a>
           <button type="button" id="menu-reset" class="app-menu-item" role="menuitem">
             <span class="material-symbols-outlined text-primary-container text-xl">delete</span>
             <span class="font-display text-button-text italic uppercase text-on-surface">Reset</span>
@@ -1902,7 +1917,8 @@
         e.preventDefault();
         deferredInstall = e;
         if (!localStorage.getItem('kinkeda-install-dismissed')) {
-          banner.classList.add('visible');
+          banner.classList.remove('hidden');
+          banner.classList.add('flex');
         }
       });
     }
@@ -1910,13 +1926,69 @@
       if (!deferredInstall) return;
       deferredInstall.prompt();
       await deferredInstall.userChoice;
-      banner.classList.remove('visible');
+      banner.classList.add('hidden');
+      banner.classList.remove('flex');
       deferredInstall = null;
     };
     document.getElementById('dismiss-install').onclick = () => {
-      banner.classList.remove('visible');
+      banner.classList.add('hidden');
+      banner.classList.remove('flex');
       localStorage.setItem('kinkeda-install-dismissed', '1');
     };
+
+    /* iOS web install banner (TestFlight; hidden in PWA and native shells) */
+    const IOS_INSTALL_DISMISS_KEY = 'kinkeda-ios-install-dismissed';
+    const iosInstallBanner = document.getElementById('ios-install-banner');
+    const iosInstallLink = document.getElementById('ios-install-link');
+    const iosInstallDismiss = document.getElementById('ios-install-dismiss');
+    const FALLBACK_TESTFLIGHT_URL = 'https://testflight.apple.com/join/BammT53U';
+
+    function isIosWebBrowser() {
+      if (isNativeApp) return false;
+      const standalone = window.matchMedia?.('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+      if (standalone) return false;
+      const ua = window.navigator.userAgent || '';
+      const isIosDevice = /iPhone|iPad|iPod/i.test(ua)
+        || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+      return isIosDevice;
+    }
+
+    function showIosInstallBanner() {
+      iosInstallBanner.hidden = false;
+      iosInstallBanner.classList.remove('hidden');
+      iosInstallBanner.classList.add('flex');
+      document.body.classList.add('ios-banner-visible');
+    }
+
+    function hideIosInstallBanner(persistDismiss = false) {
+      iosInstallBanner.hidden = true;
+      iosInstallBanner.classList.add('hidden');
+      iosInstallBanner.classList.remove('flex');
+      document.body.classList.remove('ios-banner-visible');
+      if (persistDismiss) {
+        try { localStorage.setItem(IOS_INSTALL_DISMISS_KEY, '1'); } catch (_) {}
+      }
+    }
+
+    if (isIosWebBrowser() && !localStorage.getItem(IOS_INSTALL_DISMISS_KEY)) {
+      fetch('../downloads/manifest.json')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && !data.testFlightUrl) return;
+          iosInstallLink.href = data?.testFlightUrl || FALLBACK_TESTFLIGHT_URL;
+          showIosInstallBanner();
+        })
+        .catch(() => {
+          iosInstallLink.href = FALLBACK_TESTFLIGHT_URL;
+          showIosInstallBanner();
+        });
+    }
+
+    iosInstallLink.addEventListener('click', () => {
+      trackAnalyticsEvent('download_click', { target: 'testflight' });
+    });
+    iosInstallDismiss.addEventListener('click', () => hideIosInstallBanner(true));
 
     /* Service worker */
     if ('serviceWorker' in navigator) {
@@ -1999,9 +2071,6 @@
       closeAppMenu();
       showAboutModal();
     };
-
-    document.getElementById('menu-support').addEventListener('click', closeAppMenu);
-    document.getElementById('menu-privacy').addEventListener('click', closeAppMenu);
 
     document.getElementById('menu-reset').onclick = () => {
       closeAppMenu();

@@ -98,6 +98,7 @@
 }
 
 /* Immersive arena — hide chrome */
+body.immersive #ios-install-banner,
 body.immersive #top-app-bar,
 body.immersive #bottom-nav {
   opacity: 0;
@@ -115,9 +116,10 @@ body.immersive #app {
   padding-bottom: 0;
 }
 
+#ios-install-banner,
 #top-app-bar,
 #bottom-nav {
-  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease, top 0.2s ease;
 }
 
 /* Victory burst */
@@ -198,8 +200,14 @@ body.immersive #app {
   --safe-right: env(safe-area-inset-right, 0px);
   --header-bar: 4rem;
   --nav-bar: 5rem;
-  --header-total: calc(var(--header-bar) + var(--safe-top));
+  --ios-banner-bar: 2.75rem;
+  --top-chrome-extra: 0px;
+  --header-total: calc(var(--header-bar) + var(--safe-top) + var(--top-chrome-extra));
   --nav-total: calc(var(--nav-bar) + var(--safe-bottom));
+}
+
+body.ios-banner-visible {
+  --top-chrome-extra: var(--ios-banner-bar);
 }
 
 html {
@@ -226,8 +234,14 @@ body {
 }
 
 #top-app-bar {
-  padding-top: var(--safe-top);
-  height: var(--header-total);
+  top: calc(var(--safe-top) + var(--top-chrome-extra));
+  padding-top: 0;
+  height: var(--header-bar);
+}
+
+#ios-install-banner {
+  top: var(--safe-top);
+  height: var(--ios-banner-bar);
 }
 
 #menu-anchor {
