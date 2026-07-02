@@ -121,7 +121,9 @@
         <div class="mt-10 md:mt-0 flex justify-center md:justify-end">
           <div class="marketing-phone" aria-hidden="true">
             <div class="marketing-phone__screen">
-              <iframe src="/app/" title="Kinkeda app preview" tabindex="-1" loading="lazy"></iframe>
+              <div class="marketing-phone__viewport">
+                <iframe src="/app/" title="Kinkeda app preview" tabindex="-1" loading="lazy"></iframe>
+              </div>
             </div>
           </div>
         </div>
@@ -173,6 +175,22 @@
   </main>
   <script>
     KinkedaAnalytics.bindCtaClicks('[data-cta]');
+  </script>
+  <script>
+    (function fitMarketingPhonePreview() {
+      const phone = document.querySelector('.marketing-phone');
+      if (!phone) return;
+      const designWidth = 390;
+      const setScale = () => {
+        phone.style.setProperty('--phone-scale', String(phone.clientWidth / designWidth));
+      };
+      setScale();
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(setScale).observe(phone);
+      } else {
+        window.addEventListener('resize', setScale);
+      }
+    }());
   </script>
 </body>
 </html>

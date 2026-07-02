@@ -665,6 +665,7 @@ html.native-ready .native-loading {
 
 /* Marketing home — phone app preview */
 .marketing-phone {
+  --phone-scale: 0.564;
   width: min(220px, 58vw);
   margin-inline: auto;
   aspect-ratio: 390 / 844;
@@ -685,9 +686,18 @@ html.native-ready .native-loading {
   overflow: hidden;
 }
 
-.marketing-phone__screen iframe {
+.marketing-phone__viewport {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 50%;
+  width: 390px;
+  height: 844px;
+  transform: translateX(-50%) scale(var(--phone-scale));
+  transform-origin: top center;
+}
+
+.marketing-phone__viewport iframe {
+  display: block;
   width: 100%;
   height: 100%;
   border: 0;
