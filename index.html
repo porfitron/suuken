@@ -126,6 +126,22 @@
               </div>
             </div>
           </div>
+          <script>
+            (function fitMarketingPhonePreview() {
+              const phone = document.currentScript.previousElementSibling;
+              if (!phone?.classList.contains('marketing-phone')) return;
+              const designWidth = 390;
+              const setScale = () => {
+                phone.style.setProperty('--phone-scale', String(phone.clientWidth / designWidth));
+              };
+              setScale();
+              if (typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(setScale).observe(phone);
+              } else {
+                window.addEventListener('resize', setScale);
+              }
+            }());
+          </script>
         </div>
       </div>
     </header>
@@ -176,22 +192,6 @@
   </main>
   <script>
     KinkedaAnalytics.bindCtaClicks('[data-cta]');
-  </script>
-  <script>
-    (function fitMarketingPhonePreview() {
-      const phone = document.querySelector('.marketing-phone');
-      if (!phone) return;
-      const designWidth = 390;
-      const setScale = () => {
-        phone.style.setProperty('--phone-scale', String(phone.clientWidth / designWidth));
-      };
-      setScale();
-      if (typeof ResizeObserver !== 'undefined') {
-        new ResizeObserver(setScale).observe(phone);
-      } else {
-        window.addEventListener('resize', setScale);
-      }
-    }());
   </script>
 </body>
 </html>

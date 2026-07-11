@@ -698,15 +698,15 @@ html.native-ready .native-loading {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
 }
 
 .marketing-phone__viewport {
-  position: absolute;
-  top: 0;
-  left: 50%;
   width: 390px;
   height: 844px;
-  transform: translateX(-50%) scale(var(--phone-scale));
+  flex-shrink: 0;
+  transform: scale(var(--phone-scale));
   transform-origin: top center;
 }
 
