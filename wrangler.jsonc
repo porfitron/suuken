@@ -1,0 +1,11 @@
+{
+  "name": "kinkeda-android-beta-signup",
+  "main": "workers/android-beta-signup/index.ts",
+  "compatibility_date": "2025-07-01",
+  "send_email": [
+    { "name": "EMAIL" }
+  ],
+  "routes": [
+    { "pattern": "kinkeda.com/api/android-beta-signup", "zone_name": "kinkeda.com" }
+  ]
+}

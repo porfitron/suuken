@@ -96,23 +96,55 @@
       <!-- Android -->
       <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
         <h2 id="android-heading" class="font-display font-bold text-xl mb-4">Android (Beta)</h2>
+        <p class="text-on-surface-variant mb-5">
+          Join the Android beta waitlist. We&rsquo;ll email you with installation instructions.
+        </p>
 
-        <a
-          id="download-btn"
-          href="#"
-          class="block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
-        >
-          Download APK
-        </a>
+        <form id="android-signup-form" class="space-y-4" novalidate>
+          <div>
+            <label for="android-signup-email" class="sr-only">Email address</label>
+            <input
+              id="android-signup-email"
+              name="email"
+              type="email"
+              inputmode="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+              class="w-full rounded-xl border border-outline/30 bg-surface-container-high px-4 py-3 text-on-surface placeholder:text-on-surface-variant/60 focus:border-p1 focus:outline-none focus:ring-2 focus:ring-p1/30"
+            />
+          </div>
+
+          <input
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            class="hidden"
+          />
+
+          <button
+            id="android-signup-btn"
+            type="submit"
+            class="w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition disabled:opacity-60 disabled:pointer-events-none"
+          >
+            Join Android beta
+          </button>
+        </form>
+
+        <p id="android-signup-success" class="hidden mt-4 text-sm text-p1 bg-surface-container-high rounded-xl px-4 py-3">
+          You&rsquo;re on the list. We&rsquo;ll email you when the Android beta is ready.
+        </p>
+        <p id="android-signup-error" class="hidden mt-4 text-sm text-p2 bg-surface-container-high rounded-xl px-4 py-3"></p>
 
         <ol class="list-decimal list-inside mt-5 space-y-2 text-on-surface-variant text-sm leading-relaxed">
-          <li>Tap <strong class="text-on-surface">Download APK</strong> above.</li>
-          <li>When prompted, allow your browser to install unknown apps (one-time permission).</li>
-          <li>Open the downloaded file and tap <strong class="text-on-surface">Install</strong>.</li>
-          <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen.</li>
+          <li>Enter your email and tap <strong class="text-on-surface">Join Android beta</strong>.</li>
+          <li>Watch for an invite from us with install instructions.</li>
         </ol>
         <p class="text-sm text-on-surface-variant mt-4">
-          Pre-release build for testers. Uninstall an older test build before installing a new one if needed.
+          Pre-release builds for testers only. Questions? Email
+          <a href="mailto:support@kinkeda.com" class="text-p1 underline underline-offset-2">support@kinkeda.com</a>.
         </p>
       </section>
 
@@ -205,11 +237,63 @@
     document.getElementById('testflight-btn').addEventListener('click', () => {
       trackDownloadClick('testflight');
     });
-    document.getElementById('download-btn').addEventListener('click', () => {
-      trackDownloadClick('apk');
-    });
 
     KinkedaAnalytics.bindCtaClicks('[data-cta]');
+
+    const androidSignupForm = document.getElementById('android-signup-form');
+    const androidSignupEmail = document.getElementById('android-signup-email');
+    const androidSignupBtn = document.getElementById('android-signup-btn');
+    const androidSignupSuccess = document.getElementById('android-signup-success');
+    const androidSignupError = document.getElementById('android-signup-error');
+
+    function showAndroidSignupError(message) {
+      androidSignupSuccess.classList.add('hidden');
+      androidSignupError.textContent = message;
+      androidSignupError.classList.remove('hidden');
+    }
+
+    androidSignupForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      androidSignupSuccess.classList.add('hidden');
+      androidSignupError.classList.add('hidden');
+
+      const email = androidSignupEmail.value.trim();
+      if (!email) {
+        showAndroidSignupError('Please enter your email address.');
+        androidSignupEmail.focus();
+        return;
+      }
+
+      androidSignupBtn.disabled = true;
+      androidSignupBtn.textContent = 'Submitting…';
+
+      try {
+        const response = await fetch('/api/android-beta-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            website: androidSignupForm.website.value,
+          }),
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+
+        androidSignupForm.reset();
+        androidSignupSuccess.classList.remove('hidden');
+        KinkedaAnalytics.trackEvent('android_beta_signup', { platform: 'android' });
+      } catch (error) {
+        showAndroidSignupError(
+          error.message || 'Could not submit your signup. Please email support@kinkeda.com.',
+        );
+      } finally {
+        androidSignupBtn.disabled = false;
+        androidSignupBtn.textContent = 'Join Android beta';
+      }
+    });
 
     function formatReleaseDate(iso) {
       return new Date(iso).toLocaleDateString(undefined, {
@@ -240,9 +324,6 @@
           data.updatedAt,
         );
 
-        document.getElementById('download-btn').href = `./${data.file}`;
-        document.getElementById('download-btn').setAttribute('download', data.file);
-
         const testFlightBtn = document.getElementById('testflight-btn');
         const testFlightUnavailable = document.getElementById('testflight-unavailable');
         if (data.testFlightUrl) {
@@ -253,8 +334,6 @@
         }
       })
       .catch(() => {
-        document.getElementById('download-btn').classList.add('opacity-50', 'pointer-events-none');
-        document.getElementById('download-btn').textContent = 'APK not published yet';
         document.getElementById('testflight-unavailable').classList.remove('hidden');
       });
   </script>
