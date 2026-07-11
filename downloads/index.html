@@ -268,18 +268,24 @@
       androidSignupBtn.textContent = 'Submitting…';
 
       try {
-        const response = await fetch('/api/android-beta-signup', {
+        const response = await fetch('https://formsubmit.co/ajax/support@kinkeda.com', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
           body: JSON.stringify({
             email,
-            website: androidSignupForm.website.value,
+            _subject: `Android beta signup: ${email}`,
+            _template: 'table',
+            _captcha: 'false',
+            _honey: androidSignupForm.website.value,
           }),
         });
 
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok) {
-          throw new Error(data.error || 'Something went wrong. Please try again.');
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data || data.success !== 'true') {
+          throw new Error(data?.message || 'Something went wrong. Please try again.');
         }
 
         androidSignupForm.reset();
