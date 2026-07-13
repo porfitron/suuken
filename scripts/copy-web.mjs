@@ -24,7 +24,7 @@ manifest = manifest
   .replaceAll('"/icons/', '"icons/');
 writeFileSync(join(out, 'manifest.webmanifest'), manifest);
 
-const nativeSw = `const CACHE = 'kinkeda-v6';
+const nativeSw = `const CACHE = 'kinkeda-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -33,6 +33,7 @@ const ASSETS = [
   './js/analytics.js',
   './js/orientation-lock.js',
   './js/native-loading.js',
+  './js/native-share.js',
   './js/match-haptics.js',
   './icons/icon-192.svg',
   './icons/icon-512.svg',

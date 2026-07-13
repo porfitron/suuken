@@ -1,10 +1,11 @@
 {
-  "versionName": "1.1",
-  "versionCode": 3,
+  "versionName": "1.2",
+  "versionCode": 5,
   "applicationId": "com.kinkeda.app",
   "file": "kinkeda-android-1.1.apk",
+  "aab": "kinkeda-android-1.2.aab",
   "testFlightUrl": "https://testflight.apple.com/join/BammT53U",
-  "updatedAt": "2026-07-02T01:59:27.031Z",
+  "updatedAt": "2026-07-12T23:21:00.000Z",
   "iosVersionName": "1.1",
   "iosBuildNumber": 3,
   "iosReleasedAt": "2026-07-02T01:59:27.031Z"

@@ -1,4 +1,4 @@
-const CACHE = 'kinkeda-v6';
+const CACHE = 'kinkeda-v7';
 const ASSETS = [
   '/app/',
   '/app/index.html',

@@ -187,6 +187,7 @@
   </div>
   <script src="../js/orientation-lock.js"></script>
   <script src="../js/native-loading.js"></script>
+  <script src="../js/native-share.js"></script>
   <script src="../js/match-haptics.js"></script>
   <div
     id="ios-install-banner"
@@ -1249,6 +1250,23 @@
     }
 
     async function shareApp() {
+      const nativeShare = window.KinkedaNativeShare;
+      if (nativeShare?.shareText) {
+        try {
+          await nativeShare.shareText({
+            title: 'Kinkeda',
+            text: getShareInviteText(),
+            url: SHARE_PLAY_URL,
+            dialogTitle: 'Share Kinkeda',
+          });
+        } catch (err) {
+          if (err?.name !== 'AbortError') {
+            console.error('Share failed:', err);
+          }
+        }
+        return;
+      }
+
       const shareData = {
         title: 'Kinkeda',
         text: getShareInviteText(),
@@ -1281,22 +1299,36 @@
         const blob = await drawResultsImage();
         if (!blob) return;
 
-        const file = new File([blob], 'kinkeda-results.png', { type: 'image/png' });
-        const shareData = {
-          files: [file],
-          title: 'Kinkeda Results',
-          text: `${getPlayerName(state.winner)} wins!`,
-        };
+        const shareTitle = 'Kinkeda Results';
+        const shareText = `${getPlayerName(state.winner)} wins!`;
+        const nativeShare = window.KinkedaNativeShare;
 
-        if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
-          await navigator.share(shareData);
+        if (nativeShare?.shareBlobFile) {
+          await nativeShare.shareBlobFile({
+            title: shareTitle,
+            text: shareText,
+            blob,
+            filename: 'kinkeda-results.png',
+            dialogTitle: shareTitle,
+          });
         } else {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = 'kinkeda-results.png';
-          link.click();
-          URL.revokeObjectURL(url);
+          const file = new File([blob], 'kinkeda-results.png', { type: 'image/png' });
+          const shareData = {
+            files: [file],
+            title: shareTitle,
+            text: shareText,
+          };
+
+          if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+            await navigator.share(shareData);
+          } else {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'kinkeda-results.png';
+            link.click();
+            URL.revokeObjectURL(url);
+          }
         }
       } catch (err) {
         if (err?.name !== 'AbortError') {
@@ -1990,8 +2022,8 @@
     });
     iosInstallDismiss.addEventListener('click', () => hideIosInstallBanner(true));
 
-    /* Service worker */
-    if ('serviceWorker' in navigator) {
+    /* Service worker — browser/PWA only (disabled in native shells; SW cache breaks Capacitor updates) */
+    if ('serviceWorker' in navigator && !window.KinkedaNativeShare?.isNativeShell?.()) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
       });
@@ -2063,8 +2095,8 @@
     };
 
     document.getElementById('menu-share').onclick = async () => {
-      closeAppMenu();
       await shareApp();
+      closeAppMenu();
     };
 
     document.getElementById('menu-about').onclick = () => {

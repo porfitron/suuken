@@ -15,6 +15,13 @@ const config: CapacitorConfig = {
       androidSplashResourceName: 'splash',
       showSpinner: false,
     },
+    Keyboard: {
+      resizeOnFullScreen: false,
+    },
+    SystemBars: {
+      // Prevent Capacitor from adding bottom padding when the IME opens (causes white gap on Android WebView).
+      insetsHandling: 'disable',
+    },
   },
 };
 
