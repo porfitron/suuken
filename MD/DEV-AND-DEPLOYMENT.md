@@ -51,7 +51,9 @@ npm install
 | Script | Command | Purpose |
 |--------|---------|---------|
 | `npm run dev:web` | `npx serve .` | Local static server for the PWA at repo root |
-| `npm run build:web` | `node scripts/copy-web.mjs` | Copy web assets into `www/` |
+| `npm run build:css` | Tailwind CLI | Build `css/tailwind.css` from app markup |
+| `npm run fonts` | `node scripts/fetch-fonts.mjs` | Re-download self-hosted fonts / icon subset (needs network) |
+| `npm run build:web` | `build:css` + `copy-web.mjs` | Copy web assets into `www/` |
 | `npm run cap:sync` | `build:web` + `cap sync` | Refresh native projects with latest web code |
 | `npm run cap:open:android` | `cap open android` | Open project in Android Studio |
 | `npm run cap:open:ios` | `cap open ios` | Open project in Xcode |
@@ -230,7 +232,7 @@ Native releases are separate from the web deploy. Web can update instantly via G
 - [ ] Run `npm run cap:sync` with the commit you intend to ship
 - [ ] Bump `versionName` / `versionCode` (Android) and `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` (iOS) as needed
 - [ ] Verify signing configuration (keystore / provisioning profiles)
-- [ ] Confirm CDN assets load correctly on device (Tailwind, fonts require network today)
+- [ ] Confirm offline load (airplane mode): Tailwind, fonts, and icons render without network
 
 ### Android (Play Store)
 

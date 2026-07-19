@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname;
 const out = join(root, 'www');
 
-const sharedEntries = ['css', 'js', 'icons', 'sounds', 'robots.txt', 'sitemap.xml'];
+const sharedEntries = ['css', 'js', 'icons', 'sounds', 'fonts', 'robots.txt', 'sitemap.xml'];
 
 rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
@@ -24,10 +24,17 @@ manifest = manifest
   .replaceAll('"/icons/', '"icons/');
 writeFileSync(join(out, 'manifest.webmanifest'), manifest);
 
-const nativeSw = `const CACHE = 'kinkeda-v7';
+const fontFiles = readdirSync(join(root, 'fonts'))
+  .filter((name) => name.endsWith('.woff2'))
+  .sort()
+  .map((name) => `./fonts/${name}`);
+
+const nativeSw = `const CACHE = 'kinkeda-v8';
 const ASSETS = [
   './',
   './index.html',
+  './css/fonts.css',
+  './css/tailwind.css',
   './css/kinkeda.css',
   './manifest.webmanifest',
   './js/analytics.js',
@@ -35,6 +42,7 @@ const ASSETS = [
   './js/native-loading.js',
   './js/native-share.js',
   './js/match-haptics.js',
+${fontFiles.map((f) => `  '${f}',`).join('\n')}
   './icons/icon-192.svg',
   './icons/icon-512.svg',
   './icons/icon-192.png',

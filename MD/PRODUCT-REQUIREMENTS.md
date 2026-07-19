@@ -91,7 +91,8 @@ The app is built for strict full-screen, multi-touch interaction on phones and t
 - App ID `com.kinkeda.app`, display name **Kinkeda**.
 - Android: Gradle project in `android/`.
 - iOS: Xcode project in `ios/App/` (Swift Package Manager for dependencies).
-- **Planned, not yet implemented:** native haptics, push notifications, self-hosted CDN assets for fully offline native builds.
+- Self-hosted Tailwind, fonts, and icon font for offline play (web PWA + native).
+- **Planned, not yet implemented:** native haptics, push notifications.
 
 ## Match and session features
 

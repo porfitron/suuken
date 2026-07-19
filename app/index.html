@@ -30,74 +30,9 @@
   <meta name="twitter:image" content="https://kinkeda.com/icons/og-image.png" />
   <meta name="twitter:image:alt" content="Kinkeda — 2-player thumb-guessing game on one shared screen" />
   <title>Kinkeda</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,400;0,700;0,800;0,900;1,400;1,700;1,800;1,900&family=Hanken+Grotesk:wght@400;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/fonts.css" />
+  <link rel="stylesheet" href="../css/tailwind.css" />
   <link rel="stylesheet" href="../css/kinkeda.css" />
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            background: '#121317',
-            surface: '#121317',
-            'surface-dim': '#121317',
-            'surface-bright': '#38393d',
-            'surface-container-lowest': '#0d0e12',
-            'surface-container-low': '#1a1b20',
-            'surface-container': '#1f1f24',
-            'surface-container-high': '#292a2e',
-            'surface-container-highest': '#343439',
-            'surface-variant': '#343439',
-            'on-surface': '#e3e2e7',
-            'on-surface-variant': '#d2c5ab',
-            outline: '#9a9078',
-            'outline-variant': '#4e4632',
-            'surface-tint': '#f1c100',
-            primary: '#ffedc3',
-            'on-primary': '#3d2f00',
-            'primary-container': '#ffcc00',
-            'on-primary-container': '#6f5700',
-            'primary-fixed-dim': '#f1c100',
-            secondary: '#ddfcff',
-            'on-secondary': '#00363a',
-            'secondary-container': '#00f1fe',
-            'on-secondary-container': '#006a70',
-            'secondary-fixed-dim': '#00dbe7',
-            tertiary: '#ffe9ea',
-            'on-tertiary': '#67001d',
-            'on-tertiary-container': '#ff00ff',
-            'tertiary-fixed-dim': '#ffb2b8',
-            error: '#ffb4ab',
-            p1: '#00f1fe',
-            p2: '#ff00ff',
-          },
-          spacing: {
-            'gutter-md': '1.5rem',
-            'gutter-sm': '1rem',
-            'corner-safe': '1.25rem',
-            'thumb-zone': '120px',
-            'touch-target': '3rem',
-          },
-          fontFamily: {
-            display: ['Anybody', 'sans-serif'],
-            headline: ['Anybody', 'sans-serif'],
-            body: ['Hanken Grotesk', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          fontSize: {
-            'display-xl': ['64px', { lineHeight: '60px', letterSpacing: '-0.04em', fontWeight: '900' }],
-            'headline-lg': ['36px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '800' }],
-            'headline-mobile': ['28px', { lineHeight: '32px', fontWeight: '800' }],
-            'button-text': ['18px', { lineHeight: '20px', fontWeight: '800' }],
-            'label-mono': ['12px', { lineHeight: '16px', letterSpacing: '0.1em', fontWeight: '700' }],
-            'body-md': ['16px', { lineHeight: '24px', fontWeight: '400' }],
-          },
-        },
-      },
-    };
-  </script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",

@@ -120,7 +120,7 @@ Separate structures:
 
 - `manifest.webmanifest` configured with `start_url: "./"`, `scope: "./"`, `display: "standalone"`.
 - `sw.js` caches core assets and serves cache-first for GET requests.
-- Cache versioning via `CACHE = 'kinkeda-v2'` in `sw.js`.
+- Cache versioning via `CACHE = 'kinkeda-v8'` in `sw.js` (bump when precached assets change).
 
 ## Capacitor configuration
 
@@ -146,7 +146,7 @@ Tracked events include:
 
 ## Known gaps / follow-ups
 
-- Tailwind and Google Fonts are CDN-hosted; native offline builds should self-host these assets.
+- Tailwind, display fonts, and Material Symbols are self-hosted (`css/tailwind.css`, `css/fonts.css`, `fonts/`) so the game works offline in the PWA and native shells.
 - Android launcher icons are Capacitor defaults; iOS uses generated Kinkeda icon (`icons/app-icon-1024.png`).
 - Native haptics and push notifications are not yet integrated.
 
