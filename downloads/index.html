@@ -63,33 +63,32 @@
     <header class="mb-10">
       <p class="text-sm uppercase tracking-[0.2em] text-p1 mb-2">Install</p>
       <h1 class="font-display font-black text-4xl sm:text-5xl leading-tight glitch-text">Kinkeda</h1>
-      <p class="mt-4 text-on-surface-variant text-lg">Be an early tester for Kinkeda on your phone.</p>
+      <p class="mt-4 text-on-surface-variant text-lg">Get Kinkeda on your phone — or play in the browser.</p>
     </header>
 
     <div class="space-y-8">
       <!-- iPhone -->
       <section class="bg-surface-container rounded-2xl p-6 border border-outline/20">
-        <h2 id="ios-heading" class="font-display font-bold text-xl mb-4">iPhone (Beta)</h2>
-        <p class="text-on-surface-variant mb-5">Install the beta through Apple&rsquo;s TestFlight app.</p>
+        <h2 id="ios-heading" class="font-display font-bold text-xl mb-4">iPhone</h2>
+        <p class="text-on-surface-variant mb-5">Download Kinkeda free from the App Store.</p>
 
         <a
-          id="testflight-btn"
-          href="#"
+          id="appstore-btn"
+          href="https://apps.apple.com/us/app/kinkeda-face-to-face-battles/id6780239089"
           target="_blank"
           rel="noopener noreferrer"
-          class="hidden block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
+          class="block w-full text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
         >
-          Open in TestFlight
+          Download on the App Store
         </a>
-        <p id="testflight-unavailable" class="hidden text-sm text-on-surface-variant bg-surface-container-high rounded-xl px-4 py-3">
-          TestFlight link not published yet. Ask the team for an invite.
+        <p id="appstore-unavailable" class="hidden text-sm text-on-surface-variant bg-surface-container-high rounded-xl px-4 py-3">
+          App Store link not available yet. Check back soon.
         </p>
 
         <ol class="list-decimal list-inside mt-5 space-y-2 text-on-surface-variant text-sm leading-relaxed">
-          <li>Tap <strong class="text-on-surface">Open in TestFlight</strong> above (or use the invite link you received).</li>
-          <li>Install <strong class="text-on-surface">TestFlight</strong> from the App Store if you don&rsquo;t have it.</li>
-          <li>Accept the invite and tap <strong class="text-on-surface">Install</strong> on the Kinkeda beta.</li>
-          <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen or TestFlight.</li>
+          <li>Tap <strong class="text-on-surface">Download on the App Store</strong> above.</li>
+          <li>Install <strong class="text-on-surface">Kinkeda</strong> from the App Store.</li>
+          <li>Launch <strong class="text-on-surface">Kinkeda</strong> from your home screen and play.</li>
         </ol>
       </section>
 
@@ -234,8 +233,8 @@
       KinkedaAnalytics.trackEvent('download_click', { target });
     }
 
-    document.getElementById('testflight-btn').addEventListener('click', () => {
-      trackDownloadClick('testflight');
+    document.getElementById('appstore-btn').addEventListener('click', () => {
+      trackDownloadClick('app_store');
     });
 
     KinkedaAnalytics.bindCtaClicks('[data-cta]');
@@ -309,10 +308,11 @@
       });
     }
 
-    function formatBetaHeading(platform, versionName, buildNumber, releasedAt) {
+    function formatPlatformHeading(platform, versionName, buildNumber, releasedAt, isBeta = false) {
+      const label = isBeta ? `${platform} (Beta)` : platform;
       const version = versionName ? `v${versionName} (build ${buildNumber})` : `build ${buildNumber}`;
       const date = releasedAt ? ` · Released ${formatReleaseDate(releasedAt)}` : '';
-      return `${platform} (Beta) — ${version}${date}`;
+      return `${label} — ${version}${date}`;
     }
 
     fetch('./manifest.json')
@@ -321,26 +321,30 @@
         const iosVersion = data.iosVersionName ?? data.versionName;
         const iosBuild = data.iosBuildNumber ?? data.versionCode;
         const iosReleased = data.iosReleasedAt ?? data.updatedAt;
-        document.getElementById('ios-heading').textContent = formatBetaHeading('iPhone', iosVersion, iosBuild, iosReleased);
+        document.getElementById('ios-heading').textContent = formatPlatformHeading('iPhone', iosVersion, iosBuild, iosReleased);
 
-        document.getElementById('android-heading').textContent = formatBetaHeading(
+        document.getElementById('android-heading').textContent = formatPlatformHeading(
           'Android',
           data.versionName,
           data.versionCode,
           data.updatedAt,
+          true,
         );
 
-        const testFlightBtn = document.getElementById('testflight-btn');
-        const testFlightUnavailable = document.getElementById('testflight-unavailable');
-        if (data.testFlightUrl) {
-          testFlightBtn.href = data.testFlightUrl;
-          testFlightBtn.classList.remove('hidden');
+        const appStoreBtn = document.getElementById('appstore-btn');
+        const appStoreUnavailable = document.getElementById('appstore-unavailable');
+        const storeUrl = data.appStoreUrl || data.testFlightUrl;
+        if (storeUrl) {
+          appStoreBtn.href = storeUrl;
+          appStoreBtn.classList.remove('hidden');
+          appStoreUnavailable.classList.add('hidden');
         } else {
-          testFlightUnavailable.classList.remove('hidden');
+          appStoreBtn.classList.add('hidden');
+          appStoreUnavailable.classList.remove('hidden');
         }
       })
       .catch(() => {
-        document.getElementById('testflight-unavailable').classList.remove('hidden');
+        document.getElementById('appstore-unavailable').classList.remove('hidden');
       });
   </script>
 </body>

@@ -102,6 +102,7 @@
           </p>
           <div class="mt-8 flex flex-col gap-4 max-w-sm mx-auto md:mx-0">
             <a
+              id="get-app-btn"
               href="/downloads/"
               data-cta="get_app"
               class="text-center font-bold text-lg py-4 px-6 rounded-xl bg-primary-container text-on-primary-container hover:brightness-110 transition"
@@ -182,7 +183,7 @@
       <p>
         &copy; 2026 Kinkeda.com
         <span aria-hidden="true"> · </span>
-        <a href="/downloads/" data-cta="install" class="text-p1 underline underline-offset-2">Install</a>
+        <a href="/downloads/" data-cta="downloads" class="text-p1 underline underline-offset-2">Downloads</a>
         <span aria-hidden="true"> · </span>
         <a href="/support/" class="text-p1 underline underline-offset-2">Support</a>
         <span aria-hidden="true"> · </span>
@@ -191,6 +192,29 @@
     </footer>
   </main>
   <script>
+    (function () {
+      const APP_STORE_URL = 'https://apps.apple.com/us/app/kinkeda-face-to-face-battles/id6780239089';
+      const getAppBtn = document.getElementById('get-app-btn');
+      if (!getAppBtn) return;
+
+      const ua = window.navigator.userAgent || '';
+      const isIos = /iPhone|iPad|iPod/i.test(ua)
+        || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+      if (!isIos) return;
+
+      getAppBtn.href = APP_STORE_URL;
+      getAppBtn.target = '_blank';
+      getAppBtn.rel = 'noopener noreferrer';
+
+      fetch('/downloads/manifest.json')
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const storeUrl = data?.appStoreUrl || data?.testFlightUrl;
+          if (storeUrl) getAppBtn.href = storeUrl;
+        })
+        .catch(() => {});
+    }());
+
     KinkedaAnalytics.bindCtaClicks('[data-cta]');
   </script>
 </body>

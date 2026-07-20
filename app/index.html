@@ -137,7 +137,7 @@
       <div class="font-body text-xs text-on-surface-variant truncate">Install for iPhone</div>
     </div>
     <a
-      href="https://testflight.apple.com/join/BammT53U"
+      href="https://apps.apple.com/us/app/kinkeda-face-to-face-battles/id6780239089"
       id="ios-install-link"
       class="shrink-0 px-3 py-1.5 bg-primary-container border-2 border-outline font-mono text-label-mono uppercase text-on-primary-container not-italic"
       rel="noopener noreferrer"
@@ -1903,12 +1903,12 @@
       localStorage.setItem('kinkeda-install-dismissed', '1');
     };
 
-    /* iOS web install banner (TestFlight; hidden in PWA and native shells) */
+    /* iOS web install banner (App Store; hidden in PWA and native shells) */
     const IOS_INSTALL_DISMISS_KEY = 'kinkeda-ios-install-dismissed';
     const iosInstallBanner = document.getElementById('ios-install-banner');
     const iosInstallLink = document.getElementById('ios-install-link');
     const iosInstallDismiss = document.getElementById('ios-install-dismiss');
-    const FALLBACK_TESTFLIGHT_URL = 'https://testflight.apple.com/join/BammT53U';
+    const FALLBACK_APP_STORE_URL = 'https://apps.apple.com/us/app/kinkeda-face-to-face-battles/id6780239089';
 
     function isIosWebBrowser() {
       if (isNativeApp) return false;
@@ -1942,18 +1942,19 @@
       fetch('../downloads/manifest.json')
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
-          if (data && !data.testFlightUrl) return;
-          iosInstallLink.href = data?.testFlightUrl || FALLBACK_TESTFLIGHT_URL;
+          const storeUrl = data?.appStoreUrl || data?.testFlightUrl;
+          if (data && !storeUrl) return;
+          iosInstallLink.href = storeUrl || FALLBACK_APP_STORE_URL;
           showIosInstallBanner();
         })
         .catch(() => {
-          iosInstallLink.href = FALLBACK_TESTFLIGHT_URL;
+          iosInstallLink.href = FALLBACK_APP_STORE_URL;
           showIosInstallBanner();
         });
     }
 
     iosInstallLink.addEventListener('click', () => {
-      trackAnalyticsEvent('download_click', { target: 'testflight' });
+      trackAnalyticsEvent('download_click', { target: 'app_store' });
     });
     iosInstallDismiss.addEventListener('click', () => hideIosInstallBanner(true));
 
