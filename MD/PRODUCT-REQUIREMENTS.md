@@ -115,3 +115,4 @@ The app is built for strict full-screen, multi-touch interaction on phones and t
 - [RULES-AND-INTERACTION.md](./RULES-AND-INTERACTION.md) — detailed phase and input reference
 - [ARCHITECTURE-AND-IMPLEMENTATION.md](./ARCHITECTURE-AND-IMPLEMENTATION.md) — technical stack and repo layout
 - [DEV-AND-DEPLOYMENT.md](./DEV-AND-DEPLOYMENT.md) — local dev, sync, and deploy instructions
+- [PRD-THEMES-AND-MONETIZATION.md](./PRD-THEMES-AND-MONETIZATION.md) — themes, picker, IAP, match unlock, ad removal
